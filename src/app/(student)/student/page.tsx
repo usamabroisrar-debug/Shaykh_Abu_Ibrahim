@@ -6,6 +6,30 @@ import { auth, getDashboardPath } from "@/lib/auth";
 import { getStudentDashboardData } from "@/lib/dashboard";
 import styles from "@/components/lms/LmsExperience.module.css";
 
+type EnrollmentItem = {
+  id: string;
+  status?: string | null;
+  progress?: number | null;
+  course: {
+    title: string;
+    lessons: unknown[];
+  };
+};
+
+type NotificationItem = {
+  id: string;
+  title: string;
+  message: string;
+};
+
+type StudentDashboardData = {
+  enrollments: EnrollmentItem[];
+  admissions: unknown[];
+  certificates: unknown[];
+  notifications: NotificationItem[];
+  attempts: unknown[];
+};
+
 export default async function StudentDashboardPage() {
   const session = await auth();
 
@@ -17,7 +41,7 @@ export default async function StudentDashboardPage() {
     redirect(getDashboardPath(session.user.role));
   }
 
-  let dashboard: Awaited<ReturnType<typeof getStudentDashboardData>> = {
+  let dashboard: StudentDashboardData = {
     enrollments: [],
     admissions: [],
     certificates: [],
@@ -70,12 +94,12 @@ export default async function StudentDashboardPage() {
             <h2>My learning journey</h2>
             <div className={styles.list}>
               {dashboard.enrollments.length ? (
-                dashboard.enrollments.map((item) => (
+                dashboard.enrollments.map((item: EnrollmentItem) => (
                   <div key={item.id} className={styles.listItem}>
                     <strong>{item.course.title}</strong>
                     <div className={styles.listItemMeta}>
-                      {item.status} • {item.progress}% complete •{" "}
-                      {item.course.lessons.length} lessons
+                      {item.status || "Active"} • {item.progress ?? 0}% complete
+                      • {item.course.lessons.length} lessons
                     </div>
                   </div>
                 ))
@@ -92,7 +116,7 @@ export default async function StudentDashboardPage() {
             <h2>Recent updates</h2>
             <div className={styles.list}>
               {dashboard.notifications.length ? (
-                dashboard.notifications.map((item) => (
+                dashboard.notifications.map((item: NotificationItem) => (
                   <div key={item.id} className={styles.listItem}>
                     <strong>{item.title}</strong>
                     <div className={styles.listItemMeta}>{item.message}</div>
