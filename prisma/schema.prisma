@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  TEACHER
+  STUDENT
+  PARENT
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String?
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teacherProfile TeacherProfile?
+  studentProfile StudentProfile?
+  blogs          Blog[]
+}
+
+model TeacherProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  bio       String?
+  expertise String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model StudentProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  phone     String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Course {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  description String?
+  content     String?
+  status      PublishStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  lessons     Lesson[]
+}
+
+model Lesson {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String
+  content   String?
+  courseId  String
+  createdAt DateTime @default(now())
+
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model BlogCategory {
+  id    String @id @default(cuid())
+  name  String
+  slug  String @unique
+  posts Blog[]
+}
+
+model Blog {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  excerpt     String?
+  content     String?
+  status      PublishStatus @default(DRAFT)
+  authorId    String?
+  categoryId  String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  author      User?         @relation(fields: [authorId], references: [id])
+  category    BlogCategory? @relation(fields: [categoryId], references: [id])
+}
+
+model QuizCategory {
+  id      String @id @default(cuid())
+  name    String
+  slug    String @unique
+  quizzes Quiz[]
+}
+
+model Quiz {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  description String?
+  difficulty  Difficulty    @default(EASY)
+  status      PublishStatus @default(DRAFT)
+  categoryId  String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  category    QuizCategory  @relation(fields: [categoryId], references: [id])
+  questions   Question[]
+}
+
+model Question {
+  id           String   @id @default(cuid())
+  question     String
+  options      Json
+  correctIndex Int
+  explanation  String?
+  quizId       String
+  createdAt    DateTime @default(now())
+
+  quiz         Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model Certificate {
+  id             String   @id @default(cuid())
+  certificateNo  String   @unique
+  studentName    String
+  courseName     String
+  teacherName    String?
+  issuedAt       DateTime @default(now())
+  verificationId String   @unique
+}
+
+model Admission {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  course    String
+  message   String?
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model MediaFile {
+  id        String   @id @default(cuid())
+  url       String
+  filename  String
+  mimeType  String?
+  size      Int?
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}

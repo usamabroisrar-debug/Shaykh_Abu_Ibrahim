@@ -1,0 +1,22 @@
+.section {
+  padding: 100px 0;
+}
+
+.light {
+  background: var(--background);
+}
+
+.white {
+  background: var(--white);
+}
+
+.dark {
+  background: var(--secondary);
+  color: var(--white);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 70px 0;
+  }
+}

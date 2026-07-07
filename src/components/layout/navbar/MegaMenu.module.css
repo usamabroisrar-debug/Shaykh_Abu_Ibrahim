@@ -1,0 +1,84 @@
+.menu {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  width: 620px;
+  transform: translate(-50%, 12px);
+  opacity: 0;
+  visibility: hidden;
+  padding: 18px;
+  border-radius: 26px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.16);
+  transition: 0.25s ease;
+}
+
+.header {
+  padding: 14px 16px 18px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #064e3b, #047857);
+  color: white;
+}
+
+.header span {
+  color: #fde68a;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.header strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.1rem;
+}
+
+.grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.item {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  color: #0f172a;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.item:hover {
+  background: #ecfdf5;
+  transform: translateY(-2px);
+}
+
+.icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: #047857;
+  color: #facc15;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.item h4 {
+  margin: 0;
+  color: #064e3b;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.item p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}

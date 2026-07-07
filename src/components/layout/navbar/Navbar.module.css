@@ -1,0 +1,154 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(24px);
+}
+
+.container {
+  width: min(1320px, calc(100% - 32px));
+  height: 86px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.logoWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo {
+  object-fit: contain;
+}
+
+.logoTitle {
+  margin: 0;
+  font-size: 1.18rem;
+  font-weight: 900;
+  color: #064e3b;
+  line-height: 1.1;
+}
+
+.logoText {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconButton,
+.menuButton {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 14px;
+  background: #ffffff;
+  color: #064e3b;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.iconButton:hover,
+.menuButton:hover {
+  background: #ecfdf5;
+  border-color: rgba(6, 95, 70, 0.22);
+  transform: translateY(-2px);
+}
+
+.loginButton {
+  height: 42px;
+  padding: 0 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #ffffff;
+  color: #064e3b;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+
+.loginButton:hover {
+  background: #ecfdf5;
+  transform: translateY(-2px);
+}
+
+.admissionButton {
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #facc15, #d4af37);
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 14px 28px rgba(212, 175, 55, 0.28);
+  transition: 0.25s ease;
+}
+
+.admissionButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(212, 175, 55, 0.4);
+}
+
+.menuButton {
+  display: none;
+}
+
+@media (max-width: 1120px) {
+  .loginButton,
+  .iconButton {
+    display: none;
+  }
+}
+
+@media (max-width: 920px) {
+  .container {
+    height: 78px;
+  }
+
+  .menuButton {
+    display: grid;
+  }
+
+  .admissionButton {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .logoTitle {
+    font-size: 0.95rem;
+  }
+
+  .logoText {
+    font-size: 0.68rem;
+  }
+
+  .logo {
+    width: 48px;
+    height: 48px;
+  }
+}

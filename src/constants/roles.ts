@@ -1,0 +1,8 @@
+export const USER_ROLES = {
+  SUPER_ADMIN: "SUPER_ADMIN",
+  ADMIN: "ADMIN",
+  EDITOR: "EDITOR",
+  TEACHER: "TEACHER",
+  STUDENT: "STUDENT",
+  PARENT: "PARENT",
+} as const;

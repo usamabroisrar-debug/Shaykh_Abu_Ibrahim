@@ -1,0 +1,24 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.green {
+  background: rgba(6, 95, 70, 0.1);
+  color: var(--primary);
+}
+
+.gold {
+  background: rgba(212, 175, 55, 0.18);
+  color: #8a6b10;
+}
+
+.dark {
+  background: rgba(15, 23, 42, 0.08);
+  color: var(--secondary);
+}

@@ -1,130 +1,357 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
+/* ==========================
+   DESIGN TOKENS
+========================== */
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* COLORS */
+  --primary: #065f46;
+  --primary-light: #047857;
+  --primary-dark: #022c22;
+
+  --secondary: #0f172a;
+
+  --gold: #d4af37;
+  --gold-light: #facc15;
+  --gold-dark: #8a6b10;
+
+  --white: #ffffff;
+  --black: #000000;
+
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-soft: #f1f5f9;
+  --surface-dark: #020617;
+
+  --border: #e2e8f0;
+  --border-dark: rgba(15, 23, 42, 0.12);
+  --border-light: rgba(255, 255, 255, 0.14);
+
+  --text: #0f172a;
+  --text-light: #64748b;
+  --text-muted: #94a3b8;
+  --text-white-soft: rgba(255, 255, 255, 0.82);
+
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+
+  /* GRADIENTS */
+  --gradient-primary: linear-gradient(135deg, #065f46, #047857);
+  --gradient-gold: linear-gradient(135deg, #d4af37, #facc15);
+  --gradient-dark: linear-gradient(135deg, #020617, #064e3b);
+  --gradient-hero:
+    radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.18), transparent 32%),
+    radial-gradient(circle at 85% 25%, rgba(16, 185, 129, 0.18), transparent 30%),
+    linear-gradient(135deg, #031b16 0%, #064e3b 45%, #020617 100%);
+
+  /* BORDER RADIUS */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 36px;
+  --radius-full: 999px;
+
+  /* SHADOWS */
+  --shadow-xs: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 25px 70px rgba(0, 0, 0, 0.18);
+  --shadow-xl: 0 35px 90px rgba(0, 0, 0, 0.25);
+  --shadow-gold: 0 18px 45px rgba(212, 175, 55, 0.34);
+  --shadow-green: 0 18px 45px rgba(6, 95, 70, 0.25);
+
+  /* TRANSITIONS */
+  --transition-fast: 0.2s ease;
+  --transition: 0.35s ease;
+  --transition-slow: 0.55s ease;
+
+  /* LAYOUT */
+  --max-width: 1320px;
+  --container-padding: 32px;
+  --header-height: 88px;
+
+  /* Z INDEX */
+  --z-navbar: 100;
+  --z-modal: 200;
+  --z-overlay: 300;
+
+  /* FONTS */
+  --heading-font: "Plus Jakarta Sans", sans-serif;
+  --body-font: "Inter", sans-serif;
+  --arabic-font: "Amiri", serif;
+  --urdu-font: "Noto Nastaliq Urdu", serif;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* ==========================
+   RESET
+========================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--body-font);
+  font-size: 16px;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--secondary);
+}
+
+/* ==========================
+   TYPOGRAPHY
+========================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--heading-font);
+  color: inherit;
+  line-height: 1.1;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+strong {
+  font-weight: 800;
+}
+
+.urdu {
+  font-family: var(--urdu-font);
+  line-height: 2.1;
+}
+
+.arabic {
+  font-family: var(--arabic-font);
+  line-height: 2;
+}
+
+/* ==========================
+   GLOBAL UTILITIES
+========================== */
+
+.container {
+  width: min(var(--max-width), calc(100% - var(--container-padding)));
+  margin-inline: auto;
+}
+
+.section {
+  padding: 100px 0;
+}
+
+.sectionLight {
+  background: var(--background);
+}
+
+.sectionWhite {
+  background: var(--white);
+}
+
+.sectionDark {
+  background: var(--secondary);
+  color: var(--white);
+}
+
+.textGradient {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass {
+  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+}
+
+.hiddenDesktop {
+  display: none;
+}
+
+/* ==========================
+   SCROLLBAR
+========================== */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* ==========================
+   FOCUS
+========================== */
+
+:focus-visible {
+  outline: 3px solid rgba(212, 175, 55, 0.55);
+  outline-offset: 3px;
+}
+
+/* ==========================
+   ANIMATIONS
+========================== */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
   }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
+}
+
+.animateFadeUp {
+  animation: fadeUp 0.7s ease both;
+}
+
+.animateFloatY {
+  animation: floatY 5s ease-in-out infinite;
+}
+
+.animatePulseGlow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media (max-width: 1024px) {
+  :root {
+    --container-padding: 28px;
+  }
+
+  .section {
+    padding: 80px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 24px;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    font-size: 15px;
   }
-  html {
-    @apply font-sans;
+
+  .section {
+    padding: 70px 0;
+  }
+
+  .hiddenMobile {
+    display: none !important;
+  }
+
+  .hiddenDesktop {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --container-padding: 20px;
+  }
+
+  .section {
+    padding: 58px 0;
   }
 }
