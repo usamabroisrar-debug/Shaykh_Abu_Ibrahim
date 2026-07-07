@@ -1,0 +1,54 @@
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+  gap: 24px;
+}
+
+.primaryCard,
+.secondaryCard {
+  padding: 30px;
+}
+
+.primaryCard h2,
+.secondaryCard h2 {
+  margin-top: 18px;
+}
+
+.primaryCard p {
+  margin-top: 14px;
+  color: var(--text-light);
+  line-height: 1.85;
+}
+
+.meta {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.meta span,
+.benefit {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  padding: 0 15px;
+  border-radius: 999px;
+  background: rgba(6, 95, 70, 0.08);
+  color: var(--primary);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.benefits {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

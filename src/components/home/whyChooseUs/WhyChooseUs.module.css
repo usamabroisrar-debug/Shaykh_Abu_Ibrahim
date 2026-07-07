@@ -1,0 +1,104 @@
+.section {
+  background:
+    radial-gradient(circle at right top, rgba(212, 175, 55, 0.12), transparent 28%),
+    #ffffff;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.intro {
+  display: grid;
+  gap: 18px;
+}
+
+.assuranceCard {
+  display: flex;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid rgba(6, 95, 70, 0.12);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(6, 95, 70, 0.06), rgba(212, 175, 55, 0.08));
+}
+
+.assuranceIcon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: var(--gradient-primary);
+  color: #fef3c7;
+}
+
+.assuranceCard strong {
+  display: block;
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.assuranceCard p {
+  margin-top: 8px;
+  color: var(--text-light);
+  line-height: 1.8;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.card {
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212, 175, 55, 0.45);
+  box-shadow: var(--shadow-lg);
+}
+
+.iconWrap {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: #064e3b;
+  color: #facc15;
+}
+
+.card h3 {
+  margin-top: 14px;
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.card p {
+  margin-top: 10px;
+  color: var(--text-light);
+  line-height: 1.75;
+}
+
+@media (max-width: 1040px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

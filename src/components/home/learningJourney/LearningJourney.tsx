@@ -1,11 +1,13 @@
 import {
   BookOpen,
   BookText,
-  Languages,
   Medal,
-  ScrollText,
   GraduationCap,
+  Languages,
+  ScrollText,
 } from "lucide-react";
+import { Container, Section, SectionTitle } from "@/components/shared";
+import styles from "./LearningJourney.module.css";
 
 const journey = [
   {
@@ -42,56 +44,25 @@ const journey = [
 
 export function LearningJourney() {
   return (
-    <section className="bg-slate-950 py-24 px-4 text-white">
-      <div className="mx-auto max-w-7xl">
+    <Section variant="dark" className={styles.section}>
+      <Container>
+        <SectionTitle
+          eyebrow="Learning Journey"
+          title="A complete pathway from first recitation to deep Islamic study"
+          description="Students progress through a calm, measurable sequence so the next step always feels purposeful, not confusing."
+        />
 
-        <div className="text-center max-w-3xl mx-auto">
-          <p className="uppercase tracking-[4px] text-amber-400 text-sm font-semibold">
-            Learning Journey
-          </p>
-
-          <h2 className="mt-4 text-4xl md:text-5xl font-bold">
-            Your Complete Islamic Learning Path
-          </h2>
-
-          <p className="mt-6 text-slate-300 leading-8">
-            Start from the basics and progress step by step until you build
-            a strong foundation in Quran and Islamic knowledge.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
-
+        <div className={styles.grid}>
           {journey.map((item, index) => (
-
-            <div
-              key={item.title}
-              className="relative rounded-3xl bg-white/5 border border-white/10 p-8 hover:border-amber-400 hover:bg-white/10 transition"
-            >
-
-              <div className="absolute top-6 right-6 text-6xl font-bold text-white/5">
-                {index + 1}
-              </div>
-
-              <div className="w-14 h-14 rounded-2xl bg-emerald-700 text-amber-300 flex items-center justify-center">
-                {item.icon}
-              </div>
-
-              <h3 className="mt-6 text-2xl font-bold">
-                {item.title}
-              </h3>
-
-              <p className="mt-4 leading-7 text-slate-300">
-                {item.description}
-              </p>
-
-            </div>
-
+            <article key={item.title} className={styles.card}>
+              <span className={styles.stepNumber}>0{index + 1}</span>
+              <div className={styles.iconWrap}>{item.icon}</div>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </article>
           ))}
-
         </div>
-
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

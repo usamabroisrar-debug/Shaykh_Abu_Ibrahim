@@ -1,0 +1,60 @@
+.section {
+  background:
+    radial-gradient(circle at left top, rgba(212, 175, 55, 0.12), transparent 20%),
+    radial-gradient(circle at right bottom, rgba(6, 95, 70, 0.12), transparent 20%),
+    #f8fafc;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) auto;
+  gap: 20px;
+  align-items: center;
+  padding: 30px;
+  border-radius: 36px;
+  background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%);
+  box-shadow: var(--shadow-xl);
+}
+
+.copy h2 {
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.copy p {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.74);
+  line-height: 1.85;
+}
+
+.eyebrow {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.16);
+  color: #fde68a;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.actions {
+  display: grid;
+  gap: 14px;
+}
+
+@media (max-width: 920px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .card {
+    padding: 28px;
+  }
+}

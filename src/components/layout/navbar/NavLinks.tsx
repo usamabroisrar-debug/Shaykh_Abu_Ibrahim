@@ -2,22 +2,18 @@
 
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import { primaryNavigation } from "@/data/navigation";
 import styles from "./NavLinks.module.css";
 import { MegaMenu } from "./MegaMenu";
-
-const links = [
-  { label: "Home", href: "/" },
-  { label: "Blog", href: "/blog" },
-  { label: "Quiz", href: "/quiz" },
-  { label: "Contact", href: "/contact" },
-];
 
 export function NavLinks() {
   return (
     <nav className={styles.nav}>
-      <Link href="/" className={styles.link}>
-        Home
-      </Link>
+      {primaryNavigation.slice(0, 2).map((link) => (
+        <Link key={link.href} href={link.href} className={styles.link}>
+          {link.label}
+        </Link>
+      ))}
 
       <div className={styles.dropdown}>
         <button className={styles.dropdownButton}>
@@ -27,7 +23,7 @@ export function NavLinks() {
         <MegaMenu />
       </div>
 
-      {links.slice(1).map((link) => (
+      {primaryNavigation.slice(2).map((link) => (
         <Link key={link.href} href={link.href} className={styles.link}>
           {link.label}
         </Link>

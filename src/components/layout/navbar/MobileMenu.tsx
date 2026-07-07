@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { X } from "lucide-react";
+import { primaryNavigation } from "@/data/navigation";
 import styles from "./MobileMenu.module.css";
 
 type MobileMenuProps = {
@@ -10,17 +11,14 @@ type MobileMenuProps = {
   onClose: () => void;
 };
 
-const links = [
-  { label: "Home", href: "/" },
-  { label: "Courses", href: "/courses" },
-  { label: "Blog", href: "/blog" },
-  { label: "Quiz", href: "/quiz" },
-  { label: "Contact", href: "/contact" },
-  { label: "Admission", href: "/admission" },
-  { label: "Login", href: "/login" },
-];
-
 export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+  const links = [
+    ...primaryNavigation,
+    { label: "Courses", href: "/courses" },
+    { label: "Admission", href: "/admission" },
+    { label: "Login", href: "/login" },
+  ];
+
   return (
     <div className={`${styles.overlay} ${isOpen ? styles.open : ""}`}>
       <button className={styles.backdrop} onClick={onClose} />

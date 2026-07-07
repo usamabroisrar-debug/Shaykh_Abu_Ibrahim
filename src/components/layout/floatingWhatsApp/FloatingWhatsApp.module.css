@@ -1,0 +1,63 @@
+.button {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 140;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tooltip {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.82);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 800;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateX(10px);
+  transition: var(--transition-fast);
+  pointer-events: none;
+}
+
+.iconWrap {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+  box-shadow: 0 20px 45px rgba(34, 197, 94, 0.35);
+  transition: var(--transition-fast);
+}
+
+.button:hover .tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.button:hover .iconWrap {
+  transform: translateY(-3px) scale(1.02);
+}
+
+@media (max-width: 640px) {
+  .button {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .tooltip {
+    display: none;
+  }
+
+  .iconWrap {
+    width: 54px;
+    height: 54px;
+  }
+}

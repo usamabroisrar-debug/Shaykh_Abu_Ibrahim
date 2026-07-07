@@ -1,8 +1,8 @@
 .menu {
   position: absolute;
-  top: 36px;
+  top: calc(100% + 18px);
   left: 50%;
-  width: 620px;
+  width: min(620px, calc(100vw - 80px));
   transform: translate(-50%, 12px);
   opacity: 0;
   visibility: hidden;

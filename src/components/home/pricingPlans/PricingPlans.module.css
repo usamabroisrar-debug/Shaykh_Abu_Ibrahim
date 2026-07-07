@@ -1,0 +1,120 @@
+.section {
+  background:
+    radial-gradient(circle at top left, rgba(212, 175, 55, 0.1), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  gap: 18px;
+  align-items: end;
+}
+
+.note {
+  color: var(--text-light);
+  line-height: 1.78;
+}
+
+.grid {
+  margin-top: 28px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.card {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.popular {
+  border-color: rgba(212, 175, 55, 0.4);
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.14), transparent 30%),
+    #ffffff;
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-8px);
+}
+
+.topRow {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.planName {
+  color: var(--primary);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card h3 {
+  margin-top: 10px;
+  font-size: 2rem;
+  letter-spacing: -0.04em;
+}
+
+.card h3 small {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.badge {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.18);
+  color: #8a6b10;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.description {
+  color: var(--text-light);
+  line-height: 1.75;
+}
+
+.featureList {
+  display: grid;
+  gap: 10px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.feature svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+@media (max-width: 1040px) {
+  .header,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -33,6 +33,38 @@
   opacity: 1;
 }
 
+.topRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.category,
+.popular {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.category {
+  background: rgba(6, 95, 70, 0.1);
+  color: var(--primary);
+}
+
+.popular {
+  background: rgba(212, 175, 55, 0.16);
+  color: #9a6d04;
+}
+
 .iconBox {
   position: relative;
   z-index: 1;
@@ -42,8 +74,12 @@
   place-items: center;
   border-radius: 18px;
   background: linear-gradient(135deg, #065f46, #047857);
-  color: #facc15;
+  color: #f8fafc;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
   box-shadow: 0 12px 30px rgba(4, 120, 87, 0.25);
+  margin-top: 22px;
 }
 
 .title {
@@ -59,10 +95,28 @@
   position: relative;
   z-index: 1;
   margin-top: 12px;
-  min-height: 72px;
+  min-height: 78px;
   color: #475569;
   font-size: 0.95rem;
   line-height: 1.75;
+}
+
+.teacher {
+  position: relative;
+  z-index: 1;
+  margin-top: 18px;
+  display: grid;
+  gap: 3px;
+}
+
+.teacher strong {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.teacher span {
+  color: var(--text-light);
+  font-size: 0.82rem;
 }
 
 .metaGrid {
@@ -84,7 +138,6 @@
 .link {
   position: relative;
   z-index: 1;
-  margin-top: 24px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -96,4 +149,36 @@
 
 .link:hover {
   color: #065f46;
+}
+
+.footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.price {
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.certificate {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 560px) {
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

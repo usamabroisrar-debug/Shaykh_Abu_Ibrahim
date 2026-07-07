@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, Moon, UserRound } from "lucide-react";
+import { Menu, UserRound } from "lucide-react";
 import { useState } from "react";
 import styles from "./Navbar.module.css";
 import { NavLinks } from "./NavLinks";
@@ -27,7 +27,7 @@ export function Navbar() {
             />
 
             <div>
-              <h1 className={styles.logoTitle}>Shaykh Abu Ibrahim</h1>
+              <span className={styles.logoTitle}>Shaykh Abu Ibrahim</span>
               <p className={styles.logoText}>Islamic Learning Platform</p>
             </div>
           </Link>
@@ -36,10 +36,6 @@ export function Navbar() {
 
           <div className={styles.actions}>
             <SearchBox />
-
-            <button className={styles.iconButton} aria-label="Toggle dark mode">
-              <Moon size={18} />
-            </button>
 
             <Link href="/login" className={styles.loginButton}>
               <UserRound size={17} />

@@ -1,0 +1,95 @@
+.card {
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.12), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(6, 95, 70, 0.24);
+  box-shadow: var(--shadow-lg);
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: var(--gradient-primary);
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.specialty {
+  margin-top: 22px;
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.16);
+  color: #8a6b10;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card h3 {
+  margin-top: 16px;
+  color: var(--text);
+  font-size: 1.4rem;
+}
+
+.designation {
+  margin-top: 8px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.summary {
+  margin-top: 16px;
+  color: var(--text-light);
+  line-height: 1.8;
+}
+
+.meta {
+  margin-top: 18px;
+  display: grid;
+  gap: 10px;
+  color: var(--text-light);
+  font-size: 0.88rem;
+}
+
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badges {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badges span {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 0.76rem;
+  font-weight: 700;
+}

@@ -2,51 +2,16 @@ import Link from "next/link";
 import {
   BookOpen,
   BookMarked,
-  Mic2,
+  GraduationCap,
   Languages,
-  ScrollText,
   Landmark,
+  Mic2,
+  ScrollText,
 } from "lucide-react";
+import { courseNavigation } from "@/data/navigation";
 import styles from "./MegaMenu.module.css";
 
-const courses = [
-  {
-    title: "Qaida",
-    text: "Learn Quran reading basics",
-    href: "/courses/qaida",
-    icon: <BookOpen size={20} />,
-  },
-  {
-    title: "Nazra",
-    text: "Improve Quran fluency",
-    href: "/courses/nazra",
-    icon: <BookMarked size={20} />,
-  },
-  {
-    title: "Tajweed",
-    text: "Rules of recitation",
-    href: "/courses/tajweed",
-    icon: <Mic2 size={20} />,
-  },
-  {
-    title: "Translation",
-    text: "Understand Quran meanings",
-    href: "/courses/tarjuma",
-    icon: <Languages size={20} />,
-  },
-  {
-    title: "Tafseer",
-    text: "Explanation of Quran",
-    href: "/courses/tafseer",
-    icon: <ScrollText size={20} />,
-  },
-  {
-    title: "Hadith",
-    text: "Authentic Hadith studies",
-    href: "/courses/hadith",
-    icon: <Landmark size={20} />,
-  },
-];
+const icons = [BookOpen, BookMarked, GraduationCap, Mic2, Languages, Landmark];
 
 export function MegaMenu() {
   return (
@@ -57,15 +22,21 @@ export function MegaMenu() {
       </div>
 
       <div className={styles.grid}>
-        {courses.map((course) => (
-          <Link key={course.href} href={course.href} className={styles.item}>
-            <div className={styles.icon}>{course.icon}</div>
-            <div>
-              <h4>{course.title}</h4>
-              <p>{course.text}</p>
-            </div>
-          </Link>
-        ))}
+        {courseNavigation.map((course, index) => {
+          const Icon = icons[index] ?? ScrollText;
+
+          return (
+            <Link key={course.href} href={course.href} className={styles.item}>
+              <div className={styles.icon}>
+                <Icon size={20} />
+              </div>
+              <div>
+                <h4>{course.title}</h4>
+                <p>{course.text}</p>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

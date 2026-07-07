@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 /* ==========================
    DESIGN TOKENS
 ========================== */
@@ -79,10 +77,11 @@
   --z-overlay: 300;
 
   /* FONTS */
-  --heading-font: "Plus Jakarta Sans", sans-serif;
-  --body-font: "Inter", sans-serif;
-  --arabic-font: "Amiri", serif;
-  --urdu-font: "Noto Nastaliq Urdu", serif;
+  --heading-font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --body-font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono-font: Consolas, "Courier New", monospace;
+  --arabic-font: Georgia, serif;
+  --urdu-font: Georgia, serif;
 }
 
 /* ==========================
@@ -133,6 +132,7 @@ svg {
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
 button {
@@ -195,7 +195,7 @@ strong {
 }
 
 .section {
-  padding: 100px 0;
+  padding: 64px 0;
 }
 
 .sectionLight {
@@ -226,6 +226,10 @@ strong {
 
 .hiddenDesktop {
   display: none;
+}
+
+.pageShell {
+  flex: 1;
 }
 
 /* ==========================
@@ -320,7 +324,7 @@ strong {
   }
 
   .section {
-    padding: 80px 0;
+    padding: 54px 0;
   }
 }
 
@@ -334,7 +338,7 @@ strong {
   }
 
   .section {
-    padding: 70px 0;
+    padding: 46px 0;
   }
 
   .hiddenMobile {
@@ -352,6 +356,6 @@ strong {
   }
 
   .section {
-    padding: 58px 0;
+    padding: 38px 0;
   }
 }
