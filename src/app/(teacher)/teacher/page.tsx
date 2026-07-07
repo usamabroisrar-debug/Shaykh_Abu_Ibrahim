@@ -5,6 +5,29 @@ import { auth, getDashboardPath } from "@/lib/auth";
 import { getTeacherDashboardData } from "@/lib/dashboard";
 import styles from "@/components/lms/LmsExperience.module.css";
 
+type CourseItem = {
+  id: string;
+  title: string;
+  lessons: unknown[];
+  enrollments: unknown[];
+};
+
+type AssignmentItem = {
+  id: string;
+  title: string;
+  dueDate?: Date | string | null;
+  course: {
+    title: string;
+  };
+};
+
+type TeacherDashboardData = {
+  courses: CourseItem[];
+  assignments: AssignmentItem[];
+  submissions: unknown[];
+  certificates: unknown[];
+};
+
 export default async function TeacherDashboardPage() {
   const session = await auth();
 
@@ -16,7 +39,7 @@ export default async function TeacherDashboardPage() {
     redirect(getDashboardPath(session.user.role));
   }
 
-  let dashboard: Awaited<ReturnType<typeof getTeacherDashboardData>> = {
+  let dashboard: TeacherDashboardData = {
     courses: [],
     assignments: [],
     submissions: [],
@@ -36,8 +59,8 @@ export default async function TeacherDashboardPage() {
           <div>
             <h1>Teacher Dashboard</h1>
             <p>
-              Faculty area for course oversight, submissions, and recent
-              teaching activity.
+              Faculty area for course oversight, submissions, and recent teaching
+              activity.
             </p>
           </div>
           <SignOutButton />
@@ -67,7 +90,7 @@ export default async function TeacherDashboardPage() {
             <h2>Course overview</h2>
             <div className={styles.list}>
               {dashboard.courses.length ? (
-                dashboard.courses.map((course) => (
+                dashboard.courses.map((course: CourseItem) => (
                   <div key={course.id} className={styles.listItem}>
                     <strong>{course.title}</strong>
                     <div className={styles.listItemMeta}>
@@ -78,8 +101,8 @@ export default async function TeacherDashboardPage() {
                 ))
               ) : (
                 <div className={styles.empty}>
-                  No teacher-linked courses yet. Assign teacher IDs in Prisma
-                  data to activate this area fully.
+                  No teacher-linked courses yet. Assign teacher IDs in Prisma data
+                  to activate this area fully.
                 </div>
               )}
             </div>
@@ -89,12 +112,18 @@ export default async function TeacherDashboardPage() {
             <h2>Assignment activity</h2>
             <div className={styles.list}>
               {dashboard.assignments.length ? (
-                dashboard.assignments.map((item) => (
+                dashboard.assignments.map((item: AssignmentItem) => (
                   <div key={item.id} className={styles.listItem}>
                     <strong>{item.title}</strong>
                     <div className={styles.listItemMeta}>
                       {item.course.title}
-                      {item.dueDate ? ` • Due ${item.dueDate.toDateString()}` : ""}
+                      {item.dueDate
+                        ? ` • Due ${
+                            item.dueDate instanceof Date
+                              ? item.dueDate.toDateString()
+                              : new Date(item.dueDate).toDateString()
+                          }`
+                        : ""}
                     </div>
                   </div>
                 ))
