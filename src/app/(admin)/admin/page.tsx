@@ -5,6 +5,30 @@ import { auth, getDashboardPath } from "@/lib/auth";
 import { getAdminDashboardData } from "@/lib/dashboard";
 import styles from "@/components/lms/LmsExperience.module.css";
 
+type AdmissionItem = {
+  id: string;
+  name: string;
+  course?: string | null;
+  status?: string | null;
+};
+
+type ContactItem = {
+  id: string;
+  name: string;
+  email?: string | null;
+  subject?: string | null;
+};
+
+type DashboardData = {
+  users: number;
+  admissions: AdmissionItem[];
+  courses: unknown[];
+  submissions: unknown[];
+  payments: unknown[];
+  certificates: unknown[];
+  contacts: ContactItem[];
+};
+
 export default async function AdminDashboardPage() {
   const session = await auth();
 
@@ -16,7 +40,7 @@ export default async function AdminDashboardPage() {
     redirect(getDashboardPath(session.user.role));
   }
 
-  let dashboard: Awaited<ReturnType<typeof getAdminDashboardData>> = {
+  let dashboard: DashboardData = {
     users: 0,
     admissions: [],
     courses: [],
@@ -70,11 +94,12 @@ export default async function AdminDashboardPage() {
             <h2>Recent admissions</h2>
             <div className={styles.list}>
               {dashboard.admissions.length ? (
-                dashboard.admissions.map((item) => (
+                dashboard.admissions.map((item: AdmissionItem) => (
                   <div key={item.id} className={styles.listItem}>
                     <strong>{item.name}</strong>
                     <div className={styles.listItemMeta}>
-                      {item.course || "Course pending"} • {item.status}
+                      {item.course || "Course pending"} •{" "}
+                      {item.status || "Pending"}
                     </div>
                   </div>
                 ))
@@ -91,11 +116,12 @@ export default async function AdminDashboardPage() {
             <h2>Recent contact messages</h2>
             <div className={styles.list}>
               {dashboard.contacts.length ? (
-                dashboard.contacts.map((item) => (
+                dashboard.contacts.map((item: ContactItem) => (
                   <div key={item.id} className={styles.listItem}>
                     <strong>{item.name}</strong>
                     <div className={styles.listItemMeta}>
-                      {item.email} • {item.subject || "General inquiry"}
+                      {item.email || "No email"} •{" "}
+                      {item.subject || "General inquiry"}
                     </div>
                   </div>
                 ))
