@@ -1,5 +1,10 @@
 export function isDatabaseConfigured() {
-  return Boolean(process.env.DATABASE_URL);
+  return Boolean(
+    process.env.POSTGRES_PRISMA_URL ||
+      process.env.DATABASE_URL ||
+      process.env.POSTGRES_URL_NON_POOLING ||
+      process.env.DATABASE_URL_UNPOOLED
+  );
 }
 
 export function buildAbsoluteUrl(path: string) {

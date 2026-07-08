@@ -1,10 +1,12 @@
 import { ArrowRight } from "lucide-react";
-import { featuredCourses } from "@/data/courses";
 import { Button, Container, Section, SectionTitle } from "@/components/shared";
+import { getFeaturedPublicCourses } from "@/services/course/course.service";
 import { CourseCard } from "./CourseCard";
 import styles from "./CoursesSection.module.css";
 
-export function CoursesSection() {
+export async function CoursesSection() {
+  const featuredCourses = await getFeaturedPublicCourses(6);
+
   return (
     <Section className={styles.section}>
       <Container>

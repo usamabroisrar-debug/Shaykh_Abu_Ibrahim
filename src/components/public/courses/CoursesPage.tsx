@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge, Card, Container, Section } from "@/components/shared";
 import { PageHero } from "@/components/public/PageHero/PageHero";
-import { courses } from "@/data/courses";
+import { getPublicCourses } from "@/services/course/course.service";
 import { getCourseImagePath } from "@/utils/course-image";
 import styles from "./CoursesPage.module.css";
 
-export function CoursesPage() {
+export async function CoursesPage() {
+  const courses = await getPublicCourses();
+
   return (
     <>
       <PageHero

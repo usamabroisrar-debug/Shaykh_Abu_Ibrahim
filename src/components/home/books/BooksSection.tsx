@@ -1,8 +1,10 @@
 import { Button, Container, Section, SectionTitle } from "@/components/shared";
-import { books } from "@/data/books";
+import { getPublicBooks } from "@/services/book/book.service";
 import styles from "./BooksSection.module.css";
 
-export function BooksSection() {
+export async function BooksSection() {
+  const books = await getPublicBooks(4);
+
   return (
     <Section variant="white" className={styles.section}>
       <Container>

@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Card, Container, Section } from "@/components/shared";
 import { PageHero } from "@/components/public/PageHero/PageHero";
-import { blogs } from "@/data/blogs";
+import { getPublishedBlogs } from "@/services/blog/blog.service";
 import styles from "./BlogPage.module.css";
 
-export function BlogPage() {
+export async function BlogPage() {
+  const blogs = await getPublishedBlogs();
+
   return (
     <>
       <PageHero

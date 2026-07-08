@@ -9,8 +9,11 @@ import {
   SectionTitle,
 } from "@/components/shared";
 import { EnrollmentButton } from "@/components/lms/EnrollmentButton";
-import { getCourseBySlug, popularCourses } from "@/data/courses";
 import { auth } from "@/lib/auth";
+import {
+  getPublicCourseBySlug,
+  getPublicCourses,
+} from "@/services/course/course.service";
 import { getCourseImagePath } from "@/utils/course-image";
 import styles from "./CourseDetailPage.module.css";
 
@@ -19,14 +22,15 @@ type CourseDetailPageProps = {
 };
 
 export async function CourseDetailPage({ slug }: CourseDetailPageProps) {
-  const course = getCourseBySlug(slug);
+  const course = await getPublicCourseBySlug(slug);
   const session = await auth();
 
   if (!course) {
     notFound();
   }
 
-  const relatedCourses = popularCourses
+  const relatedCourses = (await getPublicCourses())
+    .filter((item) => item.featured)
     .filter((item) => item.slug !== course.slug)
     .slice(0, 3);
 

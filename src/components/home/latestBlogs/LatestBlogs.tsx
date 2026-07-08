@@ -1,9 +1,11 @@
 import { Button, Container, Section, SectionTitle } from "@/components/shared";
-import { blogs } from "@/data/blogs";
+import { getPublishedBlogs } from "@/services/blog/blog.service";
 import { BlogCard } from "./BlogCard";
 import styles from "./LatestBlogs.module.css";
 
-export function LatestBlogs() {
+export async function LatestBlogs() {
+  const blogs = await getPublishedBlogs(3);
+
   return (
     <Section className={styles.section}>
       <Container>

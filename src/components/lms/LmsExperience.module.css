@@ -236,6 +236,11 @@
   margin-bottom: 14px;
 }
 
+.panelIntro {
+  margin-bottom: 18px;
+  color: var(--text-light);
+}
+
 .list {
   display: grid;
   gap: 14px;
@@ -258,9 +263,63 @@
   color: var(--text-light);
 }
 
+.managementGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.adminForm {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.checkboxRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.checkboxRow input {
+  width: 18px;
+  height: 18px;
+}
+
+.primaryAction,
+.dangerButton {
+  min-height: 44px;
+  border: none;
+  border-radius: 14px;
+  padding: 0 18px;
+  font-weight: 800;
+}
+
+.primaryAction {
+  background: var(--gradient-primary);
+  color: var(--white);
+}
+
+.dangerButton {
+  background: rgba(239, 68, 68, 0.12);
+  color: #991b1b;
+}
+
+.stackList {
+  display: grid;
+  gap: 12px;
+}
+
+.inlineDeleteForm {
+  margin-top: 12px;
+}
+
 @media (max-width: 1024px) {
   .heroCard,
-  .dashboardPanels {
+  .dashboardPanels,
+  .managementGrid {
     grid-template-columns: 1fr;
   }
 

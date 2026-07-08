@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Card, Container, Section } from "@/components/shared";
 import { PageHero } from "@/components/public/PageHero/PageHero";
-import { books } from "@/data/books";
+import { getPublicBooks } from "@/services/book/book.service";
 import styles from "./BooksPage.module.css";
 
-export function BooksPage() {
+export async function BooksPage() {
+  const books = await getPublicBooks();
+
   return (
     <>
       <PageHero

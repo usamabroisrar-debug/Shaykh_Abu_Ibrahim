@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import { CourseDetailPage } from "@/components/public/courses/CourseDetailPage";
-import { courses, getCourseBySlug } from "@/data/courses";
 import { buildMetadata } from "@/lib/metadata";
-
-export function generateStaticParams() {
-  return courses.map((course) => ({ slug: course.slug }));
-}
+import { getPublicCourseBySlug } from "@/services/course/course.service";
 
 export async function generateMetadata(
   props: PageProps<"/courses/[slug]">
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const course = getCourseBySlug(slug);
+  const course = await getPublicCourseBySlug(slug);
 
   if (!course) {
     return buildMetadata({

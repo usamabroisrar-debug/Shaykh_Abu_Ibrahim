@@ -1,21 +1,27 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge, Container, Section, SectionTitle } from "@/components/shared";
-import { blogs, getBlogBySlug } from "@/data/blogs";
+import {
+  getPublishedBlogBySlug,
+  getPublishedBlogs,
+} from "@/services/blog/blog.service";
 import styles from "./BlogDetailPage.module.css";
 
 type BlogDetailPageProps = {
   slug: string;
 };
 
-export function BlogDetailPage({ slug }: BlogDetailPageProps) {
-  const post = getBlogBySlug(slug);
+export async function BlogDetailPage({ slug }: BlogDetailPageProps) {
+  const post = await getPublishedBlogBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
-  const relatedPosts = blogs.filter((item) => item.slug !== post.slug);
+  const relatedPosts = (await getPublishedBlogs())
+    .filter((item) => item.slug !== post.slug)
+    .slice(0, 3);
+  const paragraphs = post.content.split(/\n{2,}/).filter(Boolean);
 
   return (
     <>
@@ -41,11 +47,9 @@ export function BlogDetailPage({ slug }: BlogDetailPageProps) {
             align="left"
           />
           <div className={styles.bodyCard}>
-            <p>
-              {post.excerpt} Each article is designed to be concise, relevant,
-              and beneficial for students and families trying to build more
-              consistent Islamic study habits.
-            </p>
+            {paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
             <div className={styles.tags}>
               {post.tags.map((tag) => (
                 <span key={tag}>{tag}</span>

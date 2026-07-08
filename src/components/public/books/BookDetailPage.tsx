@@ -1,21 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge, Container, Section, SectionTitle } from "@/components/shared";
-import { books, getBookBySlug } from "@/data/books";
+import { getPublicBookBySlug, getPublicBooks } from "@/services/book/book.service";
 import styles from "./BookDetailPage.module.css";
 
 type BookDetailPageProps = {
   slug: string;
 };
 
-export function BookDetailPage({ slug }: BookDetailPageProps) {
-  const book = getBookBySlug(slug);
+export async function BookDetailPage({ slug }: BookDetailPageProps) {
+  const book = await getPublicBookBySlug(slug);
 
   if (!book) {
     notFound();
   }
 
-  const relatedBooks = books.filter((item) => item.slug !== book.slug).slice(0, 3);
+  const relatedBooks = (await getPublicBooks())
+    .filter((item) => item.slug !== book.slug)
+    .slice(0, 3);
 
   return (
     <>

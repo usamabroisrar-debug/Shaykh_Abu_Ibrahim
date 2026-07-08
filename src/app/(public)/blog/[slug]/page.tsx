@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import { BlogDetailPage } from "@/components/public/blog/BlogDetailPage";
-import { blogs, getBlogBySlug } from "@/data/blogs";
 import { buildMetadata } from "@/lib/metadata";
-
-export function generateStaticParams() {
-  return blogs.map((post) => ({ slug: post.slug }));
-}
+import { getPublishedBlogBySlug } from "@/services/blog/blog.service";
 
 export async function generateMetadata(
   props: PageProps<"/blog/[slug]">
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const post = getBlogBySlug(slug);
+  const post = await getPublishedBlogBySlug(slug);
 
   if (!post) {
     return buildMetadata({

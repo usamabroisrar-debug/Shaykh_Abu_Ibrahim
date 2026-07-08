@@ -1,11 +1,17 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
-import { blogs } from "@/data/blogs";
-import { books } from "@/data/books";
-import { courses } from "@/data/courses";
 import { teachers } from "@/data/teachers";
+import { getPublishedBlogs } from "@/services/blog/blog.service";
+import { getPublicBooks } from "@/services/book/book.service";
+import { getPublicCourses } from "@/services/course/course.service";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [courses, books, blogs] = await Promise.all([
+    getPublicCourses(),
+    getPublicBooks(),
+    getPublishedBlogs(),
+  ]);
+
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: siteConfig.url,

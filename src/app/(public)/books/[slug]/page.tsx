@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import { BookDetailPage } from "@/components/public/books/BookDetailPage";
-import { books, getBookBySlug } from "@/data/books";
 import { buildMetadata } from "@/lib/metadata";
-
-export function generateStaticParams() {
-  return books.map((book) => ({ slug: book.slug }));
-}
+import { getPublicBookBySlug } from "@/services/book/book.service";
 
 export async function generateMetadata(
   props: PageProps<"/books/[slug]">
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const book = getBookBySlug(slug);
+  const book = await getPublicBookBySlug(slug);
 
   if (!book) {
     return buildMetadata({
