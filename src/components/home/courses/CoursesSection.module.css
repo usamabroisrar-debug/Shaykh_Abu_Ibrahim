@@ -1,13 +1,14 @@
 .section {
   background:
-    radial-gradient(circle at top left, rgba(6, 95, 70, 0.08), transparent 24%),
-    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    radial-gradient(circle at top left, rgba(6, 95, 70, 0.06), transparent 22%),
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.08), transparent 24%),
+    linear-gradient(180deg, #f9fafb 0%, #f1f5f9 100%);
 }
 
 .header {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.8fr);
-  gap: 22px;
+  gap: 26px;
   align-items: end;
 }
 
@@ -20,12 +21,13 @@
 .note {
   color: var(--text-light);
   line-height: 1.8;
+  max-width: 34ch;
 }
 
 .grid {
-  margin-top: 34px;
+  margin-top: 38px;
   display: grid;
-  gap: 18px;
+  gap: 22px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 

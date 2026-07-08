@@ -31,27 +31,39 @@ export function AdmissionForm() {
     setError("");
     setIsLoading(true);
 
-    const response = await fetch("/api/admissions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch("/api/admissions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    const data = await response.json();
-    setIsLoading(false);
+      const data = await response.json();
 
-    if (!response.ok) {
-      setError(data.message || "Admission request submit nahi ho saki.");
-      return;
+      if (!response.ok) {
+        setError(data.message || "Admission request submit nahi ho saki.");
+        return;
+      }
+
+      setMessage("Admission request submit ho gayi hai. Team aap se jaldi rabta karegi.");
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        guardianName: "",
+        guardianPhone: "",
+        timezone: "Asia/Karachi",
+        ageGroup: "Children",
+        course: courses[0]?.title ?? "",
+        message: "",
+      });
+    } catch {
+      setError("Network issue ki wajah se admission request submit nahi ho saki.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setMessage("Admission request submit ho gayi hai. Team aap se jaldi rabta karegi.");
-    setForm((current) => ({
-      ...current,
-      message: "",
-    }));
   }
 
   return (
@@ -166,7 +178,7 @@ export function AdmissionForm() {
       {message ? <div className={styles.message}>{message}</div> : null}
       {error ? <div className={styles.error}>{error}</div> : null}
 
-      <Button type="submit" className={styles.submit}>
+      <Button type="submit" className={styles.submit} disabled={isLoading}>
         {isLoading ? "Submitting..." : "Submit Admission Request"}
       </Button>
     </form>

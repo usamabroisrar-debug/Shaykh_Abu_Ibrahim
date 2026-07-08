@@ -1,8 +1,8 @@
 import { compare } from "bcrypt";
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/schemas/auth.schema";
+import { getUserByEmail } from "@/services/auth/auth.service";
 
 export function getDashboardPath(role?: string | null) {
   switch (role) {
@@ -61,15 +61,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: parsed.data.email.toLowerCase(),
-          },
-          include: {
-            studentProfile: true,
-            teacherProfile: true,
-          },
-        });
+        const user = await getUserByEmail(parsed.data.email);
 
         if (!user?.password) {
           return null;
@@ -99,13 +91,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (token.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: token.email },
-          include: {
-            studentProfile: true,
-            teacherProfile: true,
-          },
-        });
+        const dbUser = await getUserByEmail(token.email);
 
         if (dbUser) {
           token.sub = dbUser.id;

@@ -9,7 +9,7 @@ export function QuizPage() {
       <PageHero
         eyebrow="Quiz"
         title="Assessment tools designed to strengthen confidence and measure progress"
-        description="The academy quiz system is being built around timed tests, module checkpoints, and motivating performance feedback."
+        description="Explore the academy's assessment format for timed tests, module checkpoints, and motivating performance feedback."
       />
 
       <Section variant="white">

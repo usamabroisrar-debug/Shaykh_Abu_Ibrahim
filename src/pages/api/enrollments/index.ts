@@ -2,7 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getCourseBySlugFromDb } from "@/services/course/course.service";
+import { enrollStudentInCourse } from "@/services/enrollment/enrollment.service";
 
 const enrollmentSchema = z.object({
   courseSlug: z.string().min(2),
@@ -33,9 +34,7 @@ export default async function handler(
       });
     }
 
-    const course = await prisma.course.findUnique({
-      where: { slug: parsed.data.courseSlug },
-    });
+    const course = await getCourseBySlugFromDb(parsed.data.courseSlug);
 
     if (!course) {
       return response.status(404).json({
@@ -43,30 +42,10 @@ export default async function handler(
       });
     }
 
-    const enrollment = await prisma.enrollment.upsert({
-      where: {
-        studentId_courseId: {
-          studentId: session.user.id,
-          courseId: course.id,
-        },
-      },
-      update: {
-        status: "ACTIVE",
-      },
-      create: {
-        studentId: session.user.id,
-        courseId: course.id,
-        status: "ACTIVE",
-      },
-    });
-
-    await prisma.notification.create({
-      data: {
-        userId: session.user.id,
-        title: "Enrollment confirmed",
-        message: `You are now enrolled in ${course.title}.`,
-        type: "GENERAL",
-      },
+    const enrollment = await enrollStudentInCourse({
+      studentId: session.user.id,
+      courseId: course.id,
+      courseTitle: course.title,
     });
 
     return response.status(200).json({

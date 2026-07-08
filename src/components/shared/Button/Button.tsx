@@ -8,6 +8,7 @@ type ButtonProps = {
   size?: "sm" | "md" | "lg";
   className?: string;
   type?: "button" | "submit" | "reset";
+  disabled?: boolean;
   onClick?: () => void | Promise<void>;
 };
 
@@ -18,6 +19,7 @@ export function Button({
   size = "md",
   className = "",
   type = "button",
+  disabled = false,
   onClick,
 }: ButtonProps) {
   const classes = `${styles.button} ${styles[variant]} ${styles[size]} ${className}`;
@@ -31,7 +33,12 @@ export function Button({
   }
 
   return (
-    <button type={type} className={classes} onClick={onClick}>
+    <button
+      type={type}
+      className={classes}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {children}
     </button>
   );

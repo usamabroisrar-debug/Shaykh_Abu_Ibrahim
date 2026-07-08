@@ -1,6 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Award, Clock3, Star, Users } from "lucide-react";
 import type { Course } from "@/data/courses";
+import { getCourseImagePath } from "@/utils/course-image";
 import styles from "./CourseCard.module.css";
 
 type CourseCardProps = {
@@ -13,12 +15,20 @@ export function CourseCard({ course }: CourseCardProps) {
 
   return (
     <article className={styles.card}>
+      <div className={styles.imageWrap}>
+        <Image
+          src={getCourseImagePath(course.image)}
+          alt={course.title}
+          width={720}
+          height={420}
+          className={styles.image}
+        />
+      </div>
+
       <div className={styles.topRow}>
         <span className={styles.category}>{course.category}</span>
         {course.isPopular ? <span className={styles.popular}>Popular</span> : null}
       </div>
-
-      <div className={styles.iconBox}>{course.title.slice(0, 2).toUpperCase()}</div>
 
       <h3 className={styles.title}>{course.title}</h3>
 

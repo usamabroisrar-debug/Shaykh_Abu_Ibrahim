@@ -14,15 +14,22 @@ export function CTA() {
               deeper connection to Islamic knowledge, the next step should feel
               clear and welcoming.
             </p>
+
+            <div className={styles.benefits}>
+              <span>Free trial class</span>
+              <span>Flexible schedule</span>
+              <span>Personal guidance</span>
+            </div>
           </div>
 
           <div className={styles.actions}>
             <Button href="/admission" variant="primary" size="lg">
-              Apply For Admission
+              Start Free Trial
             </Button>
             <Button href="/contact" variant="outline" size="lg">
               Speak With The Team
             </Button>
+            <p className={styles.note}>No upfront payment. Consultation first.</p>
           </div>
         </div>
       </Container>

@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { createAdmission } from "@/services/admission/admission.service";
 
 const admissionSchema = z.object({
   name: z.string().min(2),
@@ -35,24 +35,10 @@ export default async function handler(
       });
     }
 
-    const admission = await prisma.admission.create({
-      data: {
-        ...parsed.data,
-        userId: session?.user?.id,
-      },
+    const admission = await createAdmission({
+      ...parsed.data,
+      userId: session?.user?.id,
     });
-
-    if (session?.user?.id) {
-      await prisma.notification.create({
-        data: {
-          userId: session.user.id,
-          title: "Admission submitted",
-          message:
-            "Your admission request is now in review. We will guide you on the next steps shortly.",
-          type: "ADMISSION",
-        },
-      });
-    }
 
     return response.status(200).json({
       message: "Admission request submitted successfully.",

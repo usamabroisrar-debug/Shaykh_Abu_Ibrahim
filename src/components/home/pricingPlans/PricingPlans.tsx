@@ -15,9 +15,15 @@ export function PricingPlans() {
             align="left"
           />
           <p className={styles.note}>
-            Inspired by common Quran academy pricing models, but presented here
-            in a more premium, calmer, and easier-to-scan format.
+            Choose a clear monthly rhythm, then start with a guided conversation
+            before final enrollment.
           </p>
+        </div>
+
+        <div className={styles.quickBenefits}>
+          <span>One-on-one live classes</span>
+          <span>Flexible global timings</span>
+          <span>Structured progress guidance</span>
         </div>
 
         <div className={styles.grid}>
@@ -26,22 +32,39 @@ export function PricingPlans() {
               key={plan.id}
               className={`${styles.card} ${plan.isPopular ? styles.popular : ""}`}
             >
-              <div className={styles.topRow}>
-                <div>
-                  <span className={styles.planName}>{plan.name}</span>
-                  <h3>
-                    {plan.price} <small>{plan.cadence}</small>
-                  </h3>
-                </div>
+              {plan.isPopular ? (
+                <span className={styles.cornerBadge}>Recommended</span>
+              ) : null}
+
+              <div className={styles.planBar}>
+                <span className={styles.planName}>{plan.name}</span>
                 {plan.isPopular ? (
                   <span className={styles.badge}>Most Popular</span>
                 ) : null}
               </div>
 
+              <div className={styles.topRow}>
+                <div>
+                  <h3>
+                    {plan.price} <small>{plan.cadence}</small>
+                  </h3>
+                  <p className={styles.classesLabel}>{plan.features[0]}</p>
+                </div>
+                <div className={styles.priceNote}>
+                  <strong>Free trial</strong>
+                  <span>Start before full admission</span>
+                </div>
+              </div>
+
               <p className={styles.description}>{plan.description}</p>
 
+              <div className={styles.metaStrip}>
+                <span>Online 1:1</span>
+                <span>Flexible timings</span>
+              </div>
+
               <div className={styles.featureList}>
-                {plan.features.map((feature) => (
+                {plan.features.slice(1).map((feature) => (
                   <div key={feature} className={styles.feature}>
                     <Check size={16} />
                     <span>{feature}</span>
@@ -49,9 +72,12 @@ export function PricingPlans() {
                 ))}
               </div>
 
-              <Button href="/admission" variant={plan.isPopular ? "primary" : "outline"}>
-                Apply For Admission
-              </Button>
+              <div className={styles.cardFooter}>
+                <Button href="/admission" variant={plan.isPopular ? "primary" : "outline"}>
+                  Start Free Trial
+                </Button>
+                <p className={styles.helper}>No payment required for first consultation</p>
+              </div>
             </article>
           ))}
         </div>

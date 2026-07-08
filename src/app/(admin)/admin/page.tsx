@@ -98,7 +98,7 @@ export default async function AdminDashboardPage() {
                   <div key={item.id} className={styles.listItem}>
                     <strong>{item.name}</strong>
                     <div className={styles.listItemMeta}>
-                      {item.course || "Course pending"} •{" "}
+                      {item.course || "Course to be confirmed"} •{" "}
                       {item.status || "Pending"}
                     </div>
                   </div>

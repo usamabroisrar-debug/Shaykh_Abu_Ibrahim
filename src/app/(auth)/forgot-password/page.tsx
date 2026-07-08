@@ -26,8 +26,8 @@ export default function ForgotPasswordPage() {
           text: "Once reset is complete, you return to the same student, teacher, or admin flow.",
         },
         {
-          title: "Ready for email integration",
-          text: "The logic is in place so the flow can later be connected to live email delivery.",
+          title: "Instant recovery link",
+          text: "A reset link is generated immediately so you can continue the recovery flow without waiting.",
         },
       ]}
     >

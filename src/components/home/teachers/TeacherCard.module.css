@@ -1,7 +1,7 @@
 .card {
-  padding: 28px;
+  padding: 30px;
   border: 1px solid var(--border);
-  border-radius: 28px;
+  border-radius: 32px;
   background:
     radial-gradient(circle at top right, rgba(212, 175, 55, 0.12), transparent 28%),
     linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -16,16 +16,17 @@
 }
 
 .avatar {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   display: grid;
   place-items: center;
-  border-radius: 20px;
+  border-radius: 24px;
   background: var(--gradient-primary);
   color: #ffffff;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 900;
   letter-spacing: 0.08em;
+  box-shadow: 0 16px 34px rgba(6, 95, 70, 0.22);
 }
 
 .specialty {
@@ -59,6 +60,7 @@
   margin-top: 16px;
   color: var(--text-light);
   line-height: 1.8;
+  min-height: 92px;
 }
 
 .meta {

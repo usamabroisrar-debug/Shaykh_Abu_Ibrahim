@@ -1,6 +1,9 @@
+import Image from "next/image";
+import Link from "next/link";
 import { Badge, Card, Container, Section } from "@/components/shared";
 import { PageHero } from "@/components/public/PageHero/PageHero";
 import { courses } from "@/data/courses";
+import { getCourseImagePath } from "@/utils/course-image";
 import styles from "./CoursesPage.module.css";
 
 export function CoursesPage() {
@@ -10,7 +13,7 @@ export function CoursesPage() {
         eyebrow="Courses"
         title="Structured programs for Quran recitation, memorization, understanding, and Islamic growth"
         description="Browse the academy's signature learning tracks designed for beginners, families, and committed students seeking depth with consistent guidance."
-        primaryCta={{ label: "Apply For Admission", href: "/contact" }}
+        primaryCta={{ label: "Apply For Admission", href: "/admission" }}
       />
 
       <Section variant="white">
@@ -18,6 +21,15 @@ export function CoursesPage() {
           <div className={styles.grid}>
             {courses.map((course) => (
               <Card key={course.id} className={styles.card}>
+                <div className={styles.imageWrap}>
+                  <Image
+                    src={getCourseImagePath(course.image)}
+                    alt={course.title}
+                    width={860}
+                    height={520}
+                    className={styles.image}
+                  />
+                </div>
                 <div className={styles.topRow}>
                   <Badge variant="green">{course.category}</Badge>
                   <span className={styles.level}>{course.level}</span>
@@ -29,9 +41,9 @@ export function CoursesPage() {
                   <span>{course.lessons} lessons</span>
                   <span>{course.students}+ students</span>
                 </div>
-                <a href={`/courses/${course.slug}`} className={styles.link}>
+                <Link href={`/courses/${course.slug}`} className={styles.link}>
                   View Course Details
-                </a>
+                </Link>
               </Card>
             ))}
           </div>

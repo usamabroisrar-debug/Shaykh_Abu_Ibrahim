@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge, Container, Section, SectionTitle } from "@/components/shared";
 import { getTeacherBySlug, teachers } from "@/data/teachers";
@@ -92,7 +93,7 @@ export function TeacherDetailPage({ slug }: TeacherDetailPageProps) {
               <div key={item.id} className={styles.relatedCard}>
                 <h3>{item.name}</h3>
                 <p>{item.designation}</p>
-                <a href={`/teachers/${item.slug}`}>View profile</a>
+                <Link href={`/teachers/${item.slug}`}>View profile</Link>
               </div>
             ))}
           </div>

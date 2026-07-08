@@ -1,7 +1,6 @@
-import { hash } from "bcrypt";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { registerUser } from "@/services/auth/auth.service";
 
 const registerSchema = z.object({
   name: z.string().min(2),
@@ -32,57 +31,19 @@ export default async function handler(
       });
     }
 
-    const email = parsed.data.email.toLowerCase();
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      return response.status(409).json({
-        message: "An account with this email already exists.",
-      });
-    }
-
-    const password = await hash(parsed.data.password, 10);
-
-    const user = await prisma.user.create({
-      data: {
-        name: parsed.data.name,
-        email,
-        password,
-        role: parsed.data.role,
-        phone: parsed.data.phone,
-        studentProfile:
-          parsed.data.role === "STUDENT" || parsed.data.role === "PARENT"
-            ? {
-                create: {
-                  phone: parsed.data.phone,
-                  guardianName: parsed.data.guardianName,
-                  guardianPhone: parsed.data.guardianPhone,
-                  timezone: parsed.data.timezone,
-                },
-              }
-            : undefined,
-        teacherProfile:
-          parsed.data.role === "TEACHER"
-            ? {
-                create: {
-                  expertise: "Islamic Studies",
-                },
-              }
-            : undefined,
-      },
-      select: {
-        id: true,
-        email: true,
-      },
-    });
+    const user = await registerUser(parsed.data);
 
     return response.status(200).json({
       message: "Account created successfully.",
       user,
     });
   } catch (error) {
+    if (error instanceof Error && error.message === "USER_ALREADY_EXISTS") {
+      return response.status(409).json({
+        message: "An account with this email already exists.",
+      });
+    }
+
     return response.status(500).json({
       message: "Registration could not be completed right now.",
       error: error instanceof Error ? error.message : "Unknown error",

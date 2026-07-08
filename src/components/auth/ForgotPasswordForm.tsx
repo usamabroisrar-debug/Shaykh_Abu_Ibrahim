@@ -19,25 +19,30 @@ export function ForgotPasswordForm() {
     setError("");
     setResetUrl("");
 
-    const response = await fetch("/api/forgot-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }),
-    });
+    try {
+      const response = await fetch("/api/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
-    const data = await response.json();
-    setIsLoading(false);
+      const data = await response.json();
 
-    if (!response.ok) {
-      setError(data.message || "Could not start reset flow.");
-      return;
-    }
+      if (!response.ok) {
+        setError(data.message || "Could not start reset flow.");
+        return;
+      }
 
-    setMessage(data.message);
-    if (data.resetUrl) {
-      setResetUrl(data.resetUrl);
+      setMessage(data.message);
+      if (data.resetUrl) {
+        setResetUrl(data.resetUrl);
+      }
+    } catch {
+      setError("Reset flow start nahi ho saka. Network connection check karein.");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -67,7 +72,7 @@ export function ForgotPasswordForm() {
       ) : null}
       {error ? <div className={styles.error}>{error}</div> : null}
 
-      <Button type="submit" className={styles.submit}>
+      <Button type="submit" className={styles.submit} disabled={isLoading}>
         {isLoading ? "Preparing reset..." : "Generate Reset Link"}
       </Button>
 

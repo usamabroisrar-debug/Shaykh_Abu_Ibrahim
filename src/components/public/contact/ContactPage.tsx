@@ -92,7 +92,7 @@ export function ContactPage() {
           </div>
           <div className={styles.infoCard}>
             <Mail size={18} />
-            <span>Social-first communication while the full admissions flow is built</span>
+            <span>Structured inquiries and admissions follow-up are both available now</span>
           </div>
         </Container>
       </Section>

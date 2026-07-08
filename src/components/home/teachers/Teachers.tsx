@@ -8,12 +8,19 @@ export function Teachers() {
     <Section variant="white" className={styles.section}>
       <Container>
         <div className={styles.header}>
-          <SectionTitle
-            eyebrow="Our Teachers"
-            title="Faculty shaped by scholarship, mentorship, and care"
-            description="Meet the instructors guiding students through Quran recitation, memorization, understanding, and lived practice."
-            align="left"
-          />
+          <div className={styles.copy}>
+            <SectionTitle
+              eyebrow="Our Teachers"
+              title="Meet teachers who combine scholarship, patience, and online teaching clarity"
+              description="Students learn better when the teacher is not only qualified, but calm, encouraging, and consistent in delivery."
+              align="left"
+            />
+            <div className={styles.points}>
+              <span>Qualified Quran guidance</span>
+              <span>Student-friendly teaching</span>
+              <span>Flexible one-to-one classes</span>
+            </div>
+          </div>
 
           <Button href="/teachers" variant="outline">
             Meet The Faculty

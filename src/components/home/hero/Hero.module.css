@@ -3,7 +3,10 @@
   min-height: calc(100vh - var(--header-height));
   overflow: hidden;
   color: var(--white);
-  background: var(--gradient-hero);
+  background:
+    radial-gradient(circle at 14% 18%, rgba(212, 175, 55, 0.18), transparent 24%),
+    radial-gradient(circle at 84% 22%, rgba(16, 185, 129, 0.14), transparent 26%),
+    linear-gradient(180deg, #05241d 0%, #064e3b 52%, #07352c 100%);
   isolation: isolate;
 }
 
@@ -75,27 +78,27 @@
   min-height: calc(100vh - var(--header-height));
   margin-inline: auto;
   display: grid;
-  grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
   align-items: center;
-  gap: 34px;
-  padding: 28px 0 40px;
+  gap: 44px;
+  padding: 32px 0 58px;
 }
 
 .content {
   max-width: 100%;
   min-width: 0;
-  padding-top: 6px;
+  padding-top: 18px;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 44px;
-  padding: 0 18px;
+  min-height: 46px;
+  padding: 0 20px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(250, 204, 21, 0.34);
-  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.28);
+  background: rgba(255, 255, 255, 0.1);
   color: #fde68a;
   font-size: 0.92rem;
   font-weight: 900;
@@ -105,22 +108,41 @@
 }
 
 .title {
-  margin-top: 22px;
-  max-width: 10.5ch;
+  max-width: 16.4ch;
   font-family: var(--heading-font);
-  font-size: clamp(3rem, 5vw, 5.4rem);
-  line-height: 0.96;
+  font-size: clamp(3.2rem, 5.6vw, 5.8rem);
+  line-height: 1;
   letter-spacing: -0.06em;
   font-weight: 950;
   text-wrap: balance;
 }
 
 .description {
-  margin-top: 22px;
-  max-width: 560px;
-  color: rgba(236, 253, 245, 0.86);
-  font-size: clamp(1rem, 1.25vw, 1.18rem);
-  line-height: 1.75;
+  margin-top: 20px;
+  max-width: 650px;
+  color: rgba(236, 253, 245, 0.82);
+  font-size: clamp(1.04rem, 1.25vw, 1.16rem);
+  line-height: 1.82;
+}
+
+.miniHighlights {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.miniHighlights span {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.82rem;
+  font-weight: 800;
 }
 
 .coursePills {
@@ -137,15 +159,15 @@
   padding: 0 13px;
   border-radius: var(--radius-full);
   border: 1px solid rgba(255, 255, 255, 0.13);
-  background: rgba(255, 255, 255, 0.075);
-  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.86);
   font-size: 0.82rem;
   font-weight: 800;
   backdrop-filter: blur(18px);
 }
 
 .actions {
-  margin-top: 20px;
+  margin-top: 24px;
   display: flex;
   flex-wrap: wrap;
   gap: 18px;
@@ -195,7 +217,7 @@
 }
 
 .trustRow {
-  margin-top: 18px;
+  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -204,13 +226,17 @@
 
 .rating,
 .trustItem {
-  min-height: 42px;
+  min-height: 46px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
   color: rgba(236, 253, 245, 0.9);
   font-size: 0.88rem;
   font-weight: 800;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .stars {
@@ -225,23 +251,23 @@
 }
 
 .statsGrid {
-  margin-top: 22px;
+  margin-top: 28px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-width: 650px;
+  max-width: 720px;
   gap: 18px;
 }
 
 .statCard {
   position: relative;
   overflow: hidden;
-  min-height: 136px;
-  padding: 22px;
-  border-radius: 26px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  min-height: 144px;
+  padding: 24px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
-  backdrop-filter: blur(22px);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+  backdrop-filter: blur(26px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
@@ -285,15 +311,15 @@
   justify-content: center;
   align-self: center;
   min-width: 0;
-  padding-top: 10px;
+  padding-top: 28px;
 }
 
 .visualFrame {
   position: relative;
-  width: min(100%, 600px);
-  padding: 16px;
-  border-radius: 46px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  width: min(100%, 640px);
+  padding: 18px;
+  border-radius: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.055));
   box-shadow:
@@ -323,11 +349,11 @@
 
 .heroImage {
   width: 100%;
-  aspect-ratio: 1.18 / 1;
+  aspect-ratio: 1.08 / 1;
   height: auto;
   object-fit: cover;
   display: block;
-  border-radius: 34px;
+  border-radius: 30px;
 }
 
 .floatCardTop,
@@ -341,8 +367,8 @@
 }
 
 .floatCardTop {
-  top: 42px;
-  right: 16px;
+  top: 38px;
+  right: 12px;
   width: 220px;
   padding: 18px 20px;
   border-radius: 24px;
@@ -370,8 +396,8 @@
 }
 
 .floatCardBottom {
-  left: 16px;
-  bottom: 54px;
+  left: 12px;
+  bottom: 48px;
   display: flex;
   align-items: center;
   gap: 13px;
@@ -420,7 +446,7 @@
   }
 
   .title {
-    max-width: 12ch;
+    max-width: 14ch;
     margin-left: auto;
     margin-right: auto;
   }
@@ -432,6 +458,7 @@
   }
 
   .actions,
+  .miniHighlights,
   .coursePills,
   .trustRow {
     justify-content: center;
@@ -481,6 +508,11 @@
 
   .actions {
     flex-direction: column;
+  }
+
+  .miniHighlights,
+  .coursePills {
+    justify-content: center;
   }
 
   .primaryButton,

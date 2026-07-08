@@ -2,28 +2,31 @@
   background:
     radial-gradient(circle at left top, rgba(212, 175, 55, 0.12), transparent 20%),
     radial-gradient(circle at right bottom, rgba(6, 95, 70, 0.12), transparent 20%),
-    #f8fafc;
+    linear-gradient(180deg, #f8fafc 0%, #eef6f3 100%);
 }
 
 .card {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) auto;
-  gap: 20px;
+  gap: 28px;
   align-items: center;
-  padding: 30px;
-  border-radius: 36px;
-  background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%);
+  padding: 38px;
+  border-radius: 38px;
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.16), transparent 28%),
+    linear-gradient(135deg, #0b1728 0%, #064e3b 100%);
   box-shadow: var(--shadow-xl);
 }
 
 .copy h2 {
   color: #ffffff;
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: clamp(2.1rem, 4vw, 3.4rem);
 }
 
 .copy p {
-  margin-top: 12px;
-  color: rgba(255, 255, 255, 0.74);
+  margin-top: 14px;
+  max-width: 60ch;
+  color: rgba(255, 255, 255, 0.76);
   line-height: 1.85;
 }
 
@@ -42,9 +45,37 @@
   margin-bottom: 14px;
 }
 
+.benefits {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.benefits span {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
 .actions {
   display: grid;
   gap: 14px;
+  justify-items: stretch;
+}
+
+.note {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.84rem;
+  line-height: 1.6;
 }
 
 @media (max-width: 920px) {

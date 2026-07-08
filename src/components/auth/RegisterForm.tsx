@@ -33,33 +33,47 @@ export function RegisterForm() {
     setMessage("");
     setIsLoading(true);
 
-    const response = await fetch("/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    const data = await response.json();
-    setIsLoading(false);
+      const data = await response.json();
 
-    if (!response.ok) {
-      setError(data.message || "Registration failed.");
-      return;
+      if (!response.ok) {
+        setError(data.message || "Registration failed.");
+        return;
+      }
+
+      setMessage("Account created. Signing you in now...");
+
+      const dashboardPath = form.role === "TEACHER" ? "/teacher" : "/student";
+      const signInResult = await signIn("credentials", {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+        callbackUrl: dashboardPath,
+      });
+
+      if (!signInResult || signInResult.error) {
+        setError(
+          "Account create ho gaya, lekin auto login nahi ho saka. Please manually login karein.",
+        );
+        router.push("/login");
+        return;
+      }
+
+      router.push(signInResult.url || dashboardPath);
+      router.refresh();
+    } catch {
+      setError("Registration is waqt complete nahi ho saki. Dobara try karein.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setMessage("Account created. Signing you in now...");
-
-    const signInResult = await signIn("credentials", {
-      email: form.email,
-      password: form.password,
-      redirect: false,
-      callbackUrl: form.role === "TEACHER" ? "/teacher" : "/student",
-    });
-
-    router.push(signInResult?.url || (form.role === "TEACHER" ? "/teacher" : "/student"));
-    router.refresh();
   }
 
   const needsGuardian = form.role === "STUDENT" || form.role === "PARENT";
@@ -167,7 +181,7 @@ export function RegisterForm() {
       {message ? <div className={styles.message}>{message}</div> : null}
       {error ? <div className={styles.error}>{error}</div> : null}
 
-      <Button type="submit" className={styles.submit}>
+      <Button type="submit" className={styles.submit} disabled={isLoading}>
         {isLoading ? "Creating account..." : "Create Account"}
       </Button>
 

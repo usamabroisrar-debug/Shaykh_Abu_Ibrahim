@@ -1,5 +1,6 @@
 .section {
   padding: 68px 0;
+  scroll-margin-top: calc(var(--header-height) + 20px);
 }
 
 .light {

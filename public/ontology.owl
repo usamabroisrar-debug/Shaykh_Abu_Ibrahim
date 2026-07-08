@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="https://shaykhabuibrahim.com/ontology.owl">
+  <owl:Ontology rdf:about="https://shaykhabuibrahim.com/ontology.owl">
+    <rdfs:label>Shaykh Abu Ibrahim Website Ontology</rdfs:label>
+    <rdfs:comment>
+      Ontology describing the educational website, courses, teachers, and enrollment-oriented structure.
+    </rdfs:comment>
+  </owl:Ontology>
+
+  <owl:Class rdf:about="https://shaykhabuibrahim.com/ontology.owl#AcademyWebsite">
+    <rdfs:label>Academy Website</rdfs:label>
+  </owl:Class>
+
+  <owl:Class rdf:about="https://shaykhabuibrahim.com/ontology.owl#Course">
+    <rdfs:label>Course</rdfs:label>
+  </owl:Class>
+
+  <owl:Class rdf:about="https://shaykhabuibrahim.com/ontology.owl#Teacher">
+    <rdfs:label>Teacher</rdfs:label>
+  </owl:Class>
+
+  <owl:ObjectProperty rdf:about="https://shaykhabuibrahim.com/ontology.owl#offersCourse">
+    <rdfs:label>offers course</rdfs:label>
+    <rdfs:domain rdf:resource="https://shaykhabuibrahim.com/ontology.owl#AcademyWebsite"/>
+    <rdfs:range rdf:resource="https://shaykhabuibrahim.com/ontology.owl#Course"/>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="https://shaykhabuibrahim.com/ontology.owl#taughtBy">
+    <rdfs:label>taught by</rdfs:label>
+    <rdfs:domain rdf:resource="https://shaykhabuibrahim.com/ontology.owl#Course"/>
+    <rdfs:range rdf:resource="https://shaykhabuibrahim.com/ontology.owl#Teacher"/>
+  </owl:ObjectProperty>
+</rdf:RDF>

@@ -23,22 +23,26 @@ export function LoginForm({ nextPath = "/student" }: LoginFormProps) {
     setError("");
     setIsLoading(true);
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-      callbackUrl: nextPath,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: nextPath,
+      });
 
-    setIsLoading(false);
+      if (!result || result.error) {
+        setError("Email ya password match nahi hua. Please dobara try karein.");
+        return;
+      }
 
-    if (!result || result.error) {
-      setError("Email ya password match nahi hua. Please dobara try karein.");
-      return;
+      router.push(result.url || nextPath);
+      router.refresh();
+    } catch {
+      setError("Login is waqt complete nahi ho saka. Dobara try karein.");
+    } finally {
+      setIsLoading(false);
     }
-
-    router.push(result.url || nextPath);
-    router.refresh();
   }
 
   return (
@@ -71,7 +75,7 @@ export function LoginForm({ nextPath = "/student" }: LoginFormProps) {
 
       {error ? <div className={styles.error}>{error}</div> : null}
 
-      <Button type="submit" className={styles.submit}>
+      <Button type="submit" className={styles.submit} disabled={isLoading}>
         {isLoading ? "Signing in..." : "Login To Dashboard"}
       </Button>
 

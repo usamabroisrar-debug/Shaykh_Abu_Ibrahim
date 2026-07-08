@@ -8,6 +8,21 @@
   padding: 30px;
 }
 
+.imageWrap {
+  margin: -30px -30px 20px;
+  aspect-ratio: 1.55 / 1;
+  overflow: hidden;
+  border-radius: 24px 24px 0 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .topRow {
   display: flex;
   align-items: center;

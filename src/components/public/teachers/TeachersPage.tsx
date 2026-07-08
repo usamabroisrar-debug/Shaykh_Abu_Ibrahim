@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, Container, Section } from "@/components/shared";
 import { PageHero } from "@/components/public/PageHero/PageHero";
 import { teachers } from "@/data/teachers";
@@ -25,9 +26,9 @@ export function TeachersPage() {
                 <span>{teacher.students}+ students</span>
                 <span>{teacher.languages.join(" / ")}</span>
               </div>
-              <a href={`/teachers/${teacher.slug}`} className={styles.link}>
+              <Link href={`/teachers/${teacher.slug}`} className={styles.link}>
                 View teacher profile
-              </a>
+              </Link>
             </Card>
           ))}
         </Container>

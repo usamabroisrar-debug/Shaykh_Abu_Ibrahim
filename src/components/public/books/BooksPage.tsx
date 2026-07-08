@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, Container, Section } from "@/components/shared";
 import { PageHero } from "@/components/public/PageHero/PageHero";
 import { books } from "@/data/books";
@@ -23,9 +24,9 @@ export function BooksPage() {
                 <span>{book.format}</span>
                 <span>{book.pages} pages</span>
               </div>
-              <a href={`/books/${book.slug}`} className={styles.link}>
+              <Link href={`/books/${book.slug}`} className={styles.link}>
                 View Book Details
-              </a>
+              </Link>
             </Card>
           ))}
         </Container>

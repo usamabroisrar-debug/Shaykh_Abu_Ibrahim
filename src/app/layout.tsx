@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
+import { AppProviders } from "@/providers/AppProviders";
 import styles from "./layout.module.css";
 import "./globals.css";
 
@@ -17,14 +18,17 @@ export const metadata: Metadata = {
   category: "education",
   icons: {
     icon: [
+      { url: "/favicon-64x64.png", type: "image/png", sizes: "64x64" },
       { url: "/images/logo2.webp", type: "image/webp" },
-      { url: "/images/logo-transparent.webp", type: "image/webp" },
     ],
-    apple: [{ url: "/images/logo2.webp", type: "image/webp" }],
-    shortcut: ["/images/logo2.webp"],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/favicon-64x64.png"],
   },
   alternates: {
     canonical: "/",
+    types: {
+      "application/rdf+xml": "/ontology.owl",
+    },
   },
   robots: {
     index: true,
@@ -78,14 +82,34 @@ export default function RootLayout({
     sameAs: Object.values(siteConfig.socials),
   };
 
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.name,
+    url: siteConfig.url,
+    description: siteConfig.description,
+    inLanguage: "en",
+    publisher: {
+      "@type": "EducationalOrganization",
+      name: siteConfig.name,
+      logo: `${siteConfig.url}/images/logo2.webp`,
+    },
+  };
+
   return (
     <html lang="en">
       <body className={styles.body}>
-        {children}
+        <AppProviders>{children}</AppProviders>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(organizationJsonLd),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteJsonLd),
           }}
         />
       </body>

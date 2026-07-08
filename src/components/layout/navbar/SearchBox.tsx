@@ -2,23 +2,14 @@
 
 import Link from "next/link";
 import { Search, X } from "lucide-react";
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { searchSiteContent } from "@/lib/search";
+import { useEffect, useRef, useState } from "react";
+import { useSiteSearch } from "@/hooks/useSiteSearch";
 import styles from "./SearchBox.module.css";
 
 export function SearchBox() {
-  const [query, setQuery] = useState("");
+  const { query, setQuery, results } = useSiteSearch();
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const deferredQuery = useDeferredValue(query);
-
-  const results = useMemo(() => {
-    if (!deferredQuery.trim()) {
-      return [];
-    }
-
-    return searchSiteContent(deferredQuery).slice(0, 6);
-  }, [deferredQuery]);
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -90,7 +81,7 @@ export function SearchBox() {
           ) : results.length ? (
             <>
               <div className={styles.results}>
-                {results.map((result) => (
+                {results.slice(0, 6).map((result) => (
                   <Link
                     key={result.id}
                     href={result.href}

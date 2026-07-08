@@ -129,8 +129,8 @@ export default async function TeacherDashboardPage() {
                 ))
               ) : (
                 <div className={styles.empty}>
-                  Assignment workflow ka schema ready hai. CRUD screens next pass
-                  mein add kiye ja sakte hain.
+                  Abhi koi assignments create nahi hue. Jaise hi teacher-linked
+                  course assignments add honge, unki activity yahan nazar aayegi.
                 </div>
               )}
             </div>

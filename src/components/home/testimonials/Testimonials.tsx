@@ -8,9 +8,20 @@ export function Testimonials() {
       <Container>
         <SectionTitle
           eyebrow="Student Testimonials"
-          title="Families and learners stay because the experience feels trustworthy"
-          description="Real progress is powered by good teaching, but also by calm systems, clear communication, and consistency that students can feel."
+          title="Families stay when the teaching feels sincere, clear, and dependable"
+          description="The strongest online academies are not only informative. They feel calm, organized, and genuinely supportive from the student side."
         />
+
+        <div className={styles.summaryRow}>
+          <div className={styles.summaryCard}>
+            <strong>Trusted by families</strong>
+            <p>Parents value consistent communication and steady student progress.</p>
+          </div>
+          <div className={styles.summaryCard}>
+            <strong>Built on clarity</strong>
+            <p>Students stay engaged when lessons, feedback, and expectations feel simple.</p>
+          </div>
+        </div>
 
         <div className={styles.grid}>
           {testimonials.map((item) => (

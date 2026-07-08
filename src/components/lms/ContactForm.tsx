@@ -26,30 +26,35 @@ export function ContactForm() {
     setError("");
     setIsLoading(true);
 
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    const data = await response.json();
-    setIsLoading(false);
+      const data = await response.json();
 
-    if (!response.ok) {
-      setError(data.message || "Message send nahi ho saka.");
-      return;
+      if (!response.ok) {
+        setError(data.message || "Message send nahi ho saka.");
+        return;
+      }
+
+      setMessage("Message save ho gaya hai. Team aap se jaldi contact karegi.");
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
+    } catch {
+      setError("Network issue ki wajah se message send nahi ho saka.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setMessage("Message save ho gaya hai. Team aap se jaldi contact karegi.");
-    setForm({
-      name: "",
-      email: "",
-      phone: "",
-      subject: "",
-      message: "",
-    });
   }
 
   return (
@@ -108,7 +113,7 @@ export function ContactForm() {
       {message ? <div className={styles.message}>{message}</div> : null}
       {error ? <div className={styles.error}>{error}</div> : null}
 
-      <Button type="submit" className={styles.submit}>
+      <Button type="submit" className={styles.submit} disabled={isLoading}>
         {isLoading ? "Sending..." : "Send Message"}
       </Button>
     </form>

@@ -27,10 +27,23 @@
   text-decoration: none;
   flex-shrink: 0;
   min-width: 0;
+  padding: 8px 12px 8px 8px;
+  border-radius: 20px;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.logoWrap:hover {
+  background: rgba(236, 253, 245, 0.75);
+  transform: translateY(-1px);
 }
 
 .logo {
   object-fit: contain;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(6, 95, 70, 0.12), rgba(212, 175, 55, 0.12));
+  padding: 6px;
 }
 
 .logoTitle {

@@ -1,7 +1,6 @@
-import crypto from "node:crypto";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { createPasswordResetToken } from "@/services/auth/auth.service";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(),
@@ -24,26 +23,13 @@ export default async function handler(
       });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: parsed.data.email.toLowerCase() },
-    });
+    const token = await createPasswordResetToken(parsed.data.email);
 
-    if (!user) {
+    if (!token) {
       return response.status(200).json({
         message: "If an account exists for this email, a reset link is now ready.",
       });
     }
-
-    const token = crypto.randomBytes(24).toString("hex");
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 30);
-
-    await prisma.passwordResetToken.create({
-      data: {
-        userId: user.id,
-        token,
-        expiresAt,
-      },
-    });
 
     return response.status(200).json({
       message: "Reset link created successfully.",

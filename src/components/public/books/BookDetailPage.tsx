@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge, Container, Section, SectionTitle } from "@/components/shared";
 import { books, getBookBySlug } from "@/data/books";
@@ -72,7 +73,7 @@ export function BookDetailPage({ slug }: BookDetailPageProps) {
               <div key={item.id} className={styles.relatedCard}>
                 <h3>{item.title}</h3>
                 <p>{item.summary}</p>
-                <a href={`/books/${item.slug}`}>View details</a>
+                <Link href={`/books/${item.slug}`}>View details</Link>
               </div>
             ))}
           </div>

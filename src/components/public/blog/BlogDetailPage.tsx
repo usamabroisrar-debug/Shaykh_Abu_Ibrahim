@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge, Container, Section, SectionTitle } from "@/components/shared";
 import { blogs, getBlogBySlug } from "@/data/blogs";
@@ -66,7 +67,7 @@ export function BlogDetailPage({ slug }: BlogDetailPageProps) {
               <div key={item.id} className={styles.relatedCard}>
                 <h3>{item.title}</h3>
                 <p>{item.excerpt}</p>
-                <a href={`/blog/${item.slug}`}>Read article</a>
+                <Link href={`/blog/${item.slug}`}>Read article</Link>
               </div>
             ))}
           </div>

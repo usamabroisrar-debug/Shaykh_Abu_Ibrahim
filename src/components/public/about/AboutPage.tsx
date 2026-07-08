@@ -13,7 +13,7 @@ const values = [
   {
     title: "Family-friendly delivery",
     description:
-      "Our learning experience is being built for children, adults, and households balancing faith goals with modern schedules.",
+      "Our learning experience is designed for children, adults, and households balancing faith goals with modern schedules.",
     icon: <HeartHandshake size={24} />,
   },
   {

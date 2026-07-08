@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, Container, Section } from "@/components/shared";
 import { PageHero } from "@/components/public/PageHero/PageHero";
 import { blogs } from "@/data/blogs";
@@ -24,9 +25,9 @@ export function BlogPage() {
                 <span>{post.readingTime}</span>
                 <span>{post.publishedAt}</span>
               </div>
-              <a href={`/blog/${post.slug}`} className={styles.link}>
+              <Link href={`/blog/${post.slug}`} className={styles.link}>
                 Read Article
-              </a>
+              </Link>
             </Card>
           ))}
         </Container>

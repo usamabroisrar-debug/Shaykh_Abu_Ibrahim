@@ -1,8 +1,17 @@
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Badge, Button, Container, Section, SectionTitle } from "@/components/shared";
+import {
+  Badge,
+  Button,
+  Container,
+  Section,
+  SectionTitle,
+} from "@/components/shared";
 import { EnrollmentButton } from "@/components/lms/EnrollmentButton";
 import { getCourseBySlug, popularCourses } from "@/data/courses";
 import { auth } from "@/lib/auth";
+import { getCourseImagePath } from "@/utils/course-image";
 import styles from "./CourseDetailPage.module.css";
 
 type CourseDetailPageProps = {
@@ -32,7 +41,7 @@ export async function CourseDetailPage({ slug }: CourseDetailPageProps) {
             <div className={styles.meta}>
               <span>{course.duration}</span>
               <span>{course.lessons} lessons</span>
-              <span>{course.language.replace("•", "/")}</span>
+              <span>{course.language.split(/[^A-Za-z]+/).filter(Boolean).join(" / ")}</span>
               <span>{course.rating} rating</span>
             </div>
             <div className={styles.actions}>
@@ -47,6 +56,16 @@ export async function CourseDetailPage({ slug }: CourseDetailPageProps) {
           </div>
 
           <div className={styles.sidebar}>
+            <div className={`${styles.sidebarCard} ${styles.coverCard}`}>
+              <Image
+                src={getCourseImagePath(course.banner)}
+                alt={course.title}
+                width={900}
+                height={620}
+                className={styles.coverImage}
+              />
+            </div>
+
             <div className={styles.sidebarCard}>
               <span className={styles.sidebarLabel}>Instructor</span>
               <strong>{course.teacher.name}</strong>
@@ -110,9 +129,16 @@ export async function CourseDetailPage({ slug }: CourseDetailPageProps) {
           <div className={styles.relatedGrid}>
             {relatedCourses.map((item) => (
               <div key={item.id} className={styles.relatedCard}>
+                <Image
+                  src={getCourseImagePath(item.thumbnail)}
+                  alt={item.title}
+                  width={640}
+                  height={380}
+                  className={styles.relatedImage}
+                />
                 <h3>{item.title}</h3>
                 <p>{item.shortDescription}</p>
-                <a href={`/courses/${item.slug}`}>Explore course</a>
+                <Link href={`/courses/${item.slug}`}>Explore course</Link>
               </div>
             ))}
           </div>

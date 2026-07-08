@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { createContactSubmission } from "@/services/contact/contact.service";
 
 const contactSchema = z.object({
   name: z.string().min(2),
@@ -30,11 +30,9 @@ export default async function handler(
       });
     }
 
-    const submission = await prisma.contactSubmission.create({
-      data: {
-        ...parsed.data,
-        userId: session?.user?.id,
-      },
+    const submission = await createContactSubmission({
+      ...parsed.data,
+      userId: session?.user?.id,
     });
 
     return response.status(200).json({

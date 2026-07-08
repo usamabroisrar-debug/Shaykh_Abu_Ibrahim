@@ -18,8 +18,8 @@ export function WhyChooseUs() {
         <div className={styles.intro}>
           <SectionTitle
             eyebrow="Why Choose Us"
-            title="A premium online academy built for trust, depth, and consistency"
-            description="Our experience is shaped to feel polished on the surface and dependable underneath, with real structure for students and families."
+            title="Why families choose a clearer, more structured Quran learning experience"
+            description="The academy is designed around trust, teacher quality, and a smoother online journey from trial class to consistent progress."
             align="left"
           />
 
@@ -30,9 +30,20 @@ export function WhyChooseUs() {
             <div>
               <strong>Designed for long-term learning</strong>
               <p>
-                From onboarding to course completion, each touchpoint is being
-                built to support clarity, accountability, and barakah in study.
+                From the first class to sustained study, every touchpoint is
+                organized to support clarity, accountability, and steady growth.
               </p>
+            </div>
+          </div>
+
+          <div className={styles.sidePoints}>
+            <div>
+              <strong>Personal attention</strong>
+              <p>Live one-to-one guidance keeps every student supported at their own pace.</p>
+            </div>
+            <div>
+              <strong>Global flexibility</strong>
+              <p>Schedules can adapt across time zones for children, adults, and families.</p>
             </div>
           </div>
         </div>

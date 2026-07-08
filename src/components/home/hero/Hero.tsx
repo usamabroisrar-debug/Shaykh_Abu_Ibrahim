@@ -66,6 +66,12 @@ export function Hero() {
             advanced learners.
           </p>
 
+          <div className={styles.miniHighlights}>
+            <span>One-to-one live classes</span>
+            <span>Flexible worldwide timings</span>
+            <span>Free trial available</span>
+          </div>
+
           <div className={styles.coursePills}>
             {highlights.map((item) => (
               <span key={item}>{item}</span>
