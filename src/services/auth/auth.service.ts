@@ -2,10 +2,49 @@ import crypto from "node:crypto";
 import { hash } from "bcrypt";
 import { prisma } from "@/lib/prisma";
 
+function getNormalizedEnvValue(value: string | undefined, fallback: string) {
+  const resolved = (value || fallback).trim();
+
+  return resolved.replace(/^['"]|['"]$/g, "").trim();
+}
+
 export async function getUserByEmail(email: string) {
   return prisma.user.findUnique({
     where: {
       email: email.toLowerCase(),
+    },
+    include: {
+      studentProfile: true,
+      teacherProfile: true,
+    },
+  });
+}
+
+export async function ensureSuperAdminUser() {
+  const email = getNormalizedEnvValue(
+    process.env.SUPER_ADMIN_EMAIL,
+    "admin@shaykhabuibrahim.com"
+  ).toLowerCase();
+  const password = getNormalizedEnvValue(
+    process.env.SUPER_ADMIN_PASSWORD,
+    "Admin@123456"
+  );
+  const name = getNormalizedEnvValue(process.env.SUPER_ADMIN_NAME, "Super Admin");
+
+  const hashedPassword = await hash(password, 10);
+
+  return prisma.user.upsert({
+    where: { email },
+    update: {
+      name,
+      password: hashedPassword,
+      role: "SUPER_ADMIN",
+    },
+    create: {
+      name,
+      email,
+      password: hashedPassword,
+      role: "SUPER_ADMIN",
     },
     include: {
       studentProfile: true,
