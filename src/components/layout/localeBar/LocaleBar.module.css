@@ -101,7 +101,8 @@
 @media (max-width: 900px) {
   .container {
     grid-template-columns: 1fr;
-    padding: 12px 0;
+    gap: 8px;
+    padding: 10px 0;
   }
 
   .dateBlock,
@@ -109,5 +110,53 @@
   .languageDropdown {
     justify-self: start;
     text-align: start;
+  }
+
+  .bismillah {
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+
+  .dateBlock span {
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    min-height: auto;
+    gap: 6px;
+    padding: 8px 0;
+  }
+
+  .dateBlock strong {
+    font-size: 0.62rem;
+  }
+
+  .dateBlock span {
+    font-size: 0.72rem;
+  }
+
+  .bismillah {
+    justify-self: center;
+    text-align: center;
+    font-size: 0.78rem;
+    max-width: 100%;
+  }
+
+  .languageDropdown {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .languageLabel {
+    font-size: 0.64rem;
+  }
+
+  .languageSelect {
+    width: 100%;
+    min-width: 0;
+    min-height: 34px;
+    font-size: 0.78rem;
   }
 }
