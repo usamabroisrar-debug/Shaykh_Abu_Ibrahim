@@ -126,18 +126,25 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.sub = user.id;
+        token.email = user.email;
+        token.name = user.name;
         token.role = user.role;
         token.profileComplete = user.profileComplete;
       }
 
       if (token.email) {
-        const dbUser = await getUserByEmail(token.email);
+        try {
+          const dbUser = await getUserByEmail(token.email);
 
-        if (dbUser) {
-          token.sub = dbUser.id;
-          token.name = dbUser.name;
-          token.role = dbUser.role;
-          token.profileComplete = isProfileComplete(dbUser);
+          if (dbUser) {
+            token.sub = dbUser.id;
+            token.name = dbUser.name;
+            token.role = dbUser.role;
+            token.profileComplete = isProfileComplete(dbUser);
+          }
+        } catch {
+          // Keep auth alive even if the database is temporarily unreachable on production.
         }
       }
 
