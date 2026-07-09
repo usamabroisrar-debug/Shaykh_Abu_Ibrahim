@@ -232,6 +232,20 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
     const matchesStatus = statusFilter === "ALL" ? true : book.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+  const todayLabel = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
+  const sidebarLinks = [
+    { href: "#overview", label: "Dashboard" },
+    { href: "#operations", label: "Operations" },
+    { href: "#content-studio", label: "Content Studio" },
+    { href: "#blog-panel", label: "Blogs" },
+    { href: "#course-panel", label: "Courses" },
+    { href: "#book-panel", label: "Books" },
+  ];
 
   const notice = getStatusMessage(searchParams.success || searchParams.error);
   const draftBlogs = blogs.filter((item) => item.status === "DRAFT").length;
@@ -277,110 +291,144 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
 
   return (
     <Section className={styles.adminSection}>
-      <Container className={styles.dashboard}>
-        <div className={styles.heroCard}>
-          <div className={styles.heroContent}>
-            <div className={styles.eyebrowRow}>
-              <span className={styles.eyebrow}>Academy control center</span>
-              <span className={styles.roleBadge}>{session.user.role}</span>
-            </div>
-            <h1>Professional admin workspace for Shaykh Abu Ibrahim</h1>
-            <p className={styles.heroText}>
-              Admissions, public content, inquiries, and academic operations are
-              now organized in one cleaner dashboard so the academy team can work
-              faster without hunting through raw forms.
-            </p>
-
-            <div className={styles.quickActions}>
-              <a href="#content-studio" className={styles.quickLink}>
-                Content studio
-              </a>
-              <a href="#operations" className={styles.quickLink}>
-                Operations
-              </a>
-              <a href="#blog-panel" className={styles.quickLink}>
-                Blogs
-              </a>
-              <a href="#course-panel" className={styles.quickLink}>
-                Courses
-              </a>
-              <a href="#book-panel" className={styles.quickLink}>
-                Books
-              </a>
+      <Container className={styles.dashboardShell}>
+        <aside className={styles.sidebar}>
+          <div className={styles.sidebarBrand}>
+            <div className={styles.brandMark}>SAI</div>
+            <div>
+              <strong>Shaykh Abu Ibrahim</strong>
+              <span>Admin Dashboard</span>
             </div>
           </div>
 
-          <div className={styles.heroSide}>
-            <div className={styles.profileCard}>
-              <div>
-                <span className={styles.profileLabel}>Signed in as</span>
-                <strong>{session.user.name || "Super Admin"}</strong>
+          <nav className={styles.sidebarNav}>
+            {sidebarLinks.map((item) => (
+              <a key={item.href} href={item.href} className={styles.sidebarLink}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className={styles.sidebarMeta}>
+            <span className={styles.sidebarLabel}>Workspace role</span>
+            <strong>{session.user.role}</strong>
+            <p>{session.user.email}</p>
+          </div>
+
+          <div className={styles.sidebarFoot}>
+            <SignOutButton />
+          </div>
+        </aside>
+
+        <div className={styles.dashboard}>
+          <div id="overview" className={styles.heroCard}>
+            <div className={styles.heroContent}>
+              <div className={styles.eyebrowRow}>
+                <span className={styles.eyebrow}>Academy control center</span>
+                <span className={styles.roleBadge}>{session.user.role}</span>
               </div>
-              <span className={styles.profileMeta}>{session.user.email}</span>
-              <SignOutButton />
+              <div className={styles.heroHeading}>
+                <div>
+                  <h1>Professional admin workspace for Shaykh Abu Ibrahim</h1>
+                  <p className={styles.heroDate}>{todayLabel}</p>
+                </div>
+                <div className={styles.heroBadge}>Live admin</div>
+              </div>
+              <p className={styles.heroText}>
+                Admissions, public content, inquiries, and academic operations are
+                now organized in a clearer editorial dashboard so the academy team
+                can work faster without hunting through raw forms.
+              </p>
+
+              <div className={styles.quickActions}>
+                <a href="#content-studio" className={styles.quickLink}>
+                  Content studio
+                </a>
+                <a href="#operations" className={styles.quickLink}>
+                  Operations
+                </a>
+                <a href="#blog-panel" className={styles.quickLink}>
+                  Blogs
+                </a>
+                <a href="#course-panel" className={styles.quickLink}>
+                  Courses
+                </a>
+                <a href="#book-panel" className={styles.quickLink}>
+                  Books
+                </a>
+              </div>
             </div>
 
-            <div className={styles.healthCard}>
-              <div className={styles.healthHeader}>
-                <strong>Workspace health</strong>
-                <span>{normalizeCountLabel(publishedContent, "item", "items")} live</span>
+            <div className={styles.heroSide}>
+              <div className={styles.profileCard}>
+                <div>
+                  <span className={styles.profileLabel}>Signed in as</span>
+                  <strong>{session.user.name || "Super Admin"}</strong>
+                </div>
+                <span className={styles.profileMeta}>{session.user.email}</span>
               </div>
-              <div className={styles.healthRow}>
-                <span>Admissions queue</span>
-                <strong>{dashboard.admissions.length}</strong>
-              </div>
-              <div className={styles.healthRow}>
-                <span>Unread-style contacts</span>
-                <strong>{dashboard.contacts.length}</strong>
-              </div>
-              <div className={styles.healthRow}>
-                <span>Content drafts</span>
-                <strong>{totalDrafts}</strong>
+
+              <div className={styles.healthCard}>
+                <div className={styles.healthHeader}>
+                  <strong>Workspace health</strong>
+                  <span>{normalizeCountLabel(publishedContent, "item", "items")} live</span>
+                </div>
+                <div className={styles.healthRow}>
+                  <span>Admissions queue</span>
+                  <strong>{dashboard.admissions.length}</strong>
+                </div>
+                <div className={styles.healthRow}>
+                  <span>Unread-style contacts</span>
+                  <strong>{dashboard.contacts.length}</strong>
+                </div>
+                <div className={styles.healthRow}>
+                  <span>Content drafts</span>
+                  <strong>{totalDrafts}</strong>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {notice ? (
-          <div className={notice.tone === "success" ? styles.noticeSuccess : styles.noticeError}>
-            {notice.text}
-          </div>
-        ) : null}
+          {notice ? (
+            <div className={notice.tone === "success" ? styles.noticeSuccess : styles.noticeError}>
+              {notice.text}
+            </div>
+          ) : null}
 
-        <div className={styles.statsGrid}>
-          <article className={styles.statCard}>
-            <span>Total users</span>
-            <strong>{dashboard.users}</strong>
-            <p>Registered learners, teachers, admins, and parents.</p>
-          </article>
-          <article className={styles.statCard}>
-            <span>Content library</span>
-            <strong>{blogs.length + courses.length + books.length}</strong>
-            <p>Combined blogs, courses, and books currently in the database.</p>
-          </article>
-          <article className={styles.statCard}>
-            <span>Payments tracked</span>
-            <strong>{dashboard.payments.length}</strong>
-            <p>Recent payment activity available for administrative review.</p>
-          </article>
-          <article className={styles.statCard}>
-            <span>Certificates issued</span>
-            <strong>{dashboard.certificates.length}</strong>
-            <p>Recently generated completion records and recognitions.</p>
-          </article>
-        </div>
-
-        <section className={styles.workspaceStrip}>
-          {studioPlaybook.map((item) => (
-            <article key={item.title} className={styles.workspaceCard}>
-              <span className={styles.workspaceKicker}>Studio note</span>
-              <strong>{item.title}</strong>
-              <p>{item.text}</p>
+          <div className={styles.statsGrid}>
+            <article className={styles.statCard}>
+              <span>Total users</span>
+              <strong>{dashboard.users}</strong>
+              <p>Registered learners, teachers, admins, and parents.</p>
             </article>
-          ))}
-        </section>
+            <article className={styles.statCard}>
+              <span>Content library</span>
+              <strong>{blogs.length + courses.length + books.length}</strong>
+              <p>Combined blogs, courses, and books currently in the database.</p>
+            </article>
+            <article className={styles.statCard}>
+              <span>Payments tracked</span>
+              <strong>{dashboard.payments.length}</strong>
+              <p>Recent payment activity available for administrative review.</p>
+            </article>
+            <article className={styles.statCard}>
+              <span>Certificates issued</span>
+              <strong>{dashboard.certificates.length}</strong>
+              <p>Recently generated completion records and recognitions.</p>
+            </article>
+          </div>
 
-        <section id="operations" className={styles.operationsGrid}>
+          <section className={styles.workspaceStrip}>
+            {studioPlaybook.map((item) => (
+              <article key={item.title} className={styles.workspaceCard}>
+                <span className={styles.workspaceKicker}>Studio note</span>
+                <strong>{item.title}</strong>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </section>
+
+          <section id="operations" className={styles.operationsGrid}>
           <article className={`${styles.surfaceCard} ${styles.priorityPanel}`}>
             <div className={styles.sectionHeading}>
               <div>
@@ -548,9 +596,9 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               )}
             </div>
           </article>
-        </section>
+          </section>
 
-        <section id="content-studio" className={styles.studioShell}>
+          <section id="content-studio" className={styles.studioShell}>
           <div className={styles.sectionHeading}>
             <div>
               <span className={styles.sectionEyebrow}>Content studio</span>
@@ -645,13 +693,24 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                   </label>
                   <label className={styles.field}>
                     <span>Category</span>
+                    <select id="blog-category" name="categoryName" defaultValue="Quran">
+                      <option value="Quran">Quran</option>
+                      <option value="Tajweed">Tajweed</option>
+                      <option value="Parenting">Parenting</option>
+                      <option value="Spirituality">Spirituality</option>
+                      <option value="Study Habits">Study Habits</option>
+                      <option value="CUSTOM">Custom category</option>
+                    </select>
+                    <small className={styles.fieldHint}>Ready-made options yahan se choose karein.</small>
+                  </label>
+                  <label className={styles.field}>
+                    <span>Custom category (optional)</span>
                     <input
-                      id="blog-category"
-                      name="categoryName"
-                      defaultValue="Quran"
-                      required
+                      id="blog-custom-category"
+                      name="customCategoryName"
+                      placeholder="Apni marzi ki category"
                     />
-                    <small className={styles.fieldHint}>Examples: Quran, Tajweed, Parenting.</small>
+                    <small className={styles.fieldHint}>Agar custom likh dein to woh selected category ko replace kar dega.</small>
                   </label>
                 </div>
 
@@ -736,10 +795,35 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                           <div className={styles.formSplit}>
                             <label className={styles.field}>
                               <span>Category</span>
-                              <input
+                              <select
                                 name="categoryName"
-                                defaultValue={blog.category?.name || "Quran"}
-                                required
+                                defaultValue={
+                                  ["Quran", "Tajweed", "Parenting", "Spirituality", "Study Habits"].includes(
+                                    blog.category?.name || ""
+                                  )
+                                    ? blog.category?.name || "Quran"
+                                    : "CUSTOM"
+                                }
+                              >
+                                <option value="Quran">Quran</option>
+                                <option value="Tajweed">Tajweed</option>
+                                <option value="Parenting">Parenting</option>
+                                <option value="Spirituality">Spirituality</option>
+                                <option value="Study Habits">Study Habits</option>
+                                <option value="CUSTOM">Custom category</option>
+                              </select>
+                            </label>
+                            <label className={styles.field}>
+                              <span>Custom category (optional)</span>
+                              <input
+                                name="customCategoryName"
+                                defaultValue={
+                                  ["Quran", "Tajweed", "Parenting", "Spirituality", "Study Habits"].includes(
+                                    blog.category?.name || ""
+                                  )
+                                    ? ""
+                                    : blog.category?.name || ""
+                                }
                               />
                             </label>
                             <label className={styles.field}>
@@ -1197,7 +1281,8 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               </div>
             </article>
           </div>
-        </section>
+          </section>
+        </div>
       </Container>
     </Section>
   );

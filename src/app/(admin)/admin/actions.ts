@@ -57,6 +57,21 @@ function joinBlockTranslations(
   return left || right;
 }
 
+function resolveCategory(
+  selectedCategory: FormDataEntryValue | null,
+  customCategory: FormDataEntryValue | null,
+  fallback: string
+) {
+  const custom = cleanValue(customCategory);
+
+  if (custom) {
+    return custom;
+  }
+
+  const selected = cleanValue(selectedCategory);
+  return selected && selected !== "CUSTOM" ? selected : fallback;
+}
+
 function buildAdminRedirect(search: string) {
   return `/admin?${search}`;
 }
@@ -86,7 +101,11 @@ export async function createBlogAction(formData: FormData) {
       slug: cleanValue(formData.get("slug")),
       excerpt: joinBlockTranslations("English Summary", excerpt, "Urdu Summary", excerptUrdu),
       content: joinBlockTranslations("English Content", content, "Urdu Content", contentUrdu),
-      categoryName: cleanValue(formData.get("categoryName")) || "Quran",
+      categoryName: resolveCategory(
+        formData.get("categoryName"),
+        formData.get("customCategoryName"),
+        "Quran"
+      ),
       status: cleanValue(formData.get("status")) as
         | "DRAFT"
         | "PUBLISHED"
@@ -128,7 +147,11 @@ export async function updateBlogAction(formData: FormData) {
       slug: cleanValue(formData.get("slug")),
       excerpt: cleanValue(formData.get("excerpt")),
       content: cleanValue(formData.get("content")),
-      categoryName: cleanValue(formData.get("categoryName")) || "Quran",
+      categoryName: resolveCategory(
+        formData.get("categoryName"),
+        formData.get("customCategoryName"),
+        "Quran"
+      ),
       status: cleanValue(formData.get("status")) as "DRAFT" | "PUBLISHED" | "ARCHIVED",
     });
   } catch {
