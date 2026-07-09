@@ -25,7 +25,7 @@
 .drawer {
   position: absolute;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   width: min(390px, 90vw);
   height: 100%;
   background: #ffffff;
@@ -37,6 +37,10 @@
 
 .open .drawer {
   transform: translateX(0);
+}
+
+:global(html[dir="rtl"]) .drawer {
+  transform: translateX(-105%);
 }
 
 .top {

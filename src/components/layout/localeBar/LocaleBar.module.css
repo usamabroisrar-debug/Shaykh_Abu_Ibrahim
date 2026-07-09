@@ -1,0 +1,113 @@
+.bar {
+  background:
+    linear-gradient(135deg, #062b24 0%, #064e3b 55%, #0f172a 100%);
+  color: #f8fafc;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.container {
+  width: min(var(--max-width), calc(100% - var(--container-padding)));
+  margin: 0 auto;
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  padding: 8px 0;
+}
+
+.bismillah {
+  justify-self: center;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.dateBlock {
+  display: grid;
+  gap: 2px;
+  justify-self: start;
+}
+
+.dateBlock strong {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(250, 204, 21, 0.92);
+}
+
+.dateBlock span {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.84rem;
+}
+
+.languageDropdown {
+  display: grid;
+  gap: 6px;
+  justify-self: end;
+}
+
+.languageLabel {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(250, 204, 21, 0.92);
+}
+
+.selectWrap {
+  position: relative;
+}
+
+.languageSelect {
+  min-width: 148px;
+  min-height: 38px;
+  padding: 0 38px 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: var(--transition-fast);
+  appearance: none;
+}
+
+.languageSelect:hover {
+  background: rgba(250, 204, 21, 0.12);
+  border-color: rgba(250, 204, 21, 0.38);
+}
+
+.languageSelect:focus {
+  outline: none;
+  border-color: rgba(250, 204, 21, 0.44);
+  box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.14);
+}
+
+.languageSelect option {
+  color: #0f172a;
+}
+
+.selectIcon {
+  position: absolute;
+  inset-inline-end: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+    padding: 12px 0;
+  }
+
+  .dateBlock,
+  .bismillah,
+  .languageDropdown {
+    justify-self: start;
+    text-align: start;
+  }
+}

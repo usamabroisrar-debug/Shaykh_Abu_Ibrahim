@@ -1,6 +1,8 @@
+import { cookies } from "next/headers";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { LoginForm } from "@/components/auth/LoginForm";
 import styles from "@/components/auth/AuthForms.module.css";
+import { getLocaleContent, getLocaleFromCookies } from "@/lib/locale";
 import { buildMetadata } from "@/lib/metadata";
 
 export const metadata = buildMetadata({
@@ -16,34 +18,33 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string }>;
 }) {
   const params = await searchParams;
+  const locale = getLocaleFromCookies(await cookies());
+  const content = getLocaleContent(locale);
 
   return (
     <AuthShell
-      eyebrow="Secure access"
-      title="Login to continue your Islamic learning journey"
-      description="Students, parents, teachers, and administrators can now move into dedicated dashboards for admissions, enrollments, progress tracking, and academy operations."
+      eyebrow={content.auth.secureAccess}
+      title={content.auth.loginJourney}
+      description={content.auth.loginDescription}
       benefits={[
         {
-          title: "Role-based dashboards",
-          text: "Each account lands on the right space for study, teaching, or administration.",
+          title: content.auth.roleDashboards,
+          text: content.auth.roleDashboardsText,
         },
         {
-          title: "Admissions and learning records",
-          text: "Stay close to submissions, course movement, and ongoing progress in one place.",
+          title: content.auth.records,
+          text: content.auth.recordsText,
         },
         {
-          title: "Structured next steps",
-          text: "From admission to enrollment to certificates, the experience now has a real system behind it.",
+          title: content.auth.nextSteps,
+          text: content.auth.nextStepsText,
         },
       ]}
     >
-      <span className={styles.eyebrow}>Login</span>
-      <h2 className={styles.title}>Welcome back</h2>
-      <p className={styles.description}>
-        Use your academy credentials to continue with courses, admissions, and
-        your private dashboard.
-      </p>
-      <LoginForm nextPath={params.next || "/student"} />
+      <span className={styles.eyebrow}>{content.auth.login}</span>
+      <h2 className={styles.title}>{content.auth.welcomeBack}</h2>
+      <p className={styles.description}>{content.auth.useCredentials}</p>
+      <LoginForm nextPath={params.next || "/student"} locale={locale} />
     </AuthShell>
   );
 }

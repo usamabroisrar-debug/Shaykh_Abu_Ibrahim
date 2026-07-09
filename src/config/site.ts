@@ -1,8 +1,10 @@
+import { getSiteOriginForMetadata } from "@/lib/site-url";
+
 export const siteConfig = {
   name: "Shaykh Abu Ibrahim",
   description:
     "Join Shaykh Abu Ibrahim Islamic Academy for Quran, Tajweed, Tafseer, Hadith, Fiqh, and online Islamic classes for children, adults, and families worldwide.",
-  url: "https://shaykhabuibrahim.com",
+  url: getSiteOriginForMetadata(),
   locale: "en_US",
   ogImage: "/images/hero.webp",
   keywords: [
@@ -23,5 +25,6 @@ export const siteConfig = {
     instagram: "https://www.instagram.com/shaykhabuibrahimofficial/",
     tiktok: "https://www.tiktok.com/@shaykhabuibrahim3/",
     whatsapp: "https://whatsapp.com/channel/0029Vb8oOKaCnA7q6AuQvl3U",
+    whatsappChat: "https://wa.me/923491860340",
   },
 };

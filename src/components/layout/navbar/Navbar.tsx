@@ -4,13 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, UserRound } from "lucide-react";
 import { useState } from "react";
+import { getLocaleContent, type SiteLocale } from "@/lib/locale";
 import styles from "./Navbar.module.css";
 import { NavLinks } from "./NavLinks";
 import { SearchBox } from "./SearchBox";
 import { MobileMenu } from "./MobileMenu";
 
-export function Navbar() {
+type NavbarProps = {
+  locale: SiteLocale;
+};
+
+export function Navbar({ locale }: NavbarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const content = getLocaleContent(locale);
 
   return (
     <>
@@ -28,22 +34,22 @@ export function Navbar() {
 
             <div>
               <span className={styles.logoTitle}>Shaykh Abu Ibrahim</span>
-              <p className={styles.logoText}>Islamic Learning Platform</p>
+              <p className={styles.logoText}>{content.subtitle}</p>
             </div>
           </Link>
 
-          <NavLinks />
+          <NavLinks locale={locale} />
 
           <div className={styles.actions}>
-            <SearchBox />
+            <SearchBox locale={locale} />
 
             <Link href="/login" className={styles.loginButton}>
               <UserRound size={17} />
-              Login
+              {content.nav.login}
             </Link>
 
             <Link href="/admission" className={styles.admissionButton}>
-              Apply Now
+              {content.nav.applyNow}
             </Link>
 
             <button
@@ -58,6 +64,7 @@ export function Navbar() {
       </header>
 
       <MobileMenu
+        locale={locale}
         isOpen={isMobileOpen}
         onClose={() => setIsMobileOpen(false)}
       />

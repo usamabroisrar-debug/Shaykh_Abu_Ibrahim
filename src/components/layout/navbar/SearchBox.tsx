@@ -4,12 +4,18 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSiteSearch } from "@/hooks/useSiteSearch";
+import { getLocaleContent, type SiteLocale } from "@/lib/locale";
 import styles from "./SearchBox.module.css";
 
-export function SearchBox() {
+type SearchBoxProps = {
+  locale: SiteLocale;
+};
+
+export function SearchBox({ locale }: SearchBoxProps) {
   const { query, setQuery, results } = useSiteSearch();
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const content = getLocaleContent(locale);
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -51,14 +57,14 @@ export function SearchBox() {
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          placeholder="Search website..."
-          aria-label="Search website"
+          placeholder={content.search.placeholder}
+          aria-label={content.search.ariaLabel}
         />
         {query ? (
           <button
             type="button"
             className={styles.clearButton}
-            aria-label="Clear search"
+            aria-label={content.search.clear}
             onClick={() => {
               setQuery("");
               setIsOpen(false);
@@ -75,8 +81,8 @@ export function SearchBox() {
         <div className={styles.panel}>
           {!query.trim() ? (
             <div className={styles.emptyState}>
-              <strong>Search across the full website</strong>
-              <span>Courses, teachers, books, and blog posts appear here instantly.</span>
+              <strong>{content.search.emptyTitle}</strong>
+              <span>{content.search.emptyText}</span>
             </div>
           ) : results.length ? (
             <>
@@ -101,18 +107,18 @@ export function SearchBox() {
                 className={styles.viewAll}
                 onClick={() => setIsOpen(false)}
               >
-                View all results for &quot;{query}&quot;
+                {content.search.viewAll} &quot;{query}&quot;
               </Link>
             </>
           ) : (
             <div className={styles.emptyState}>
-              <strong>No instant matches found</strong>
+              <strong>{content.search.noMatches}</strong>
               <Link
                 href={`/search?q=${encodeURIComponent(query)}`}
                 className={styles.emptyLink}
                 onClick={() => setIsOpen(false)}
               >
-                Open full search results page
+                {content.search.fullResults}
               </Link>
             </div>
           )}

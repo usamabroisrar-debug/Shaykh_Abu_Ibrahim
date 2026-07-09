@@ -3,20 +3,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { X } from "lucide-react";
-import { primaryNavigation } from "@/data/navigation";
+import { getLocaleContent, type SiteLocale } from "@/lib/locale";
 import styles from "./MobileMenu.module.css";
 
 type MobileMenuProps = {
+  locale: SiteLocale;
   isOpen: boolean;
   onClose: () => void;
 };
 
-export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+export function MobileMenu({ locale, isOpen, onClose }: MobileMenuProps) {
+  const content = getLocaleContent(locale);
   const links = [
-    ...primaryNavigation,
-    { label: "Courses", href: "/courses" },
-    { label: "Admission", href: "/admission" },
-    { label: "Login", href: "/login" },
+    { label: content.nav.home, href: "/" },
+    { label: content.nav.about, href: "/about" },
+    { label: content.nav.teachers, href: "/teachers" },
+    { label: content.nav.books, href: "/books" },
+    { label: content.nav.blog, href: "/blog" },
+    { label: content.nav.quiz, href: "/quiz" },
+    { label: content.nav.contact, href: "/contact" },
+    { label: content.nav.courses, href: "/courses" },
+    { label: content.nav.admission, href: "/admission" },
+    { label: content.nav.login, href: "/login" },
   ];
 
   return (
@@ -34,7 +42,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             />
             <div>
               <strong>Shaykh Abu Ibrahim</strong>
-              <span>Islamic Learning Platform</span>
+              <span>{content.subtitle}</span>
             </div>
           </div>
 

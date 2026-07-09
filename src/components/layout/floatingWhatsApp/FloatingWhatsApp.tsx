@@ -6,7 +6,7 @@ import styles from "./FloatingWhatsApp.module.css";
 export function FloatingWhatsApp() {
   return (
     <Link
-      href={siteConfig.socials.whatsapp}
+      href={siteConfig.socials.whatsappChat}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Open WhatsApp"

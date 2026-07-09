@@ -114,6 +114,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body[data-locale="ur"] {
+  font-family: var(--urdu-font);
+}
+
+body[data-locale="ar"] {
+  font-family: var(--arabic-font);
+}
+
+html[dir="rtl"] body {
+  text-align: right;
+}
+
 body,
 button,
 input,
@@ -231,6 +243,12 @@ strong {
 
 .pageShell {
   flex: 1;
+}
+
+html[dir="rtl"] input,
+html[dir="rtl"] textarea,
+html[dir="rtl"] select {
+  text-align: right;
 }
 
 /* ==========================

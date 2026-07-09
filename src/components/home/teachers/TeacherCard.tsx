@@ -1,12 +1,14 @@
 import { BookOpenText, Languages, Users } from "lucide-react";
 import type { Teacher } from "@/data/teachers";
+import type { SiteLocale } from "@/lib/locale";
 import styles from "./TeacherCard.module.css";
 
 type TeacherCardProps = {
   teacher: Teacher;
+  locale: SiteLocale;
 };
 
-export function TeacherCard({ teacher }: TeacherCardProps) {
+export function TeacherCard({ teacher, locale }: TeacherCardProps) {
   const initials = teacher.name
     .split(" ")
     .map((segment) => segment[0])
@@ -26,11 +28,13 @@ export function TeacherCard({ teacher }: TeacherCardProps) {
       <div className={styles.meta}>
         <span>
           <Users size={15} />
-          {teacher.students}+ students
+          {teacher.students}+{" "}
+          {locale === "en" ? "students" : locale === "ur" ? "طلبہ" : "طلاب"}
         </span>
         <span>
           <BookOpenText size={15} />
-          {teacher.courses} courses
+          {teacher.courses}{" "}
+          {locale === "en" ? "courses" : locale === "ur" ? "کورسز" : "دورات"}
         </span>
         <span>
           <Languages size={15} />

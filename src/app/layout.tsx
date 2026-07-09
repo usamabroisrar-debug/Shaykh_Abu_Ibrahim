@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { siteConfig } from "@/config/site";
+import { getLocaleContent, getLocaleFromCookies } from "@/lib/locale";
 import { AppProviders } from "@/providers/AppProviders";
 import styles from "./layout.module.css";
 import "./globals.css";
@@ -65,11 +67,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = getLocaleFromCookies(await cookies());
+  const localeContent = getLocaleContent(locale);
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
@@ -88,7 +92,7 @@ export default function RootLayout({
     name: siteConfig.name,
     url: siteConfig.url,
     description: siteConfig.description,
-    inLanguage: "en",
+    inLanguage: localeContent.lang,
     publisher: {
       "@type": "EducationalOrganization",
       name: siteConfig.name,
@@ -97,8 +101,12 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
-      <body className={styles.body}>
+    <html lang={localeContent.lang} dir={localeContent.dir} suppressHydrationWarning>
+      <body
+        className={`${styles.body} ${locale}`}
+        data-locale={locale}
+        suppressHydrationWarning
+      >
         <AppProviders>{children}</AppProviders>
         <script
           type="application/ld+json"

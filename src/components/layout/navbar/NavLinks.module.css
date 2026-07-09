@@ -24,7 +24,7 @@
 .dropdownButton::after {
   content: "";
   position: absolute;
-  left: 0;
+  inset-inline-start: 0;
   bottom: -9px;
   width: 0;
   height: 3px;

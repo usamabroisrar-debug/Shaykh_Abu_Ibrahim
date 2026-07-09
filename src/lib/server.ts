@@ -1,3 +1,5 @@
+import { getSiteUrl } from "@/lib/site-url";
+
 export function isDatabaseConfigured() {
   return Boolean(
     process.env.POSTGRES_PRISMA_URL ||
@@ -8,14 +10,9 @@ export function isDatabaseConfigured() {
 }
 
 export function buildAbsoluteUrl(path: string) {
-  const baseUrl =
-    process.env.NEXTAUTH_URL ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    "http://localhost:3000";
-
-  return new URL(path, baseUrl).toString();
+  return new URL(path, getSiteUrl()).toString();
 }
 
 export function getBaseUrl() {
-  return process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "";
+  return getSiteUrl();
 }

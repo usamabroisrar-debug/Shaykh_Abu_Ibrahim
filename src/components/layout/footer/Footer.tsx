@@ -2,10 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { courseNavigation, footerNavigation } from "@/data/navigation";
+import { getLocaleContent, type SiteLocale } from "@/lib/locale";
 import { SocialIcon } from "@/components/shared/SocialIcon";
 import styles from "./Footer.module.css";
 
-export function Footer() {
+type FooterProps = {
+  locale: SiteLocale;
+};
+
+export function Footer({ locale }: FooterProps) {
+  const content = getLocaleContent(locale);
   const socialLinks = [
     {
       label: "YouTube",
@@ -28,7 +34,12 @@ export function Footer() {
       icon: <SocialIcon name="tiktok" size={18} />,
     },
     {
-      label: "WhatsApp",
+      label: content.footer.whatsappChat,
+      href: siteConfig.socials.whatsappChat,
+      icon: <SocialIcon name="whatsapp" size={18} />,
+    },
+    {
+      label: content.footer.whatsappChannel,
       href: siteConfig.socials.whatsapp,
       icon: <SocialIcon name="whatsapp" size={18} />,
     },
@@ -50,7 +61,7 @@ export function Footer() {
             </div>
             <div>
               <p className={styles.brandTitle}>Shaykh Abu Ibrahim</p>
-              <p className={styles.brandSubtitle}>Islamic Learning Platform</p>
+              <p className={styles.brandSubtitle}>{content.subtitle}</p>
             </div>
           </div>
 
@@ -61,7 +72,7 @@ export function Footer() {
         </div>
 
         <div className={styles.column}>
-          <h3>Courses</h3>
+          <h3>{content.footer.courses}</h3>
           <div className={styles.links}>
             {courseNavigation.slice(0, 4).map((link) => (
               <Link key={link.href} href={link.href}>
@@ -72,7 +83,7 @@ export function Footer() {
         </div>
 
         <div className={styles.column}>
-          <h3>Explore</h3>
+          <h3>{content.footer.explore}</h3>
           <div className={styles.links}>
             {footerNavigation.explore.map((link) => (
               <Link key={link.href} href={link.href}>
@@ -83,7 +94,7 @@ export function Footer() {
         </div>
 
         <div className={styles.column}>
-          <h3>Resources</h3>
+          <h3>{content.footer.resources}</h3>
           <div className={styles.links}>
             {footerNavigation.resources.map((link) => (
               <Link key={link.href} href={link.href}>
@@ -94,11 +105,8 @@ export function Footer() {
         </div>
 
         <div className={styles.column}>
-          <h3>Follow Us</h3>
-          <p className={styles.socialText}>
-            Connect with us for daily Islamic reminders, course updates, and
-            academy announcements.
-          </p>
+          <h3>{content.footer.followUs}</h3>
+          <p className={styles.socialText}>{content.footer.followText}</p>
           <div className={styles.socialLinks}>
             {socialLinks.map((link) => (
               <Link
@@ -118,8 +126,7 @@ export function Footer() {
       </div>
 
       <div className={styles.bottomBar}>
-        Copyright {new Date().getFullYear()} Shaykh Abu Ibrahim. All rights
-        reserved.
+        Copyright {new Date().getFullYear()} Shaykh Abu Ibrahim. {content.footer.rights}
       </div>
     </footer>
   );
