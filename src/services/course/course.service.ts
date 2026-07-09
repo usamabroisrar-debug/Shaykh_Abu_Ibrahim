@@ -378,6 +378,95 @@ export async function createAdminCourse(input: {
   });
 }
 
+export async function updateAdminCourse(input: {
+  id: string;
+  title: string;
+  slug?: string;
+  description: string;
+  content?: string;
+  level?: string;
+  duration?: string;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  featured: boolean;
+  price?: number;
+}) {
+  const title = input.title.trim();
+
+  return prisma.course.update({
+    where: {
+      id: input.id,
+    },
+    data: {
+      title,
+      slug: normalizeSlug(input.slug?.trim() || title),
+      description: input.description.trim(),
+      content: input.content?.trim() || null,
+      level: input.level?.trim() || null,
+      duration: input.duration?.trim() || null,
+      status: input.status,
+      featured: input.featured,
+      price:
+        typeof input.price === "number" && Number.isFinite(input.price)
+          ? input.price
+          : undefined,
+    },
+  });
+}
+
+export async function seedAdminCourses() {
+  const count = await prisma.course.count();
+
+  if (count > 0) {
+    return;
+  }
+
+  const demoCourses = [
+    {
+      title: "Qaida Foundation Program / قائدہ فاؤنڈیشن پروگرام",
+      slug: "qaida-foundation-program",
+      description:
+        "English Description\nA beginner course for Arabic letters, pronunciation, and smooth transition into Quran reading.\n\nUrdu Description\nعربی حروف، درست تلفظ، اور قرآن پڑھنے کی مضبوط بنیاد کے لیے ابتدائی کورس۔",
+      content:
+        "English Curriculum / Notes\nArabic letters\nHarakat and joining rules\nBasic reading fluency\n\nUrdu Curriculum / Notes\nعربی حروف\nحرکات اور جوڑنے کے قواعد\nابتدائی روانی",
+      level: "Beginner",
+      duration: "6 Weeks",
+      status: "PUBLISHED" as const,
+      featured: true,
+      price: 26,
+    },
+    {
+      title: "Tajweed Improvement Track / تجوید امپروومنٹ ٹریک",
+      slug: "tajweed-improvement-track",
+      description:
+        "English Description\nA structured correction path for learners who want clearer recitation and stronger Tajweed application.\n\nUrdu Description\nان طلبہ کے لیے منظم اصلاحی راستہ جو بہتر قرأت اور مضبوط تجویدی اطلاق چاہتے ہیں۔",
+      content:
+        "English Curriculum / Notes\nMakharij drills\nMadd practice\nSurah recitation feedback\n\nUrdu Curriculum / Notes\nمخارج کی مشق\nمد کی مشق\nسورہ قرأت فیڈ بیک",
+      level: "Intermediate",
+      duration: "8 Weeks",
+      status: "PUBLISHED" as const,
+      featured: true,
+      price: 52,
+    },
+    {
+      title: "Hifz Support & Revision Circle / حفظ سپورٹ اور ریویژن سرکل",
+      slug: "hifz-support-revision-circle",
+      description:
+        "English Description\nSupport for memorization students with sabaq planning, revision discipline, and teacher accountability.\n\nUrdu Description\nحفظ کے طلبہ کے لیے سبق پلاننگ، ریویژن نظم، اور استاد کی نگرانی کے ساتھ معاونت۔",
+      content:
+        "English Curriculum / Notes\nSabaq planning\nRevision checkpoints\nParent progress guidance\n\nUrdu Curriculum / Notes\nسبق پلاننگ\nریویژن چیک پوائنٹس\nوالدین کے لیے پیش رفت رہنمائی",
+      level: "All Levels",
+      duration: "Ongoing",
+      status: "PUBLISHED" as const,
+      featured: false,
+      price: 78,
+    },
+  ];
+
+  for (const course of demoCourses) {
+    await createAdminCourse(course);
+  }
+}
+
 export async function deleteAdminCourse(id: string) {
   return prisma.course.delete({
     where: {

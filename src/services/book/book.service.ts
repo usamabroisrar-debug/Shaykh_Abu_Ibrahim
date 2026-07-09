@@ -136,6 +136,75 @@ export async function createAdminBook(input: {
   });
 }
 
+export async function updateAdminBook(input: {
+  id: string;
+  title: string;
+  slug?: string;
+  category: string;
+  format: string;
+  pages: number;
+  summary: string;
+  featuredNote?: string;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+}) {
+  const title = input.title.trim();
+
+  return prisma.libraryBook.update({
+    where: {
+      id: input.id,
+    },
+    data: {
+      title,
+      slug: normalizeSlug(input.slug?.trim() || title),
+      category: normalizeCategory(input.category),
+      format: input.format.trim(),
+      pages: Math.max(1, input.pages || 1),
+      summary: input.summary.trim(),
+      featuredNote: input.featuredNote?.trim() || null,
+      status: input.status,
+    },
+  });
+}
+
+export async function seedAdminBooks() {
+  const count = await prisma.libraryBook.count();
+
+  if (count > 0) {
+    return;
+  }
+
+  const demoBooks = [
+    {
+      title: "Foundations of Daily Adhkar / روزانہ اذکار کی بنیادیں",
+      slug: "foundations-of-daily-adhkar",
+      category: "Character",
+      format: "PDF Guide",
+      pages: 42,
+      summary:
+        "English Summary\nA concise student companion for morning and evening adhkar with transliteration cues and short reflections.\n\nUrdu Summary\nصبح و شام کے اذکار کے لیے مختصر رہنما جس میں تلفظی اشارے اور مختصر نصیحتیں شامل ہیں۔",
+      featuredNote:
+        "English Featured Note\nIdeal for new students and families.\n\nUrdu Featured Note\nنئے طلبہ اور خاندانوں کے لیے بہترین۔",
+      status: "PUBLISHED" as const,
+    },
+    {
+      title: "Tajweed Essentials Workbook / تجوید ضروریات ورک بک",
+      slug: "tajweed-essentials-workbook",
+      category: "Quran",
+      format: "Practice Workbook",
+      pages: 64,
+      summary:
+        "English Summary\nPractice sheets covering makharij, madd, qalqalah, and common live-recitation errors.\n\nUrdu Summary\nمخارج، مد، قلقلہ، اور عام قرأت کی غلطیوں پر مبنی مشقی صفحات۔",
+      featuredNote:
+        "English Featured Note\nPairs well with weekly Tajweed review.\n\nUrdu Featured Note\nہفتہ وار تجوید ریویو کے ساتھ بہترین رہتا ہے۔",
+      status: "PUBLISHED" as const,
+    },
+  ];
+
+  for (const book of demoBooks) {
+    await createAdminBook(book);
+  }
+}
+
 export async function deleteAdminBook(id: string) {
   return prisma.libraryBook.delete({
     where: {

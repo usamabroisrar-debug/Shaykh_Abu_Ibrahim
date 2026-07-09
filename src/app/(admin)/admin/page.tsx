@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { StructuredEditor } from "@/components/admin/StructuredEditor";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { Container, Section } from "@/components/shared";
 import { auth, getDashboardPath } from "@/lib/auth";
@@ -13,6 +14,10 @@ import {
   deleteBookAction,
   deleteBlogAction,
   deleteCourseAction,
+  seedDemoContentAction,
+  updateBookAction,
+  updateBlogAction,
+  updateCourseAction,
 } from "./actions";
 import styles from "./page.module.css";
 
@@ -114,6 +119,16 @@ function getStatusMessage(value?: string | string[]): Notice | null {
       return { tone: "error", text: "Book create nahi ho saki." };
     case "book-delete-failed":
       return { tone: "error", text: "Book delete nahi ho saki." };
+    case "seed-complete":
+      return {
+        tone: "success",
+        text: "Demo blogs, courses, aur books successfully create ho gaye.",
+      };
+    case "seed-failed":
+      return {
+        tone: "error",
+        text: "Demo content create nahi ho saka. Database access check karo.",
+      };
     default:
       return null;
   }
@@ -158,6 +173,8 @@ function normalizeCountLabel(value: number, singular: string, plural: string) {
 export default async function AdminDashboardPage(props: PageProps<"/admin">) {
   const searchParams = await props.searchParams;
   const session = await auth();
+  const searchTerm = typeof searchParams.q === "string" ? searchParams.q.trim().toLowerCase() : "";
+  const statusFilter = typeof searchParams.status === "string" ? searchParams.status : "ALL";
 
   if (!session?.user?.id) {
     redirect("/login?next=/admin");
@@ -188,6 +205,33 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
     getAdminCourses(),
     getAdminBooks(),
   ]);
+  const filteredBlogs = blogs.filter((blog) => {
+    const matchesSearch = !searchTerm
+      ? true
+      : [blog.title, blog.slug, blog.category?.name, blog.author?.email]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(searchTerm));
+    const matchesStatus = statusFilter === "ALL" ? true : blog.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+  const filteredCourses = courses.filter((course) => {
+    const matchesSearch = !searchTerm
+      ? true
+      : [course.title, course.slug, course.level, course.teacher?.name]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(searchTerm));
+    const matchesStatus = statusFilter === "ALL" ? true : course.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+  const filteredBooks = books.filter((book) => {
+    const matchesSearch = !searchTerm
+      ? true
+      : [book.title, book.slug, book.category, book.format]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(searchTerm));
+    const matchesStatus = statusFilter === "ALL" ? true : book.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const notice = getStatusMessage(searchParams.success || searchParams.error);
   const draftBlogs = blogs.filter((item) => item.status === "DRAFT").length;
@@ -214,6 +258,20 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
       label: "Draft content items",
       value: totalDrafts,
       hint: "Publish or archive pending content from the studio.",
+    },
+  ];
+  const studioPlaybook = [
+    {
+      title: "Bilingual publishing flow",
+      text: "Primary English field aur optional Urdu field dono bharo. System dono ko ek structured entry me save karega.",
+    },
+    {
+      title: "Editorial consistency",
+      text: "Short summaries concise rakho, full content me headings, bullets, aur clear teaching value mention karo.",
+    },
+    {
+      title: "Homepage readiness",
+      text: "Featured courses aur polished excerpts public website par sab se pehle nazar aate hain.",
     },
   ];
 
@@ -311,6 +369,16 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
             <p>Recently generated completion records and recognitions.</p>
           </article>
         </div>
+
+        <section className={styles.workspaceStrip}>
+          {studioPlaybook.map((item) => (
+            <article key={item.title} className={styles.workspaceCard}>
+              <span className={styles.workspaceKicker}>Studio note</span>
+              <strong>{item.title}</strong>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </section>
 
         <section id="operations" className={styles.operationsGrid}>
           <article className={`${styles.surfaceCard} ${styles.priorityPanel}`}>
@@ -495,21 +563,77 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
             </p>
           </div>
 
+          <div className={styles.commandBar}>
+            <form className={styles.filterForm}>
+              <input
+                type="search"
+                name="q"
+                defaultValue={typeof searchParams.q === "string" ? searchParams.q : ""}
+                placeholder="Search blogs, courses, books..."
+                className={styles.filterInput}
+              />
+              <select
+                name="status"
+                defaultValue={statusFilter}
+                className={styles.filterSelect}
+              >
+                <option value="ALL">All statuses</option>
+                <option value="PUBLISHED">Published</option>
+                <option value="DRAFT">Draft</option>
+                <option value="ARCHIVED">Archived</option>
+              </select>
+              <button type="submit" className={styles.secondaryAction}>
+                Apply filters
+              </button>
+            </form>
+
+            <form action={seedDemoContentAction}>
+              <button type="submit" className={styles.secondaryAction}>
+                Create demo content
+              </button>
+            </form>
+          </div>
+
+          <div className={styles.editorialBanner}>
+            <div>
+              <span className={styles.sectionEyebrow}>Editorial workflow</span>
+              <h3>English aur Urdu dono ke liye structured content desk</h3>
+            </div>
+            <p>
+              Har create form me optional Urdu heading aur Urdu content fields
+              add kiye gaye hain. Agar Urdu fill karoge to public content ke
+              andar uski structured bilingual presentation save ho jayegi.
+            </p>
+          </div>
+
           <div className={styles.contentGrid}>
             <article id="blog-panel" className={styles.studioCard}>
               <div className={styles.panelHeader}>
                 <div>
                   <span className={styles.sectionEyebrow}>Blog management</span>
                   <h3>Articles and announcements</h3>
+                  <p className={styles.panelIntro}>
+                    Blog posts ko bilingual summary aur long-form content ke sath
+                    publish karo.
+                  </p>
                 </div>
-                <span className={styles.counterBadge}>{blogs.length}</span>
+                <span className={styles.counterBadge}>{filteredBlogs.length}</span>
               </div>
               <form action={createBlogAction} className={styles.adminForm}>
                 <div className={styles.formSplit}>
                   <label className={styles.field}>
                     <span>Title</span>
                     <input id="blog-title" name="title" placeholder="New article title" required />
+                    <small className={styles.fieldHint}>Primary heading, usually English.</small>
                   </label>
+                  <label className={styles.field}>
+                    <span>Urdu title (optional)</span>
+                    <input id="blog-title-urdu" name="titleUrdu" dir="rtl" placeholder="اردو عنوان" />
+                    <small className={styles.fieldHint}>Agar Urdu headline chahiye to yahan likhein.</small>
+                  </label>
+                </div>
+
+                <div className={styles.formSplit}>
                   <label className={styles.field}>
                     <span>Slug</span>
                     <input
@@ -517,10 +641,8 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       name="slug"
                       placeholder="auto-generate-ho-jayega"
                     />
+                    <small className={styles.fieldHint}>Leave blank to auto-create from title.</small>
                   </label>
-                </div>
-
-                <div className={styles.formSplit}>
                   <label className={styles.field}>
                     <span>Category</span>
                     <input
@@ -529,7 +651,11 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       defaultValue="Quran"
                       required
                     />
+                    <small className={styles.fieldHint}>Examples: Quran, Tajweed, Parenting.</small>
                   </label>
+                </div>
+
+                <div className={styles.formSplit}>
                   <label className={styles.field}>
                     <span>Status</span>
                     <select id="blog-status" name="status" defaultValue="PUBLISHED">
@@ -537,18 +663,45 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       <option value="DRAFT">Draft</option>
                       <option value="ARCHIVED">Archived</option>
                     </select>
+                    <small className={styles.fieldHint}>Draft for internal review, publish when ready.</small>
+                  </label>
+                  <div className={styles.tipCard}>
+                    <strong>Urdu publishing tip</strong>
+                    <p>
+                      Urdu text ke liye title aur content fields me direct Urdu
+                      likh sakte hain. Form usay bilingual structure me save karega.
+                    </p>
+                  </div>
+                </div>
+
+                <div className={styles.formSplit}>
+                  <label className={styles.field}>
+                    <span>Excerpt</span>
+                    <textarea id="blog-excerpt" name="excerpt" required />
+                    <small className={styles.fieldHint}>Short teaser for cards and previews.</small>
+                  </label>
+                  <label className={styles.field}>
+                    <span>Urdu excerpt (optional)</span>
+                    <textarea id="blog-excerpt-urdu" name="excerptUrdu" dir="rtl" />
+                    <small className={styles.fieldHint}>Card summary ka Urdu version yahan likhein.</small>
                   </label>
                 </div>
 
-                <label className={styles.field}>
-                  <span>Excerpt</span>
-                  <textarea id="blog-excerpt" name="excerpt" required />
-                </label>
+                <StructuredEditor
+                  name="content"
+                  label="Content"
+                  required
+                  placeholder="Write the main article here..."
+                  hint="Main article body, lessons, and call to action."
+                />
 
-                <label className={styles.field}>
-                  <span>Content</span>
-                  <textarea id="blog-content" name="content" required />
-                </label>
+                <StructuredEditor
+                  name="contentUrdu"
+                  label="Urdu content (optional)"
+                  dir="rtl"
+                  placeholder="اردو مکمل مواد"
+                  hint="Full Urdu body yahan add karein."
+                />
 
                 <button type="submit" className={styles.primaryAction}>
                   Publish blog
@@ -556,8 +709,8 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               </form>
 
               <div className={styles.recordList}>
-                {blogs.length ? (
-                  blogs.map((blog) => (
+                {filteredBlogs.length ? (
+                  filteredBlogs.map((blog) => (
                     <div key={blog.id} className={styles.recordItem}>
                       <div className={styles.recordTop}>
                         <strong>{blog.title}</strong>
@@ -566,6 +719,53 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       <p className={styles.recordMeta}>
                         {blog.category?.name || "General"} | {blog.author?.email || "No author email"}
                       </p>
+                      <details className={styles.editDetails}>
+                        <summary className={styles.editSummary}>Edit blog</summary>
+                        <form action={updateBlogAction} className={styles.editForm}>
+                          <input type="hidden" name="id" value={blog.id} />
+                          <div className={styles.formSplit}>
+                            <label className={styles.field}>
+                              <span>Title</span>
+                              <input name="title" defaultValue={blog.title} required />
+                            </label>
+                            <label className={styles.field}>
+                              <span>Slug</span>
+                              <input name="slug" defaultValue={blog.slug} />
+                            </label>
+                          </div>
+                          <div className={styles.formSplit}>
+                            <label className={styles.field}>
+                              <span>Category</span>
+                              <input
+                                name="categoryName"
+                                defaultValue={blog.category?.name || "Quran"}
+                                required
+                              />
+                            </label>
+                            <label className={styles.field}>
+                              <span>Status</span>
+                              <select name="status" defaultValue={blog.status}>
+                                <option value="PUBLISHED">Published</option>
+                                <option value="DRAFT">Draft</option>
+                                <option value="ARCHIVED">Archived</option>
+                              </select>
+                            </label>
+                          </div>
+                          <label className={styles.field}>
+                            <span>Excerpt</span>
+                            <textarea name="excerpt" defaultValue={blog.excerpt || ""} required />
+                          </label>
+                          <StructuredEditor
+                            name="content"
+                            label="Content"
+                            defaultValue={blog.content || ""}
+                            required
+                          />
+                          <button type="submit" className={styles.secondaryAction}>
+                            Save blog changes
+                          </button>
+                        </form>
+                      </details>
                       <form action={deleteBlogAction} className={styles.inlineAction}>
                         <input type="hidden" name="id" value={blog.id} />
                         <button type="submit" className={styles.dangerButton}>
@@ -585,15 +785,28 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 <div>
                   <span className={styles.sectionEyebrow}>Course management</span>
                   <h3>Programs and featured offerings</h3>
+                  <p className={styles.panelIntro}>
+                    Course listings ko bilingual description aur curriculum notes ke
+                    sath professionally publish karo.
+                  </p>
                 </div>
-                <span className={styles.counterBadge}>{courses.length}</span>
+                <span className={styles.counterBadge}>{filteredCourses.length}</span>
               </div>
               <form action={createCourseAction} className={styles.adminForm}>
                 <div className={styles.formSplit}>
                   <label className={styles.field}>
                     <span>Title</span>
                     <input id="course-title" name="title" placeholder="Course title" required />
+                    <small className={styles.fieldHint}>Public course heading.</small>
                   </label>
+                  <label className={styles.field}>
+                    <span>Urdu title (optional)</span>
+                    <input id="course-title-urdu" name="titleUrdu" dir="rtl" placeholder="اردو کورس عنوان" />
+                    <small className={styles.fieldHint}>Urdu audience ke liye optional title.</small>
+                  </label>
+                </div>
+
+                <div className={styles.formSplit}>
                   <label className={styles.field}>
                     <span>Slug</span>
                     <input
@@ -601,7 +814,15 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       name="slug"
                       placeholder="auto-generate-ho-jayega"
                     />
+                    <small className={styles.fieldHint}>SEO-friendly course URL.</small>
                   </label>
+                  <div className={styles.tipCard}>
+                    <strong>Course copy note</strong>
+                    <p>
+                      Description me learning outcome likho aur notes me curriculum
+                      ko line-by-line break karo.
+                    </p>
+                  </div>
                 </div>
 
                 <div className={styles.formTriple}>
@@ -613,6 +834,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       <option value="Advanced">Advanced</option>
                       <option value="All Levels">All Levels</option>
                     </select>
+                    <small className={styles.fieldHint}>Student difficulty level.</small>
                   </label>
                   <label className={styles.field}>
                     <span>Status</span>
@@ -621,6 +843,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       <option value="DRAFT">Draft</option>
                       <option value="ARCHIVED">Archived</option>
                     </select>
+                    <small className={styles.fieldHint}>Draft or live publishing state.</small>
                   </label>
                   <label className={styles.field}>
                     <span>Price</span>
@@ -632,6 +855,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       step="1"
                       defaultValue="0"
                     />
+                    <small className={styles.fieldHint}>Use `0` for free or consultation-based programs.</small>
                   </label>
                 </div>
 
@@ -639,6 +863,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                   <label className={styles.field}>
                     <span>Duration</span>
                     <input id="course-duration" name="duration" placeholder="8 Weeks" />
+                    <small className={styles.fieldHint}>Examples: 8 Weeks, Ongoing, Flexible schedule.</small>
                   </label>
                   <label className={styles.checkboxField}>
                     <input type="checkbox" name="featured" defaultChecked />
@@ -646,19 +871,33 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                   </label>
                 </div>
 
-                <label className={styles.field}>
-                  <span>Description</span>
-                  <textarea id="course-description" name="description" required />
-                </label>
+                <div className={styles.formSplit}>
+                  <label className={styles.field}>
+                    <span>Description</span>
+                    <textarea id="course-description" name="description" required />
+                    <small className={styles.fieldHint}>Public-facing course overview.</small>
+                  </label>
+                  <label className={styles.field}>
+                    <span>Urdu description (optional)</span>
+                    <textarea id="course-description-urdu" name="descriptionUrdu" dir="rtl" />
+                    <small className={styles.fieldHint}>Urdu overview for bilingual listing.</small>
+                  </label>
+                </div>
 
-                <label className={styles.field}>
-                  <span>Curriculum / notes</span>
-                  <textarea
-                    id="course-content"
-                    name="content"
-                    placeholder="Har line aik curriculum point ban sakti hai"
-                  />
-                </label>
+                <StructuredEditor
+                  name="content"
+                  label="Curriculum / notes"
+                  placeholder="Har line aik curriculum point ban sakti hai"
+                  hint="Each line can become a visible curriculum bullet."
+                />
+
+                <StructuredEditor
+                  name="contentUrdu"
+                  label="Urdu curriculum / notes (optional)"
+                  dir="rtl"
+                  placeholder="ہر لائن ایک نصابی پوائنٹ ہو سکتی ہے"
+                  hint="Urdu curriculum ya teaching notes yahan add karein."
+                />
 
                 <button type="submit" className={styles.primaryAction}>
                   Create course
@@ -666,8 +905,8 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               </form>
 
               <div className={styles.recordList}>
-                {courses.length ? (
-                  courses.map((course) => (
+                {filteredCourses.length ? (
+                  filteredCourses.map((course) => (
                     <div key={course.id} className={styles.recordItem}>
                       <div className={styles.recordTop}>
                         <strong>{course.title}</strong>
@@ -677,6 +916,70 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                         {course.level || "All Levels"} |{" "}
                         {course.featured ? "Featured on homepage" : "Standard visibility"}
                       </p>
+                      <details className={styles.editDetails}>
+                        <summary className={styles.editSummary}>Edit course</summary>
+                        <form action={updateCourseAction} className={styles.editForm}>
+                          <input type="hidden" name="id" value={course.id} />
+                          <div className={styles.formSplit}>
+                            <label className={styles.field}>
+                              <span>Title</span>
+                              <input name="title" defaultValue={course.title} required />
+                            </label>
+                            <label className={styles.field}>
+                              <span>Slug</span>
+                              <input name="slug" defaultValue={course.slug} />
+                            </label>
+                          </div>
+                          <div className={styles.formTriple}>
+                            <label className={styles.field}>
+                              <span>Level</span>
+                              <input name="level" defaultValue={course.level || ""} />
+                            </label>
+                            <label className={styles.field}>
+                              <span>Status</span>
+                              <select name="status" defaultValue={course.status}>
+                                <option value="PUBLISHED">Published</option>
+                                <option value="DRAFT">Draft</option>
+                                <option value="ARCHIVED">Archived</option>
+                              </select>
+                            </label>
+                            <label className={styles.field}>
+                              <span>Price</span>
+                              <input
+                                name="price"
+                                type="number"
+                                defaultValue={Number(course.price || 0)}
+                              />
+                            </label>
+                          </div>
+                          <div className={styles.formSplit}>
+                            <label className={styles.field}>
+                              <span>Duration</span>
+                              <input name="duration" defaultValue={course.duration || ""} />
+                            </label>
+                            <label className={styles.checkboxField}>
+                              <input type="checkbox" name="featured" defaultChecked={course.featured} />
+                              <span>Feature this course on homepage</span>
+                            </label>
+                          </div>
+                          <label className={styles.field}>
+                            <span>Description</span>
+                            <textarea
+                              name="description"
+                              defaultValue={course.description || ""}
+                              required
+                            />
+                          </label>
+                          <StructuredEditor
+                            name="content"
+                            label="Curriculum / notes"
+                            defaultValue={course.content || ""}
+                          />
+                          <button type="submit" className={styles.secondaryAction}>
+                            Save course changes
+                          </button>
+                        </form>
+                      </details>
                       <form action={deleteCourseAction} className={styles.inlineAction}>
                         <input type="hidden" name="id" value={course.id} />
                         <button type="submit" className={styles.dangerButton}>
@@ -696,15 +999,28 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 <div>
                   <span className={styles.sectionEyebrow}>Book management</span>
                   <h3>Library and downloadable resources</h3>
+                  <p className={styles.panelIntro}>
+                    Books, PDFs, aur revision resources ko cleaner catalog form me
+                    manage karo.
+                  </p>
                 </div>
-                <span className={styles.counterBadge}>{books.length}</span>
+                <span className={styles.counterBadge}>{filteredBooks.length}</span>
               </div>
               <form action={createBookAction} className={styles.adminForm}>
                 <div className={styles.formSplit}>
                   <label className={styles.field}>
                     <span>Title</span>
                     <input id="book-title" name="title" placeholder="Book title" required />
+                    <small className={styles.fieldHint}>Main resource title.</small>
                   </label>
+                  <label className={styles.field}>
+                    <span>Urdu title (optional)</span>
+                    <input id="book-title-urdu" name="titleUrdu" dir="rtl" placeholder="اردو کتاب عنوان" />
+                    <small className={styles.fieldHint}>Optional Urdu resource heading.</small>
+                  </label>
+                </div>
+
+                <div className={styles.formSplit}>
                   <label className={styles.field}>
                     <span>Slug</span>
                     <input
@@ -712,7 +1028,15 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       name="slug"
                       placeholder="auto-generate-ho-jayega"
                     />
+                    <small className={styles.fieldHint}>Book detail page URL.</small>
                   </label>
+                  <div className={styles.tipCard}>
+                    <strong>Library note</strong>
+                    <p>
+                      Summary ko searchable aur concise rakho taa ke books page par
+                      resource jaldi samajh aaye.
+                    </p>
+                  </div>
                 </div>
 
                 <div className={styles.formTriple}>
@@ -724,6 +1048,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       <option value="Aqidah">Aqidah</option>
                       <option value="Character">Character</option>
                     </select>
+                    <small className={styles.fieldHint}>Best-fit learning area.</small>
                   </label>
                   <label className={styles.field}>
                     <span>Status</span>
@@ -732,6 +1057,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       <option value="DRAFT">Draft</option>
                       <option value="ARCHIVED">Archived</option>
                     </select>
+                    <small className={styles.fieldHint}>Use draft before public release.</small>
                   </label>
                   <label className={styles.field}>
                     <span>Pages</span>
@@ -742,6 +1068,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       min="1"
                       defaultValue="32"
                     />
+                    <small className={styles.fieldHint}>Approximate page count.</small>
                   </label>
                 </div>
 
@@ -754,6 +1081,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       defaultValue="PDF Guide"
                       required
                     />
+                    <small className={styles.fieldHint}>Examples: PDF Guide, Workbook, eBook.</small>
                   </label>
                   <div className={styles.tipCard}>
                     <strong>Resource tip</strong>
@@ -764,15 +1092,31 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                   </div>
                 </div>
 
-                <label className={styles.field}>
-                  <span>Summary</span>
-                  <textarea id="book-summary" name="summary" required />
-                </label>
+                <div className={styles.formSplit}>
+                  <label className={styles.field}>
+                    <span>Summary</span>
+                    <textarea id="book-summary" name="summary" required />
+                    <small className={styles.fieldHint}>Short explanation of what the resource covers.</small>
+                  </label>
+                  <label className={styles.field}>
+                    <span>Urdu summary (optional)</span>
+                    <textarea id="book-summary-urdu" name="summaryUrdu" dir="rtl" />
+                    <small className={styles.fieldHint}>Urdu reader ke liye short introduction.</small>
+                  </label>
+                </div>
 
-                <label className={styles.field}>
-                  <span>Featured note</span>
-                  <textarea id="book-note" name="featuredNote" />
-                </label>
+                <div className={styles.formSplit}>
+                  <label className={styles.field}>
+                    <span>Featured note</span>
+                    <textarea id="book-note" name="featuredNote" />
+                    <small className={styles.fieldHint}>Highlight line for featured placement.</small>
+                  </label>
+                  <label className={styles.field}>
+                    <span>Urdu featured note (optional)</span>
+                    <textarea id="book-note-urdu" name="featuredNoteUrdu" dir="rtl" />
+                    <small className={styles.fieldHint}>Urdu highlight line yahan add karein.</small>
+                  </label>
+                </div>
 
                 <button type="submit" className={styles.primaryAction}>
                   Create book
@@ -780,8 +1124,8 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               </form>
 
               <div className={styles.recordList}>
-                {books.length ? (
-                  books.map((book) => (
+                {filteredBooks.length ? (
+                  filteredBooks.map((book) => (
                     <div key={book.id} className={styles.recordItem}>
                       <div className={styles.recordTop}>
                         <strong>{book.title}</strong>
@@ -790,6 +1134,55 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       <p className={styles.recordMeta}>
                         {book.category} | {book.format} | {book.pages} pages
                       </p>
+                      <details className={styles.editDetails}>
+                        <summary className={styles.editSummary}>Edit book</summary>
+                        <form action={updateBookAction} className={styles.editForm}>
+                          <input type="hidden" name="id" value={book.id} />
+                          <div className={styles.formSplit}>
+                            <label className={styles.field}>
+                              <span>Title</span>
+                              <input name="title" defaultValue={book.title} required />
+                            </label>
+                            <label className={styles.field}>
+                              <span>Slug</span>
+                              <input name="slug" defaultValue={book.slug} />
+                            </label>
+                          </div>
+                          <div className={styles.formTriple}>
+                            <label className={styles.field}>
+                              <span>Category</span>
+                              <input name="category" defaultValue={book.category} />
+                            </label>
+                            <label className={styles.field}>
+                              <span>Format</span>
+                              <input name="format" defaultValue={book.format} />
+                            </label>
+                            <label className={styles.field}>
+                              <span>Pages</span>
+                              <input name="pages" type="number" defaultValue={book.pages} />
+                            </label>
+                          </div>
+                          <label className={styles.field}>
+                            <span>Status</span>
+                            <select name="status" defaultValue={book.status}>
+                              <option value="PUBLISHED">Published</option>
+                              <option value="DRAFT">Draft</option>
+                              <option value="ARCHIVED">Archived</option>
+                            </select>
+                          </label>
+                          <label className={styles.field}>
+                            <span>Summary</span>
+                            <textarea name="summary" defaultValue={book.summary} required />
+                          </label>
+                          <label className={styles.field}>
+                            <span>Featured note</span>
+                            <textarea name="featuredNote" defaultValue={book.featuredNote || ""} />
+                          </label>
+                          <button type="submit" className={styles.secondaryAction}>
+                            Save book changes
+                          </button>
+                        </form>
+                      </details>
                       <form action={deleteBookAction} className={styles.inlineAction}>
                         <input type="hidden" name="id" value={book.id} />
                         <button type="submit" className={styles.dangerButton}>

@@ -230,6 +230,92 @@ export async function createAdminBlog(input: {
   });
 }
 
+export async function updateAdminBlog(input: {
+  id: string;
+  title: string;
+  slug?: string;
+  excerpt: string;
+  content: string;
+  categoryName: string;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+}) {
+  const title = input.title.trim();
+  const slug = normalizeSlug(input.slug?.trim() || title);
+  const categoryName = input.categoryName.trim() || "Quran";
+
+  return prisma.blog.update({
+    where: {
+      id: input.id,
+    },
+    data: {
+      title,
+      slug,
+      excerpt: input.excerpt.trim(),
+      content: input.content.trim(),
+      status: input.status,
+      category: {
+        connectOrCreate: {
+          where: {
+            slug: normalizeSlug(categoryName),
+          },
+          create: {
+            name: categoryName,
+            slug: normalizeSlug(categoryName),
+          },
+        },
+      },
+    },
+  });
+}
+
+export async function seedAdminBlogs(authorId: string) {
+  const count = await prisma.blog.count();
+
+  if (count > 0) {
+    return;
+  }
+
+  const demoBlogs = [
+    {
+      title: "How to Build a Consistent Quran Routine at Home / گھر میں مستقل قرآن روٹین کیسے بنائیں",
+      slug: "consistent-quran-routine-at-home",
+      excerpt:
+        "English Summary\nA practical framework for families and solo learners to create a calm, repeatable Quran study rhythm that actually lasts.\n\nUrdu Summary\nخاندانوں اور انفرادی طلبہ کے لیے ایک عملی طریقہ کار جو پُرسکون اور مستقل قرآن مطالعہ روٹین بنانے میں مدد دے۔",
+      content:
+        "English Content\nStart with a realistic weekly schedule, choose a fixed revision slot, and keep communication open with the teacher.\n\nUrdu Content\nحقیقی ہفتہ وار شیڈول بنائیں، ریویژن کے لیے مقرر وقت رکھیں، اور استاد کے ساتھ رابطہ واضح رکھیں۔",
+      categoryName: "Quran",
+      status: "PUBLISHED" as const,
+      authorId,
+    },
+    {
+      title: "Three Tajweed Mistakes New Learners Can Fix Quickly / نئی تجوید کی تین غلطیاں",
+      slug: "tajweed-mistakes-new-learners-can-fix",
+      excerpt:
+        "English Summary\nCommon pronunciation issues can be corrected quickly when listening, repetition, and teacher feedback work together.\n\nUrdu Summary\nدرست سماعت، بار بار مشق، اور استاد کی رہنمائی سے تجوید کی عام غلطیاں جلد درست ہو سکتی ہیں۔",
+      content:
+        "English Content\nFocus on makharij, madd length, and heavy-light letter distinction during the first stage of Tajweed correction.\n\nUrdu Content\nتجوید کی ابتدائی اصلاح میں مخارج، مد کی مقدار، اور حروف کی تفخیم و ترقیق پر توجہ دیں۔",
+      categoryName: "Tajweed",
+      status: "PUBLISHED" as const,
+      authorId,
+    },
+    {
+      title: "What Parents Should Expect From an Online Hifz Program / آن لائن حفظ پروگرام سے والدین کیا توقع رکھیں",
+      slug: "what-parents-should-expect-from-online-hifz",
+      excerpt:
+        "English Summary\nParents should look for a structured sabaq plan, revision system, and transparent progress reporting.\n\nUrdu Summary\nوالدین کو منظم سبق پلان، مضبوط ریویژن نظام، اور واضح پروگریس رپورٹنگ دیکھنی چاہیے۔",
+      content:
+        "English Content\nA serious Hifz journey depends on revision accountability, teacher consistency, and realistic memorization pacing.\n\nUrdu Content\nکامیاب حفظ سفر کے لیے ریویژن کی پابندی، استاد کی مستقل مزاجی، اور حفظ کی مناسب رفتار ضروری ہے۔",
+      categoryName: "Parenting",
+      status: "PUBLISHED" as const,
+      authorId,
+    },
+  ];
+
+  for (const blog of demoBlogs) {
+    await createAdminBlog(blog);
+  }
+}
+
 export async function deleteAdminBlog(id: string) {
   return prisma.blog.delete({
     where: {

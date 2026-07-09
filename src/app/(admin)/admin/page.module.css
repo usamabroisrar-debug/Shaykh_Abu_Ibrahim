@@ -207,6 +207,40 @@
   gap: 18px;
 }
 
+.workspaceStrip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.workspaceCard {
+  padding: 22px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(247, 251, 249, 0.92));
+  border: 1px solid rgba(6, 95, 70, 0.1);
+  box-shadow: 0 14px 32px rgba(8, 33, 29, 0.06);
+}
+
+.workspaceCard strong {
+  display: block;
+  margin-top: 8px;
+  color: #132238;
+  font-size: 1.08rem;
+}
+
+.workspaceCard p {
+  margin: 10px 0 0;
+  color: #62748a;
+}
+
+.workspaceKicker {
+  color: #0b6a54;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .statCard {
   padding: 24px;
   border-radius: 24px;
@@ -368,6 +402,56 @@
   gap: 20px;
 }
 
+.commandBar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.filterForm {
+  display: flex;
+  flex: 1 1 720px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filterInput,
+.filterSelect {
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.96);
+  padding: 0 16px;
+  color: #1b2a41;
+}
+
+.filterInput {
+  flex: 1 1 320px;
+}
+
+.editorialBanner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 18px;
+  padding: 24px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, rgba(11, 106, 84, 0.08), rgba(230, 192, 69, 0.08));
+  border: 1px solid rgba(11, 106, 84, 0.12);
+}
+
+.editorialBanner h3 {
+  margin: 8px 0 0;
+  color: #132238;
+  font-size: 1.45rem;
+}
+
+.editorialBanner p {
+  margin: 0;
+  color: #62748a;
+  align-self: center;
+}
+
 .contentGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -377,6 +461,11 @@
 .panelHeader {
   align-items: center;
   margin-bottom: 18px;
+}
+
+.panelIntro {
+  margin: 10px 0 0;
+  color: #62748a;
 }
 
 .formSplit,
@@ -403,6 +492,12 @@
 .checkboxField span {
   font-weight: 700;
   color: #1b2a41;
+}
+
+.fieldHint {
+  color: #6b7c93;
+  font-size: 0.82rem;
+  line-height: 1.4;
 }
 
 .field input,
@@ -450,6 +545,8 @@
 }
 
 .tipCard {
+  display: grid;
+  align-content: start;
   padding: 16px 18px;
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(230, 192, 69, 0.12), rgba(230, 192, 69, 0.05));
@@ -461,6 +558,7 @@
 }
 
 .primaryAction,
+.secondaryAction,
 .dangerButton {
   min-height: 50px;
   border: none;
@@ -471,6 +569,7 @@
 }
 
 .primaryAction:hover,
+.secondaryAction:hover,
 .dangerButton:hover {
   transform: translateY(-2px);
 }
@@ -479,6 +578,13 @@
   background: linear-gradient(135deg, #0d7f62, #0b5f4f);
   color: #ffffff;
   box-shadow: 0 16px 24px rgba(11, 95, 79, 0.18);
+}
+
+.secondaryAction {
+  padding: 0 18px;
+  background: rgba(6, 95, 70, 0.08);
+  color: #0b6a54;
+  border: 1px solid rgba(11, 106, 84, 0.18);
 }
 
 .dangerButton {
@@ -505,6 +611,28 @@
   margin: 0;
 }
 
+.editDetails {
+  border-top: 1px solid rgba(6, 95, 70, 0.08);
+  padding-top: 12px;
+}
+
+.editSummary {
+  cursor: pointer;
+  font-weight: 800;
+  color: #0b6a54;
+  list-style: none;
+}
+
+.editSummary::-webkit-details-marker {
+  display: none;
+}
+
+.editForm {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
 .emptyState {
   padding: 18px;
   border-radius: 18px;
@@ -515,6 +643,7 @@
 
 @media (max-width: 1280px) {
   .statsGrid,
+  .workspaceStrip,
   .contentGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -531,11 +660,18 @@
 @media (max-width: 1024px) {
   .heroCard,
   .statsGrid,
+  .workspaceStrip,
   .operationsGrid,
   .contentGrid,
+  .editorialBanner,
   .formTriple,
   .formSplit {
     grid-template-columns: 1fr;
+  }
+
+  .filterForm,
+  .commandBar {
+    flex-direction: column;
   }
 
   .priorityPanel {

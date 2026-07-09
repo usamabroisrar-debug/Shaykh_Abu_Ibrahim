@@ -1,0 +1,50 @@
+.wrapper {
+  display: grid;
+  gap: 8px;
+}
+
+.label {
+  font-weight: 700;
+  color: #1b2a41;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tool {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(11, 106, 84, 0.16);
+  border-radius: 999px;
+  background: rgba(6, 95, 70, 0.06);
+  color: #0b6a54;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #ffffff;
+  color: #1b2a41;
+  resize: vertical;
+}
+
+.textarea:focus {
+  border-color: rgba(11, 106, 84, 0.45);
+  box-shadow: 0 0 0 4px rgba(11, 106, 84, 0.08);
+  outline: none;
+}
+
+.hint {
+  color: #6b7c93;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
