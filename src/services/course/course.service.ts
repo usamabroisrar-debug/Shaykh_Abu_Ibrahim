@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured, shouldUseDatabaseReads } from "@/lib/server";
-import type { Course, CourseCategory, CourseLevel } from "@/data/courses";
+import {
+  courses as staticCourses,
+  type Course,
+  type CourseCategory,
+  type CourseLevel,
+} from "@/data/courses";
 import { normalizeSlug } from "@/utils/slug";
 
 const categoryImageMap: Record<CourseCategory, string> = {
@@ -62,6 +67,21 @@ function buildListFromContent(content: string | null | undefined, fallback: stri
     .filter((item) => item && !/^(english|urdu|arabic)\b/i.test(item));
 
   return lines.length ? lines.slice(0, 8) : fallback;
+}
+
+function sortPublicCourses(courses: Course[]) {
+  return [...courses].sort(
+    (left, right) =>
+      Number(right.featured) - Number(left.featured) ||
+      (left.order || 999) - (right.order || 999) ||
+      left.title.localeCompare(right.title)
+  );
+}
+
+function getStaticPublishedCourses() {
+  return sortPublicCourses(
+    staticCourses.filter((course) => course.status === "Published")
+  );
 }
 
 type CourseLocaleContent = {
@@ -300,19 +320,18 @@ export async function getRecentCourses(limit = 8) {
 export async function getPublicCourses(limit?: number) {
   const databaseCourses = await getDatabasePublishedCourses();
   const mappedDatabaseCourses = databaseCourses.map(toPublicCourseFromDb);
-  const merged = mappedDatabaseCourses.sort(
-      (left, right) =>
-        Number(right.featured) - Number(left.featured) ||
-        (left.order || 999) - (right.order || 999) ||
-        left.title.localeCompare(right.title)
-  );
+  const merged = mappedDatabaseCourses.length
+    ? sortPublicCourses(mappedDatabaseCourses)
+    : getStaticPublishedCourses();
 
   return typeof limit === "number" ? merged.slice(0, limit) : merged;
 }
 
 export async function getFeaturedPublicCourses(limit = 6) {
   const courses = await getPublicCourses();
-  return courses.filter((course) => course.featured).slice(0, limit);
+  const featuredCourses = courses.filter((course) => course.featured);
+
+  return (featuredCourses.length ? featuredCourses : courses).slice(0, limit);
 }
 
 export async function getPublicCourseBySlug(slug: string) {
@@ -347,11 +366,13 @@ export async function getPublicCourseBySlug(slug: string) {
         return toPublicCourseFromDb(databaseCourse);
       }
     } catch {
-      return undefined;
+      // Fall through to the initial academy content when the database is unavailable.
     }
   }
 
-  return undefined;
+  return staticCourses.find(
+    (course) => course.slug === slug && course.status === "Published"
+  );
 }
 
 export async function getAdminCourses() {

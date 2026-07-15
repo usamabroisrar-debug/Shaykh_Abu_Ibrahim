@@ -80,7 +80,7 @@ export async function BookDetailPage({ slug }: BookDetailPageProps) {
           </div>
 
           <div className={styles.panel}>
-            <strong>{book.format}</strong>
+            <strong>{resolveLocalizedInlineText(book.format, locale)}</strong>
             <span>
               {book.pages} {locale === "ur" ? "صفحات" : locale === "ar" ? "صفحة" : "pages"}
             </span>

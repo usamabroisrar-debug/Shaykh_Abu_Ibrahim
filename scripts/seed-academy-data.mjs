@@ -39,6 +39,202 @@ const prisma = new PrismaClient({ adapter });
 
 const defaultPassword = process.env.SEED_USER_PASSWORD || "Admin@123456";
 
+const blogLocaleContentBySlug = {
+  "consistent-quran-routine-at-home": {
+    title: {
+      en: "How to Build a Consistent Quran Routine at Home",
+      ur: "گھر میں مستقل قرآن معمول کیسے بنائیں",
+      ar: "كيف تبني روتيناً ثابتاً للقرآن في المنزل",
+    },
+    excerpt: {
+      en: "A practical framework for families and solo learners to create a calm, repeatable Quran study rhythm that lasts.",
+      ur: "خاندانوں اور انفرادی طلبہ کے لیے ایک عملی طریقہ جس سے پرسکون اور مستقل قرآن مطالعہ معمول بنایا جا سکے۔",
+      ar: "إطار عملي للأسر والمتعلمين الأفراد لبناء روتين قرآني هادئ ومتكرر يدوم بإذن الله.",
+    },
+    content: {
+      en: "Start with a fixed weekly plan, keep revision realistic, and stay in touch with the teacher for accountability.",
+      ur: "ہفتہ وار مقررہ منصوبہ بنائیں، دہرائی کو حقیقت پسندانہ رکھیں، اور جواب دہی کے لیے استاد سے رابطہ برقرار رکھیں۔",
+      ar: "ابدأ بخطة أسبوعية ثابتة، واجعل المراجعة واقعية، وابقَ على تواصل مع المعلم للمتابعة.",
+    },
+  },
+  "tajweed-mistakes-new-learners-can-fix": {
+    title: {
+      en: "Three Tajweed Mistakes New Learners Can Fix Quickly",
+      ur: "تجوید کی تین غلطیاں جو نئے طلبہ جلد درست کر سکتے ہیں",
+      ar: "ثلاث أخطاء في التجويد يمكن للمتعلمين الجدد تصحيحها سريعاً",
+    },
+    excerpt: {
+      en: "A teacher-guided look at common pronunciation issues and how structured correction builds confidence.",
+      ur: "عام تلفظی غلطیوں اور منظم اصلاح کے ذریعے اعتماد بڑھانے پر استاد کی رہنمائی۔",
+      ar: "نظرة تعليمية إلى أخطاء النطق الشائعة وكيف يبني التصحيح المنظم الثقة.",
+    },
+    content: {
+      en: "Focus on makharij, madd, and heavy-light letter distinction during the early Tajweed stage.",
+      ur: "تجوید کے ابتدائی مرحلے میں مخارج، مد، اور حروف کی تفخیم و ترقیق پر خاص توجہ دیں۔",
+      ar: "ركز في المرحلة الأولى على المخارج والمد والتمييز بين الحروف المفخمة والمرققة.",
+    },
+  },
+  "what-parents-should-expect-from-online-hifz": {
+    title: {
+      en: "What Parents Should Expect From an Online Hifz Program",
+      ur: "آن لائن حفظ پروگرام سے والدین کو کیا توقع رکھنی چاہیے",
+      ar: "ما الذي ينبغي أن يتوقعه الآباء من برنامج حفظ عبر الإنترنت",
+    },
+    excerpt: {
+      en: "Parents should look for structured sabaq planning, revision accountability, and transparent reporting.",
+      ur: "والدین کو منظم سبق پلاننگ، دہرائی کی پابندی، اور واضح پیش رفت رپورٹنگ دیکھنی چاہیے۔",
+      ar: "ينبغي للآباء البحث عن خطة درس منظمة ومتابعة للمراجعة وتقارير تقدم واضحة.",
+    },
+    content: {
+      en: "A serious Hifz program is measured through consistency, revision strength, and teacher-parent communication.",
+      ur: "مضبوط حفظ پروگرام کی پہچان مستقل مزاجی، دہرائی کی مضبوطی، اور استاد و والدین کے رابطے سے ہوتی ہے۔",
+      ar: "يقاس برنامج الحفظ الجاد بالاستمرار وقوة المراجعة والتواصل بين المعلم وولي الأمر.",
+    },
+  },
+};
+
+const bookLocaleContentBySlug = {
+  "foundations-of-daily-adhkar": {
+    title: {
+      en: "Foundations of Daily Adhkar",
+      ur: "روزانہ اذکار کی بنیادی رہنمائی",
+      ar: "أسس الأذكار اليومية",
+    },
+    summary: {
+      en: "A concise student companion for morning and evening adhkar with transliteration cues and reflections.",
+      ur: "صبح و شام کے اذکار کے لیے مختصر طالب علم ساتھی، جس میں تلفظی اشارے اور مختصر نصیحتیں شامل ہیں۔",
+      ar: "دليل مختصر للطالب في أذكار الصباح والمساء مع إشارات للنطق وتأملات قصيرة.",
+    },
+    featuredNote: {
+      en: "Ideal for new students and families.",
+      ur: "نئے طلبہ اور خاندانوں کے لیے بہترین۔",
+      ar: "مناسب للطلاب الجدد والأسر.",
+    },
+  },
+  "tajweed-essentials-workbook": {
+    title: {
+      en: "Tajweed Essentials Workbook",
+      ur: "تجوید ضروریات ورک بک",
+      ar: "كراسة أساسيات التجويد",
+    },
+    summary: {
+      en: "Worksheet-style drills for makharij, madd, qalqalah, and common recitation mistakes.",
+      ur: "مخارج، مد، قلقلة، اور عام قراءت کی غلطیوں کے لیے مشقی ورک شیٹس۔",
+      ar: "تدريبات عملية في المخارج والمد والقلقلة والأخطاء الشائعة في التلاوة.",
+    },
+    featuredNote: {
+      en: "Pairs with weekly Tajweed review.",
+      ur: "ہفتہ وار تجوید جائزے کے ساتھ بہترین۔",
+      ar: "مناسبة مع مراجعة التجويد الأسبوعية.",
+    },
+  },
+};
+
+const courseLocaleContentBySlug = {
+  "qaida-foundation-program": {
+    title: {
+      en: "Qaida Foundation Program",
+      ur: "قاعدہ فاؤنڈیشن پروگرام",
+      ar: "برنامج تأسيس القاعدة",
+    },
+    description: {
+      en: "A beginner course for Arabic letters, pronunciation, and smooth transition into Quran reading.",
+      ur: "عربی حروف، درست تلفظ، اور قرآن پڑھنے کی مضبوط بنیاد کے لیے ابتدائی کورس۔",
+      ar: "دورة للمبتدئين في الحروف العربية والنطق والانتقال السلس إلى قراءة القرآن.",
+    },
+    content: {
+      en: "Arabic letters\nHarakat and joining rules\nBasic reading fluency",
+      ur: "عربی حروف\nحرکات اور جوڑنے کے قواعد\nابتدائی روانی",
+      ar: "الحروف العربية\nالحركات وقواعد الوصل\nطلاقة القراءة الأساسية",
+    },
+  },
+  "nazra-quran-program": {
+    title: {
+      en: "Nazra Quran Program",
+      ur: "ناظرہ قرآن پروگرام",
+      ar: "برنامج قراءة القرآن نظراً",
+    },
+    description: {
+      en: "A guided Quran reading course for students who have completed Qaida and want fluency with correction and supervision.",
+      ur: "قاعدہ مکمل کرنے والے طلبہ کے لیے رہنمائی والا قرآن خوانی کورس، جس میں روانی، اصلاح، اور نگرانی شامل ہے۔",
+      ar: "دورة قراءة قرآنية موجهة لمن أتموا القاعدة ويريدون الطلاقة مع التصحيح والإشراف.",
+    },
+    content: {
+      en: "Daily Quran reading\nCorrection sessions\nFluency building",
+      ur: "روزانہ قرآن خوانی\nاصلاحی نشستیں\nروانی پیدا کرنا",
+      ar: "قراءة يومية للقرآن\nجلسات تصحيح\nبناء الطلاقة",
+    },
+  },
+  "tajweed-improvement-track": {
+    title: {
+      en: "Tajweed Improvement Track",
+      ur: "تجوید امپروومنٹ ٹریک",
+      ar: "مسار تحسين التجويد",
+    },
+    description: {
+      en: "A structured correction path for learners who want clearer recitation and stronger Tajweed application.",
+      ur: "ان طلبہ کے لیے منظم اصلاحی راستہ جو بہتر قراءت اور مضبوط تجویدی اطلاق چاہتے ہیں۔",
+      ar: "مسار تصحيح منظم للمتعلمين الذين يريدون تلاوة أوضح وتطبيقاً أقوى للتجويد.",
+    },
+    content: {
+      en: "Makharij drills\nMadd practice\nSurah recitation feedback",
+      ur: "مخارج کی مشق\nمد کی مشق\nسورہ قراءت فیڈبیک",
+      ar: "تدريبات المخارج\nتدريب المد\nملاحظات على تلاوة السور",
+    },
+  },
+  "hifz-support-revision-circle": {
+    title: {
+      en: "Hifz Support & Revision Circle",
+      ur: "حفظ سپورٹ اور دہرائی حلقہ",
+      ar: "حلقة دعم الحفظ والمراجعة",
+    },
+    description: {
+      en: "Support for memorization students with sabaq planning, revision discipline, and teacher accountability.",
+      ur: "حفظ کے طلبہ کے لیے سبق پلاننگ، دہرائی نظم، اور استاد کی نگرانی کے ساتھ معاونت۔",
+      ar: "دعم لطلاب الحفظ من خلال تخطيط الدرس والانضباط في المراجعة ومتابعة المعلم.",
+    },
+    content: {
+      en: "Sabaq planning\nRevision checkpoints\nParent progress guidance",
+      ur: "سبق پلاننگ\nدہرائی چیک پوائنٹس\nوالدین کے لیے پیش رفت رہنمائی",
+      ar: "تخطيط الدرس\nنقاط مراجعة\nإرشاد تقدم لأولياء الأمور",
+    },
+  },
+  "tafseer-guidance-program": {
+    title: {
+      en: "Tafseer Guidance Program",
+      ur: "تفسیر رہنمائی پروگرام",
+      ar: "برنامج إرشاد التفسير",
+    },
+    description: {
+      en: "A structured course for understanding themes, context, and practical guidance from selected Quran passages.",
+      ur: "منتخب قرآنی مقامات کے موضوعات، پس منظر، اور عملی رہنمائی کو سمجھنے کے لیے ایک منظم کورس۔",
+      ar: "دورة منظمة لفهم الموضوعات والسياق والهداية العملية من مقاطع قرآنية مختارة.",
+    },
+    content: {
+      en: "Surah themes\nContext of revelation\nPractical lessons",
+      ur: "سورہ کے موضوعات\nشان نزول اور پس منظر\nعملی اسباق",
+      ar: "موضوعات السور\nسياق النزول\nدروس عملية",
+    },
+  },
+  "dars-e-nizami-program": {
+    title: {
+      en: "Dars e Nizami Program",
+      ur: "درس نظامی پروگرام",
+      ar: "برنامج درس نظامي",
+    },
+    description: {
+      en: "A long-term classical Islamic studies track covering Arabic, fiqh, usool, and text-based learning with teacher guidance.",
+      ur: "عربی، فقہ، اصول، اور متنی تعلیم کے ساتھ کلاسیکی اسلامی علوم کے لیے طویل مدتی منظم پروگرام۔",
+      ar: "مسار طويل المدى في العلوم الإسلامية الكلاسيكية يشمل العربية والفقه والأصول والتعلم من المتون بإرشاد المعلم.",
+    },
+    content: {
+      en: "Nahw and Sarf\nFoundations of fiqh\nText reading",
+      ur: "نحو و صرف\nفقہ کی بنیادیں\nمتن خوانی",
+      ar: "النحو والصرف\nأسس الفقه\nقراءة المتون",
+    },
+  },
+};
+
 async function upsertUser({
   email,
   name,
@@ -89,26 +285,32 @@ async function upsertUser({
 }
 
 async function upsertBlog({ slug, ...data }) {
+  const localeContent = blogLocaleContentBySlug[slug] || data.localeContent;
+
   return prisma.blog.upsert({
     where: { slug },
-    update: data,
-    create: { slug, ...data },
+    update: { ...data, localeContent },
+    create: { slug, ...data, localeContent },
   });
 }
 
 async function upsertBook({ slug, ...data }) {
+  const localeContent = bookLocaleContentBySlug[slug] || data.localeContent;
+
   return prisma.libraryBook.upsert({
     where: { slug },
-    update: data,
-    create: { slug, ...data },
+    update: { ...data, localeContent },
+    create: { slug, ...data, localeContent },
   });
 }
 
 async function upsertCourse({ slug, ...data }) {
+  const localeContent = courseLocaleContentBySlug[slug] || data.localeContent;
+
   return prisma.course.upsert({
     where: { slug },
-    update: data,
-    create: { slug, ...data },
+    update: { ...data, localeContent },
+    create: { slug, ...data, localeContent },
   });
 }
 

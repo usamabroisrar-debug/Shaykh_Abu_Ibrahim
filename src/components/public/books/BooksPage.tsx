@@ -52,7 +52,7 @@ export async function BooksPage() {
               <h2>{resolveLocalizedInlineText(book.title, locale)}</h2>
               <p>{resolveLocalizedRichText(book.summary, locale)}</p>
               <div className={styles.meta}>
-                <span>{book.format}</span>
+                <span>{resolveLocalizedInlineText(book.format, locale)}</span>
                 <span>
                   {book.pages} {locale === "ur" ? "صفحات" : locale === "ar" ? "صفحة" : "pages"}
                 </span>

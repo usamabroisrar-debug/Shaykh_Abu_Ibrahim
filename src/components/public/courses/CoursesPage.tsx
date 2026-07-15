@@ -9,6 +9,48 @@ import { getPublicCourses } from "@/services/course/course.service";
 import { getCourseImagePath } from "@/utils/course-image";
 import styles from "./CoursesPage.module.css";
 
+const courseCategoryLabels: Record<string, Partial<Record<"en" | "ur" | "ar", string>>> = {
+  Qaida: { ur: "قاعدہ", ar: "القاعدة" },
+  Nazra: { ur: "ناظرہ", ar: "النظرة" },
+  Hifz: { ur: "حفظ", ar: "الحفظ" },
+  Tajweed: { ur: "تجوید", ar: "التجويد" },
+  Tarjuma: { ur: "ترجمہ", ar: "الترجمة" },
+  Tafseer: { ur: "تفسیر", ar: "التفسير" },
+  Hadith: { ur: "حدیث", ar: "الحديث" },
+  Fiqh: { ur: "فقہ", ar: "الفقه" },
+  Arabic: { ur: "عربی", ar: "العربية" },
+  Kids: { ur: "بچوں کے لیے", ar: "للأطفال" },
+};
+
+const courseLevelLabels: Record<string, Partial<Record<"en" | "ur" | "ar", string>>> = {
+  Beginner: { ur: "ابتدائی", ar: "مبتدئ" },
+  Intermediate: { ur: "درمیانی", ar: "متوسط" },
+  Advanced: { ur: "اعلیٰ", ar: "متقدم" },
+  "All Levels": { ur: "تمام سطحیں", ar: "كل المستويات" },
+};
+
+function isUnavailableCopy(value: string) {
+  return (
+    value.includes("Content is not available") ||
+    value.includes("دستیاب نہیں") ||
+    value.includes("غير متاح")
+  );
+}
+
+function localizedInline(value: string, locale: "en" | "ur" | "ar") {
+  const resolved = resolveLocalizedInlineText(value, locale).trim();
+  return resolved && !isUnavailableCopy(resolved)
+    ? resolved
+    : resolveLocalizedInlineText(value, "en").trim() || value;
+}
+
+function localizedRich(value: string, locale: "en" | "ur" | "ar") {
+  const resolved = resolveLocalizedRichText(value, locale).trim();
+  return resolved && !isUnavailableCopy(resolved)
+    ? resolved
+    : resolveLocalizedRichText(value, "en").trim() || value;
+}
+
 export async function CoursesPage() {
   const locale = getLocaleFromCookies(await cookies());
   const courses = await getPublicCourses();
@@ -56,7 +98,7 @@ export async function CoursesPage() {
                 <div className={styles.imageWrap}>
                   <Image
                     src={getCourseImagePath(course.image)}
-                    alt={resolveLocalizedInlineText(course.title, locale)}
+                    alt={localizedInline(course.title, locale)}
                     width={860}
                     height={520}
                     className={styles.image}
@@ -64,15 +106,17 @@ export async function CoursesPage() {
                 </div>
                 <div className={styles.topRow}>
                   <Badge variant="green">
-                    {resolveLocalizedInlineText(course.category, locale) || course.category}
+                    {courseCategoryLabels[course.category]?.[locale] ||
+                      localizedInline(course.category, locale)}
                   </Badge>
                   <span className={styles.level}>
-                    {resolveLocalizedInlineText(course.level, locale) || course.level}
+                    {courseLevelLabels[course.level]?.[locale] ||
+                      localizedInline(course.level, locale)}
                   </span>
                 </div>
-                <h2>{resolveLocalizedInlineText(course.title, locale)}</h2>
+                <h2>{localizedInline(course.title, locale)}</h2>
                 <p className={styles.description}>
-                  {resolveLocalizedRichText(course.rawDescription || course.description, locale)}
+                  {localizedRich(course.rawDescription || course.description, locale)}
                 </p>
                 <div className={styles.meta}>
                   <span>{course.duration}</span>

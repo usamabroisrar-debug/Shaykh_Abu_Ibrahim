@@ -51,9 +51,10 @@ const defaultSiteSettings: SiteSettings = {
   brandName: siteConfig.name,
   subtitle:
     "English\nIslamic Learning Platform\n\nUrdu\nاسلامی تعلیمی پلیٹ فارم\n\nArabic\nمنصة تعليمية إسلامية",
-  description: siteConfig.description,
+  description:
+    "English\nJoin Shaykh Abu Ibrahim Islamic Academy for Quran, Tajweed, Tafseer, Hadith, Fiqh, and online Islamic classes for children, adults, and families worldwide.\n\nUrdu\nشیخ ابو ابراہیم اسلامی اکیڈمی میں قرآن، تجوید، تفسیر، حدیث، فقہ، اور بچوں، بڑوں، اور خاندانوں کے لیے آن لائن اسلامی کلاسز میں شامل ہوں۔\n\nArabic\nانضم إلى أكاديمية شيخ أبو إبراهيم الإسلامية لتعلم القرآن والتجويد والتفسير والحديث والفقه والدروس الإسلامية عبر الإنترنت للأطفال والكبار والأسر حول العالم.",
   footerText:
-    "English\nQuran, Hadith, Fiqh, Tafseer, and guided Islamic learning in a more refined online experience for students and families.\n\nUrdu\nقرآن، حدیث، فقہ، تفسیر، اور طلبہ و خاندانوں کے لیے بہتر آن لائن اسلامی رہنمائی۔",
+    "English\nQuran, Hadith, Fiqh, Tafseer, and guided Islamic learning in a more refined online experience for students and families.\n\nUrdu\nقرآن، حدیث، فقہ، تفسیر، اور طلبہ و خاندانوں کے لیے بہتر آن لائن اسلامی رہنمائی۔\n\nArabic\nتعلم القرآن والحديث والفقه والتفسير بإرشاد إسلامي في تجربة تعليمية إلكترونية أكثر تنظيماً للطلاب والأسر.",
   logoSrc: "/images/logo-transparent.webp",
   socials: {
     youtube: siteConfig.socials.youtube,

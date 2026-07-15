@@ -57,7 +57,7 @@ export async function BooksSection() {
               <h3>{resolveLocalizedInlineText(book.title, locale)}</h3>
               <p>{resolveLocalizedRichText(book.summary, locale)}</p>
               <div className={styles.meta}>
-                <strong>{book.format}</strong>
+                <strong>{resolveLocalizedInlineText(book.format, locale)}</strong>
                 <span>{book.pages} {content.pages}</span>
               </div>
               <small>{resolveLocalizedRichText(book.featuredNote, locale)}</small>
