@@ -1,14 +1,18 @@
 .button {
   position: fixed;
   right: 20px;
+  left: auto;
   bottom: 20px;
   z-index: 140;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  display: grid;
+  place-items: center;
+  direction: ltr;
 }
 
 .tooltip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
   min-height: 40px;
   display: inline-flex;
   align-items: center;
@@ -20,9 +24,10 @@
   font-weight: 800;
   box-shadow: var(--shadow-md);
   opacity: 0;
-  transform: translateX(10px);
+  transform: translate(10px, -50%);
   transition: var(--transition-fast);
   pointer-events: none;
+  white-space: nowrap;
 }
 
 .iconWrap {
@@ -39,7 +44,7 @@
 
 .button:hover .tooltip {
   opacity: 1;
-  transform: translateX(0);
+  transform: translate(0, -50%);
 }
 
 .button:hover .iconWrap {
@@ -49,6 +54,7 @@
 @media (max-width: 640px) {
   .button {
     right: 14px;
+    left: auto;
     bottom: 14px;
   }
 

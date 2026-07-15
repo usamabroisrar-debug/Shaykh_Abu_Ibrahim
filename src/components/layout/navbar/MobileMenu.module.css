@@ -43,6 +43,10 @@
   transform: translateX(-105%);
 }
 
+:global(html[dir="rtl"]) .open .drawer {
+  transform: translateX(0);
+}
+
 .top {
   display: flex;
   align-items: center;
