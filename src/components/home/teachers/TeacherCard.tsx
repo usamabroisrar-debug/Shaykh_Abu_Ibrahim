@@ -1,10 +1,10 @@
 import { BookOpenText, Languages, Users } from "lucide-react";
-import type { Teacher } from "@/data/teachers";
 import type { SiteLocale } from "@/lib/locale";
+import type { PublicTeacher } from "@/services/teacher/teacher.service";
 import styles from "./TeacherCard.module.css";
 
 type TeacherCardProps = {
-  teacher: Teacher;
+  teacher: PublicTeacher;
   locale: SiteLocale;
 };
 

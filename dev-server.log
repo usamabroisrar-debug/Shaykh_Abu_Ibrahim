@@ -1,34 +1,15 @@
 
 > shaykh-abu-ibrahim@0.1.0 dev
-> next dev -p 3001
+> next dev -p 3000
 
-▲ Next.js 16.2.10 (Turbopack)
-- Local:         http://localhost:3001
-- Network:       http://192.168.18.16:3001
-- Environments: .env
-✓ Ready in 2.2s
-Creating turbopack project { dir: 'D:\\Personal Projects\\Shaykh_Abu_Ibrahim', testMode: true }
-
-○ Compiling /login ...
- GET /login 200 in 6.4s (next.js: 5.6s, application-code: 772ms)
- GET /admin 307 in 3.6s (next.js: 2.6s, application-code: 968ms)
- GET /login 200 in 275ms (next.js: 28ms, application-code: 247ms)
-(node:17212) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
-In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
-
-To prepare for this change:
-- If you want the current behavior, explicitly use 'sslmode=verify-full'
-- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
-
-See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
-(Use `node --trace-warnings ...` to show where the warning was created)
- GET /api/auth/session 200 in 3.6s (next.js: 1581ms, application-code: 1970ms)
- GET /api/auth/providers 200 in 21ms (next.js: 6ms, application-code: 15ms)
- GET /api/auth/csrf 200 in 19ms (next.js: 7ms, application-code: 12ms)
- POST /api/auth/callback/credentials 200 in 541ms (next.js: 6ms, application-code: 535ms)
- GET /api/auth/session 200 in 187ms (next.js: 5ms, application-code: 182ms)
-[browser] Failed to fetch RSC payload for http://localhost:3000/student. Falling back to browser navigation. TypeError: Failed to fetch
-    at createFetch (file://D:/Personal Projects/Shaykh_Abu_Ibrahim/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:8207:21)
-    at async fetchServerResponse (file://D:/Personal Projects/Shaykh_Abu_Ibrahim/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:8051:21)
-    at async fetchMissingDynamicData (file://D:/Personal Projects/Shaykh_Abu_Ibrahim/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:9464:24) (file://D:/Personal Projects/Shaykh_Abu_Ibrahim/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:8128:21)
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
 [?25h

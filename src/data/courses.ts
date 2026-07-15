@@ -34,6 +34,8 @@ export type Course = {
 
   shortDescription: string;
   description: string;
+  rawDescription?: string;
+  rawContent?: string;
 
   image: string;
   banner: string;
@@ -745,6 +747,90 @@ export const courses: Course[] = [
         "Islamic Rulings",
         "Prayer",
         "Taharah",
+      ],
+    },
+
+    createdAt: "2026-01-01",
+    updatedAt: "2026-01-01",
+  },
+  {
+    id: "9",
+    title: "Dars e Nizami",
+    slug: "dars-e-nizami",
+
+    shortDescription:
+      "A structured classical Islamic studies pathway covering foundational Arabic and traditional texts.",
+
+    description:
+      "This Dars e Nizami course is designed for students seeking a structured route into classical Islamic learning through Arabic grammar, fiqh, usool, tafseer foundations, and guided text-based study.",
+
+    image: "/images/courses/fiqh.webp",
+    banner: "/images/courses/fiqh-banner.webp",
+    thumbnail: "/images/courses/fiqh-thumb.webp",
+
+    category: "Fiqh",
+    level: "Advanced",
+    status: "Published",
+
+    duration: "2 Years",
+    language: "English • Urdu",
+
+    students: 95,
+    lessons: 140,
+    rating: 4.9,
+    reviews: 41,
+
+    price: 0,
+    discountPrice: 0,
+
+    certificate: true,
+    featured: true,
+    isPopular: false,
+    isTrending: true,
+
+    order: 9,
+
+    tags: ["Dars e Nizami", "Islamic Studies", "Arabic", "Fiqh", "Tafseer"],
+
+    teacher: {
+      name: "Shaykh Abu Ibrahim",
+      slug: "shaykh-abu-ibrahim",
+      image: "/images/teachers/abu-ibrahim.webp",
+      designation: "Dars e Nizami Instructor",
+    },
+
+    curriculum: [
+      "Arabic Nahw and Sarf",
+      "Foundations of Fiqh",
+      "Usool al-Fiqh introduction",
+      "Classical text reading",
+      "Tafseer foundations",
+      "Hadith study preparation",
+    ],
+
+    requirements: [
+      "Comfortable Quran reading ability",
+      "Serious interest in Islamic studies",
+      "Regular study commitment",
+      "Notebook for text-based learning",
+    ],
+
+    outcomes: [
+      "Build a foundation in classical Islamic sciences",
+      "Study guided Arabic and fiqh texts with structure",
+      "Prepare for deeper tafseer and hadith learning",
+      "Follow a long-term traditional learning pathway",
+    ],
+
+    seo: {
+      title: "Online Dars e Nizami Course",
+      description:
+        "Study Dars e Nizami online with structured Arabic, fiqh, classical text reading, and foundational Islamic sciences.",
+      keywords: [
+        "Dars e Nizami",
+        "Islamic Studies",
+        "Arabic Grammar",
+        "Fiqh Course",
       ],
     },
 

@@ -3,6 +3,7 @@
   top: 0;
   z-index: var(--z-navbar);
   width: 100%;
+  font-family: var(--body-font);
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(18px);
@@ -16,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   padding: 0;
 }
 
@@ -48,6 +49,7 @@
 
 .logoTitle {
   display: block;
+  font-family: var(--heading-font);
   font-size: 1.18rem;
   font-weight: 900;
   color: #064e3b;
@@ -56,9 +58,38 @@
 
 .logoText {
   margin: 4px 0 0;
+  font-family: var(--body-font);
   color: #64748b;
   font-size: 0.78rem;
   font-weight: 500;
+}
+
+:global(body[data-locale="ur"]) .logoTitle {
+  font-family: var(--urdu-font);
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+:global(body[data-locale="ur"]) .logoText {
+  font-family: var(--urdu-font);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+:global(body[data-locale="ur"]) .loginButton,
+:global(body[data-locale="ur"]) .admissionButton {
+  font-family: var(--urdu-font);
+  line-height: 1.35;
+}
+
+:global(body[data-locale="ar"]) .logoTitle {
+  font-size: 1.08rem;
+  line-height: 1.2;
+}
+
+:global(body[data-locale="ar"]) .logoText {
+  font-size: 0.74rem;
+  line-height: 1.35;
 }
 
 .actions {
@@ -66,6 +97,8 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  min-width: 0;
+  margin-inline-start: auto;
 }
 
 .menuButton {
@@ -94,6 +127,7 @@
   border: 1px solid rgba(15, 23, 42, 0.1);
   background: #ffffff;
   color: #064e3b;
+  font-family: var(--body-font);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -114,6 +148,7 @@
   border-radius: 15px;
   background: linear-gradient(135deg, #facc15, #d4af37);
   color: #111827;
+  font-family: var(--body-font);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -136,6 +171,16 @@
 @media (max-width: 1120px) {
   .loginButton {
     display: none;
+  }
+}
+
+@media (max-width: 1320px) {
+  .container {
+    gap: 10px;
+  }
+
+  .logoWrap {
+    padding-inline-end: 8px;
   }
 }
 
@@ -169,5 +214,28 @@
   .logo {
     width: 48px;
     height: 48px;
+  }
+
+  :global(body[data-locale="ur"]) .logoTitle {
+    font-size: 1.06rem;
+  }
+
+:global(body[data-locale="ur"]) .logoText {
+    font-size: 0.76rem;
+  }
+
+  :global(body[data-locale="ur"]) .logoTitle,
+  :global(body[data-locale="ur"]) .logoText,
+  :global(body[data-locale="ur"]) .loginButton,
+  :global(body[data-locale="ur"]) .admissionButton {
+    font-family: var(--urdu-font);
+  }
+
+  :global(body[data-locale="ar"]) .logoTitle {
+    font-size: 0.92rem;
+  }
+
+  :global(body[data-locale="ar"]) .logoText {
+    font-size: 0.66rem;
   }
 }

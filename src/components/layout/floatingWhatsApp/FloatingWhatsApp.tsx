@@ -1,12 +1,15 @@
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
 import { SocialIcon } from "@/components/shared/SocialIcon";
 import styles from "./FloatingWhatsApp.module.css";
 
-export function FloatingWhatsApp() {
+type FloatingWhatsAppProps = {
+  href?: string;
+};
+
+export function FloatingWhatsApp({ href = "#" }: FloatingWhatsAppProps) {
   return (
     <Link
-      href={siteConfig.socials.whatsappChat}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Open WhatsApp"

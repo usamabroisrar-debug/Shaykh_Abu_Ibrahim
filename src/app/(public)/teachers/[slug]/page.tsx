@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { TeacherDetailPage } from "@/components/public/teachers/TeacherDetailPage";
-import { getTeacherBySlug, teachers } from "@/data/teachers";
 import { buildMetadata } from "@/lib/metadata";
+import { getPublicTeacherBySlug, getPublicTeachers } from "@/services/teacher/teacher.service";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const teachers = await getPublicTeachers();
   return teachers.map((teacher) => ({ slug: teacher.slug }));
 }
 
@@ -11,7 +12,7 @@ export async function generateMetadata(
   props: PageProps<"/teachers/[slug]">
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const teacher = getTeacherBySlug(slug);
+  const teacher = await getPublicTeacherBySlug(slug);
 
   if (!teacher) {
     return buildMetadata({

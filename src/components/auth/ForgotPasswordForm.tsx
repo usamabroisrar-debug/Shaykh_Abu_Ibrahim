@@ -3,9 +3,43 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/shared";
+import type { SiteLocale } from "@/lib/locale";
 import styles from "./AuthForms.module.css";
 
-export function ForgotPasswordForm() {
+type ForgotPasswordFormProps = {
+  locale: SiteLocale;
+};
+
+export function ForgotPasswordForm({ locale }: ForgotPasswordFormProps) {
+  const copy = {
+    en: {
+      failed: "Could not start reset flow.",
+      networkError: "Could not start reset flow. Please check your connection.",
+      email: "Email address",
+      openReset: "Open reset page",
+      preparing: "Preparing reset...",
+      submit: "Generate Reset Link",
+      back: "Back to login",
+    },
+    ur: {
+      failed: "ری سیٹ عمل شروع نہیں ہو سکا۔",
+      networkError: "ری سیٹ عمل شروع نہیں ہو سکا۔ براہ کرم کنکشن چیک کریں۔",
+      email: "ای میل ایڈریس",
+      openReset: "ری سیٹ صفحہ کھولیں",
+      preparing: "ری سیٹ تیار ہو رہا ہے...",
+      submit: "ری سیٹ لنک بنائیں",
+      back: "لاگ اِن پر واپس جائیں",
+    },
+    ar: {
+      failed: "تعذر بدء مسار إعادة التعيين.",
+      networkError: "تعذر بدء مسار إعادة التعيين. يرجى التحقق من الاتصال.",
+      email: "البريد الإلكتروني",
+      openReset: "افتح صفحة إعادة التعيين",
+      preparing: "جارٍ تجهيز إعادة التعيين...",
+      submit: "إنشاء رابط إعادة التعيين",
+      back: "العودة إلى تسجيل الدخول",
+    },
+  }[locale];
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -31,7 +65,7 @@ export function ForgotPasswordForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Could not start reset flow.");
+        setError(data.message || copy.failed);
         return;
       }
 
@@ -40,7 +74,7 @@ export function ForgotPasswordForm() {
         setResetUrl(data.resetUrl);
       }
     } catch {
-      setError("Reset flow start nahi ho saka. Network connection check karein.");
+      setError(copy.networkError);
     } finally {
       setIsLoading(false);
     }
@@ -49,7 +83,7 @@ export function ForgotPasswordForm() {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
-        <label htmlFor="forgot-email">Email address</label>
+        <label htmlFor="forgot-email">{copy.email}</label>
         <input
           id="forgot-email"
           type="email"
@@ -65,7 +99,7 @@ export function ForgotPasswordForm() {
           {message}{" "}
           {resetUrl ? (
             <Link className={styles.inlineLink} href={resetUrl}>
-              Open reset page
+              {copy.openReset}
             </Link>
           ) : null}
         </div>
@@ -73,11 +107,11 @@ export function ForgotPasswordForm() {
       {error ? <div className={styles.error}>{error}</div> : null}
 
       <Button type="submit" className={styles.submit} disabled={isLoading}>
-        {isLoading ? "Preparing reset..." : "Generate Reset Link"}
+        {isLoading ? copy.preparing : copy.submit}
       </Button>
 
       <div className={styles.footer}>
-        <Link href="/login">Back to login</Link>
+        <Link href="/login">{copy.back}</Link>
       </div>
     </form>
   );

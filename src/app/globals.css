@@ -1,3 +1,54 @@
+:root {
+  --font-poppins: "Poppins", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src:
+    local("Poppins"),
+    local("Poppins Regular");
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Jameel Noori Nastaleeq Regular";
+  src:
+    local("Jameel Noori Nastaleeq Regular"),
+    local("Jameel Noori Nastaleeq");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nafees";
+  src:
+    local("Nafees"),
+    local("Nafees Regular"),
+    local("Nafees Nastaleeq");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Amiri Quran";
+  src: url("/fonts/AmiriQuran-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src: url("/fonts/NotoSansArabic-VariableFont_wdth-wght.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 /* ==========================
    DESIGN TOKENS
 ========================== */
@@ -77,11 +128,21 @@
   --z-overlay: 300;
 
   /* FONTS */
-  --heading-font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --body-font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --heading-font: var(--font-poppins), "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --body-font: var(--font-poppins), "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --mono-font: Consolas, "Courier New", monospace;
-  --arabic-font: Georgia, serif;
-  --urdu-font: Georgia, serif;
+  --arabic-font:
+    "Amiri Quran",
+    "Noto Sans Arabic",
+    "Noto Naskh Arabic",
+    "Scheherazade New",
+    serif;
+  --font-arabic: var(--arabic-font);
+  --urdu-font:
+    "Jameel Noori Nastaleeq Regular",
+    "Noto Nastaliq Urdu",
+    "Noto Naskh Arabic",
+    serif;
 }
 
 /* ==========================
@@ -115,15 +176,87 @@ body {
 }
 
 body[data-locale="ur"] {
+  --heading-font: var(--urdu-font);
+  --body-font: var(--urdu-font);
   font-family: var(--urdu-font);
+  line-height: 1.9;
 }
 
 body[data-locale="ar"] {
+  --heading-font: var(--arabic-font);
+  --body-font: var(--arabic-font);
   font-family: var(--arabic-font);
+  font-weight: 500;
+  line-height: 1.95;
+  font-feature-settings: "rlig" 1, "calt" 1, "ccmp" 1, "kern" 1;
+  letter-spacing: 0;
+}
+
+body[data-locale="en"],
+body[data-locale="en"] main,
+body[data-locale="en"] section,
+body[data-locale="en"] article,
+body[data-locale="en"] aside,
+body[data-locale="en"] nav,
+body[data-locale="en"] div,
+body[data-locale="en"] span,
+body[data-locale="en"] p,
+body[data-locale="en"] a,
+body[data-locale="en"] li,
+body[data-locale="en"] label,
+body[data-locale="en"] small,
+body[data-locale="en"] strong,
+body[data-locale="en"] button,
+body[data-locale="en"] input,
+body[data-locale="en"] textarea,
+body[data-locale="en"] select {
+  font-family: var(--body-font);
 }
 
 html[dir="rtl"] body {
   text-align: right;
+}
+
+body[data-locale="ur"] h1,
+body[data-locale="ur"] h2,
+body[data-locale="ur"] h3,
+body[data-locale="ur"] h4,
+body[data-locale="ur"] h5,
+body[data-locale="ur"] h6 {
+  font-family: var(--urdu-font);
+  line-height: 1.5;
+}
+
+body[data-locale="ar"] h1,
+body[data-locale="ar"] h2,
+body[data-locale="ar"] h3,
+body[data-locale="ar"] h4,
+body[data-locale="ar"] h5,
+body[data-locale="ar"] h6 {
+  font-family: var(--arabic-font);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+body[data-locale="ar"] main,
+body[data-locale="ar"] section,
+body[data-locale="ar"] article,
+body[data-locale="ar"] aside,
+body[data-locale="ar"] nav,
+body[data-locale="ar"] div,
+body[data-locale="ar"] span,
+body[data-locale="ar"] p,
+body[data-locale="ar"] a,
+body[data-locale="ar"] li,
+body[data-locale="ar"] label,
+body[data-locale="ar"] small,
+body[data-locale="ar"] strong,
+body[data-locale="ar"] button,
+body[data-locale="ar"] input,
+body[data-locale="ar"] textarea,
+body[data-locale="ar"] select {
+  font-family: var(--body-font);
 }
 
 body,
@@ -195,7 +328,10 @@ strong {
 
 .arabic {
   font-family: var(--arabic-font);
-  line-height: 2;
+  font-weight: 500;
+  line-height: 2.05;
+  font-feature-settings: "rlig" 1, "calt" 1, "ccmp" 1, "kern" 1;
+  letter-spacing: 0;
 }
 
 /* ==========================

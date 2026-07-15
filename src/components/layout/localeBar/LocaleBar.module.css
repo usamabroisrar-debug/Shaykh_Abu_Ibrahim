@@ -2,6 +2,7 @@
   background:
     linear-gradient(135deg, #062b24 0%, #064e3b 55%, #0f172a 100%);
   color: #f8fafc;
+  font-family: var(--body-font);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -19,9 +20,21 @@
 .bismillah {
   justify-self: center;
   text-align: center;
+  font-family: var(--body-font);
   font-size: 0.92rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.86);
+}
+
+:global(body[data-locale="ur"]) .bismillah {
+  font-family: var(--urdu-font);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+:global(body[data-locale="ar"]) .bismillah {
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 
 .dateBlock {
@@ -40,6 +53,15 @@
 .dateBlock span {
   color: rgba(255, 255, 255, 0.82);
   font-size: 0.84rem;
+}
+
+:global(body[data-locale="ur"]) .dateBlock span {
+  font-family: var(--urdu-font);
+  font-size: 0.88rem;
+}
+
+:global(body[data-locale="ar"]) .dateBlock span {
+  font-size: 0.78rem;
 }
 
 .languageDropdown {
@@ -68,10 +90,20 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.06);
   color: #f8fafc;
+  font-family: var(--body-font);
   font-size: 0.82rem;
   font-weight: 700;
   transition: var(--transition-fast);
   appearance: none;
+}
+
+:global(body[data-locale="ur"]) .languageSelect {
+  font-family: var(--urdu-font);
+  font-size: 0.88rem;
+}
+
+:global(body[data-locale="ar"]) .languageSelect {
+  font-size: 0.78rem;
 }
 
 .languageSelect:hover {
@@ -100,63 +132,156 @@
 
 @media (max-width: 900px) {
   .container {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding: 10px 0;
+    min-height: 46px;
+    grid-template-columns: minmax(0, 1fr) auto minmax(92px, auto);
+    gap: 10px;
+    padding: 6px 0;
   }
 
   .dateBlock,
   .bismillah,
   .languageDropdown {
-    justify-self: start;
-    text-align: start;
-  }
-
-  .bismillah {
-    font-size: 0.84rem;
-    line-height: 1.5;
-  }
-
-  .dateBlock span {
-    font-size: 0.78rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .container {
-    min-height: auto;
-    gap: 6px;
-    padding: 8px 0;
-  }
-
-  .dateBlock strong {
-    font-size: 0.62rem;
-  }
-
-  .dateBlock span {
-    font-size: 0.72rem;
+    min-width: 0;
   }
 
   .bismillah {
     justify-self: center;
     text-align: center;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(body[data-locale="ur"]) .bismillah {
+    font-size: 0.9rem;
+  }
+
+  :global(body[data-locale="ar"]) .bismillah {
+    font-size: 0.76rem;
+  }
+
+  .dateBlock span {
     font-size: 0.78rem;
-    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(body[data-locale="ur"]) .dateBlock span {
+    font-size: 0.82rem;
+  }
+
+  :global(body[data-locale="ar"]) .dateBlock span {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    min-height: 58px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "bismillah bismillah"
+      "date language";
+    gap: 8px;
+    padding: 6px 0;
+  }
+
+  .dateBlock {
+    grid-area: date;
+  }
+
+  .bismillah {
+    grid-area: bismillah;
   }
 
   .languageDropdown {
-    width: 100%;
-    justify-self: stretch;
+    grid-area: language;
+  }
+
+  .dateBlock strong {
+    font-size: 0.56rem;
+  }
+
+  .dateBlock span {
+    font-size: 0.66rem;
+  }
+
+  .bismillah {
+    justify-self: center;
+    text-align: center;
+    font-size: 0.76rem;
+    max-width: 100%;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(body[data-locale="ur"]) .bismillah {
+    font-size: 0.82rem;
+  }
+
+  :global(body[data-locale="ar"]) .bismillah {
+    font-size: 0.7rem;
+  }
+
+  .languageDropdown {
+    width: auto;
+    min-width: 86px;
+    justify-self: end;
+    gap: 2px;
   }
 
   .languageLabel {
-    font-size: 0.64rem;
+    font-size: 0;
+    line-height: 0;
   }
 
   .languageSelect {
-    width: 100%;
+    width: 92px;
     min-width: 0;
-    min-height: 34px;
-    font-size: 0.78rem;
+    min-height: 32px;
+    padding: 0 28px 0 10px;
+    font-size: 0.7rem;
+  }
+
+  :global(body[data-locale="ur"]) .languageSelect {
+    font-size: 0.72rem;
+  }
+
+  :global(body[data-locale="ar"]) .languageSelect {
+    font-size: 0.66rem;
+  }
+
+  .selectIcon {
+    inset-inline-end: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .container {
+    min-height: 56px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .bismillah {
+    display: block;
+    width: 100%;
+    font-size: 0.68rem;
+  }
+
+  .dateBlock span {
+    max-width: 190px;
+  }
+
+  :global(body[data-locale="ur"]) .bismillah {
+    font-size: 0.76rem;
+  }
+
+  :global(body[data-locale="ar"]) .bismillah {
+    font-size: 0.62rem;
   }
 }

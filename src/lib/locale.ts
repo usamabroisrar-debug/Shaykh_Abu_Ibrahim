@@ -114,7 +114,7 @@ const localeContent: Record<SiteLocale, LocaleContent> = {
       whatsappChat: "WhatsApp Chat",
     },
     search: {
-      placeholder: "Search website...",
+      placeholder: "Search...",
       ariaLabel: "Search website",
       clear: "Clear search",
       emptyTitle: "Search across the full website",
@@ -197,7 +197,7 @@ const localeContent: Record<SiteLocale, LocaleContent> = {
       whatsappChat: "واٹس ایپ چیٹ",
     },
     search: {
-      placeholder: "ویب سائٹ میں تلاش کریں...",
+      placeholder: "تلاش کریں...",
       ariaLabel: "ویب سائٹ تلاش",
       clear: "تلاش صاف کریں",
       emptyTitle: "پوری ویب سائٹ میں تلاش کریں",
@@ -280,7 +280,7 @@ const localeContent: Record<SiteLocale, LocaleContent> = {
       whatsappChat: "محادثة واتساب",
     },
     search: {
-      placeholder: "ابحث في الموقع...",
+      placeholder: "ابحث...",
       ariaLabel: "البحث في الموقع",
       clear: "مسح البحث",
       emptyTitle: "ابحث في جميع أجزاء الموقع",

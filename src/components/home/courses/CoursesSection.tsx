@@ -61,7 +61,7 @@ export async function CoursesSection() {
 
         <div className={styles.grid}>
           {featuredCourses.slice(0, 6).map((course) => (
-            <CourseCard key={course.id} course={course} />
+            <CourseCard key={course.id} course={course} locale={locale} />
           ))}
         </div>
       </Container>

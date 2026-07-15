@@ -1,12 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { isDatabaseConfigured } from "@/lib/server";
-import {
-  courses as staticCourses,
-  getCourseBySlug as getStaticCourseBySlug,
-  type Course,
-  type CourseCategory,
-  type CourseLevel,
-} from "@/data/courses";
+import { isDatabaseConfigured, shouldUseDatabaseReads } from "@/lib/server";
+import type { Course, CourseCategory, CourseLevel } from "@/data/courses";
 import { normalizeSlug } from "@/utils/slug";
 
 const categoryImageMap: Record<CourseCategory, string> = {
@@ -22,9 +16,24 @@ const categoryImageMap: Record<CourseCategory, string> = {
   Kids: "/images/courses/qaida.svg",
 };
 
+function normalizeInstructorName(name?: string | null) {
+  const value = name?.trim();
+
+  if (!value) {
+    return "Academy Faculty";
+  }
+
+  if (/shayk?h?\s+abdul\s+hadi/i.test(value)) {
+    return "Shaykh Abu Ibrahim";
+  }
+
+  return value;
+}
+
 function inferCourseCategory(title: string): CourseCategory {
   const value = title.toLowerCase();
 
+  if (value.includes("dars") || value.includes("nizami")) return "Fiqh";
   if (value.includes("nazra")) return "Nazra";
   if (value.includes("hifz")) return "Hifz";
   if (value.includes("tajweed")) return "Tajweed";
@@ -50,9 +59,41 @@ function buildListFromContent(content: string | null | undefined, fallback: stri
   const lines = (content || "")
     .split(/\r?\n/)
     .map((item) => item.replace(/^[-*]\s*/, "").trim())
-    .filter(Boolean);
+    .filter((item) => item && !/^(english|urdu|arabic)\b/i.test(item));
 
   return lines.length ? lines.slice(0, 8) : fallback;
+}
+
+type CourseLocaleContent = {
+  title?: Partial<Record<"en" | "ur" | "ar", string>>;
+  description?: Partial<Record<"en" | "ur" | "ar", string>>;
+  content?: Partial<Record<"en" | "ur" | "ar", string>>;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function normalizeLocaleContent(value: unknown): CourseLocaleContent {
+  return isRecord(value) ? (value as CourseLocaleContent) : {};
+}
+
+function stringifyLocaleField(
+  value: Partial<Record<"en" | "ur" | "ar", string>> | undefined,
+  fallback: string | null | undefined,
+  headings: Record<"en" | "ur" | "ar", string>
+) {
+  const parts: string[] = [];
+
+  for (const locale of ["en", "ur", "ar"] as const) {
+    const content = value?.[locale]?.trim();
+
+    if (content) {
+      parts.push(`${headings[locale]}\n${content}`);
+    }
+  }
+
+  return parts.length ? parts.join("\n\n") : fallback?.trim() || "";
 }
 
 function toPublicCourseFromDb(course: {
@@ -61,6 +102,7 @@ function toPublicCourseFromDb(course: {
   slug: string;
   description: string | null;
   content: string | null;
+  localeContent: unknown;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   level: string | null;
   duration: string | null;
@@ -72,18 +114,39 @@ function toPublicCourseFromDb(course: {
   lessons: { id: string }[];
   enrollments: { id: string }[];
 }): Course {
+  const localeContent = normalizeLocaleContent(course.localeContent);
+  const localizedTitle = stringifyLocaleField(localeContent.title, course.title, {
+    en: "English",
+    ur: "Urdu",
+    ar: "Arabic",
+  });
+  const localizedDescription = stringifyLocaleField(
+    localeContent.description,
+    course.description,
+    {
+      en: "English Description",
+      ur: "Urdu Description",
+      ar: "Arabic Description",
+    }
+  );
+  const localizedContent = stringifyLocaleField(localeContent.content, course.content, {
+    en: "English Curriculum / Notes",
+    ur: "Urdu Curriculum / Notes",
+    ar: "Arabic Curriculum / Notes",
+  });
   const category = inferCourseCategory(course.title);
   const image = categoryImageMap[category];
   const description =
-    course.description?.trim() ||
+    localizedDescription ||
     `${course.title} built for students who want structured Islamic learning with clear progress.`;
 
   return {
     id: course.id,
-    title: course.title,
+    title: localizedTitle || course.title,
     slug: course.slug,
     shortDescription: description,
     description,
+    rawDescription: localizedDescription || undefined,
     image,
     banner: image,
     thumbnail: image,
@@ -110,17 +173,18 @@ function toPublicCourseFromDb(course: {
     order: 999,
     tags: [category, "Islamic Learning", "Online Course"],
     teacher: {
-      name: course.teacher?.name?.trim() || "Academy Faculty",
+      name: normalizeInstructorName(course.teacher?.name),
       slug: "teachers",
       image: course.teacher?.image || "/images/logo-transparent.webp",
       designation: "Islamic Instructor",
     },
-    curriculum: buildListFromContent(course.content, [
+    curriculum: buildListFromContent(localizedContent, [
       "Guided weekly lessons",
       "Teacher-led explanation",
       "Practical assignments",
       "Structured revision",
     ]),
+    rawContent: localizedContent || undefined,
     requirements: [
       "Stable internet connection",
       "Regular attendance",
@@ -141,46 +205,8 @@ function toPublicCourseFromDb(course: {
   };
 }
 
-function mergeStaticCourseWithDb(
-  staticCourse: Course,
-  course: {
-    title: string;
-    slug: string;
-    description: string | null;
-    content: string | null;
-    level: string | null;
-    duration: string | null;
-    price: { toNumber(): number } | null;
-    featured: boolean;
-    lessons: { id: string }[];
-    enrollments: { id: string }[];
-    teacher: { name: string | null; image: string | null } | null;
-  }
-) {
-  return {
-    ...staticCourse,
-    title: course.title || staticCourse.title,
-    slug: course.slug || staticCourse.slug,
-    shortDescription: course.description?.trim() || staticCourse.shortDescription,
-    description: course.description?.trim() || staticCourse.description,
-    level: normalizeCourseLevel(course.level),
-    duration: course.duration?.trim() || staticCourse.duration,
-    price: course.price?.toNumber() || staticCourse.price,
-    featured: course.featured,
-    isPopular: course.featured || staticCourse.isPopular,
-    lessons: course.lessons.length || staticCourse.lessons,
-    students: course.enrollments.length || staticCourse.students,
-    teacher: {
-      ...staticCourse.teacher,
-      name: course.teacher?.name?.trim() || staticCourse.teacher.name,
-      image: course.teacher?.image || staticCourse.teacher.image,
-    },
-    curriculum: buildListFromContent(course.content, staticCourse.curriculum),
-  } satisfies Course;
-}
-
 async function getDatabasePublishedCourses() {
-  if (!isDatabaseConfigured()) {
+  if (!shouldUseDatabaseReads()) {
     return [];
   }
 
@@ -217,51 +243,68 @@ async function getDatabasePublishedCourses() {
 }
 
 export async function getCourseBySlugFromDb(slug: string) {
-  return prisma.course.findUnique({
-    where: { slug },
-    include: {
-      lessons: true,
-      enrollments: true,
-    },
-  });
+  if (!isDatabaseConfigured()) {
+    return null;
+  }
+
+  try {
+    return await prisma.course.findUnique({
+      where: { slug },
+      include: {
+        lessons: true,
+        enrollments: true,
+      },
+    });
+  } catch {
+    return null;
+  }
 }
 
 export async function getTeacherCourses(teacherId: string) {
-  return prisma.course.findMany({
-    where: { teacherId },
-    include: {
-      lessons: true,
-      enrollments: true,
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+  if (!isDatabaseConfigured()) {
+    return [];
+  }
+
+  try {
+    return await prisma.course.findMany({
+      where: { teacherId },
+      include: {
+        lessons: true,
+        enrollments: true,
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getRecentCourses(limit = 8) {
-  return prisma.course.findMany({
-    include: {
-      enrollments: true,
-    },
-    orderBy: { updatedAt: "desc" },
-    take: limit,
-  });
+  if (!isDatabaseConfigured()) {
+    return [];
+  }
+
+  try {
+    return await prisma.course.findMany({
+      include: {
+        enrollments: true,
+      },
+      orderBy: { updatedAt: "desc" },
+      take: limit,
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getPublicCourses(limit?: number) {
   const databaseCourses = await getDatabasePublishedCourses();
-  const databaseCourseMap = new Map(databaseCourses.map((course) => [course.slug, course]));
-
-  const mergedStaticCourses = staticCourses.map((course) => {
-    const databaseCourse = databaseCourseMap.get(course.slug);
-    return databaseCourse ? mergeStaticCourseWithDb(course, databaseCourse) : course;
-  });
-
-  const extraDatabaseCourses = databaseCourses
-    .filter((course) => !staticCourses.some((item) => item.slug === course.slug))
-    .map(toPublicCourseFromDb);
-
-  const merged = [...mergedStaticCourses, ...extraDatabaseCourses].sort(
-    (left, right) => left.order - right.order || left.title.localeCompare(right.title)
+  const mappedDatabaseCourses = databaseCourses.map(toPublicCourseFromDb);
+  const merged = mappedDatabaseCourses.sort(
+      (left, right) =>
+        Number(right.featured) - Number(left.featured) ||
+        (left.order || 999) - (right.order || 999) ||
+        left.title.localeCompare(right.title)
   );
 
   return typeof limit === "number" ? merged.slice(0, limit) : merged;
@@ -273,7 +316,7 @@ export async function getFeaturedPublicCourses(limit = 6) {
 }
 
 export async function getPublicCourseBySlug(slug: string) {
-  if (isDatabaseConfigured()) {
+  if (shouldUseDatabaseReads()) {
     try {
       const databaseCourse = await prisma.course.findFirst({
         where: {
@@ -301,17 +344,14 @@ export async function getPublicCourseBySlug(slug: string) {
       });
 
       if (databaseCourse) {
-        const staticCourse = getStaticCourseBySlug(slug);
-        return staticCourse
-          ? mergeStaticCourseWithDb(staticCourse, databaseCourse)
-          : toPublicCourseFromDb(databaseCourse);
+        return toPublicCourseFromDb(databaseCourse);
       }
     } catch {
-      // Fall back to bundled course data when the database is unavailable.
+      return undefined;
     }
   }
 
-  return getStaticCourseBySlug(slug);
+  return undefined;
 }
 
 export async function getAdminCourses() {
@@ -352,6 +392,7 @@ export async function createAdminCourse(input: {
   slug?: string;
   description: string;
   content?: string;
+  localeContent?: CourseLocaleContent;
   level?: string;
   duration?: string;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
@@ -366,6 +407,7 @@ export async function createAdminCourse(input: {
       slug: normalizeSlug(input.slug?.trim() || title),
       description: input.description.trim(),
       content: input.content?.trim() || null,
+      localeContent: input.localeContent,
       level: input.level?.trim() || null,
       duration: input.duration?.trim() || null,
       status: input.status,
@@ -384,6 +426,7 @@ export async function updateAdminCourse(input: {
   slug?: string;
   description: string;
   content?: string;
+  localeContent?: CourseLocaleContent;
   level?: string;
   duration?: string;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
@@ -401,6 +444,7 @@ export async function updateAdminCourse(input: {
       slug: normalizeSlug(input.slug?.trim() || title),
       description: input.description.trim(),
       content: input.content?.trim() || null,
+      localeContent: input.localeContent,
       level: input.level?.trim() || null,
       duration: input.duration?.trim() || null,
       status: input.status,

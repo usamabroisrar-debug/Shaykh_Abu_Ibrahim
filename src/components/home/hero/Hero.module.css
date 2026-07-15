@@ -87,7 +87,7 @@
 .content {
   max-width: 100%;
   min-width: 0;
-  padding-top: 18px;
+  padding-top: 30px;
 }
 
 .badge {
@@ -108,17 +108,18 @@
 }
 
 .title {
+  margin: 18px 0 0;
   max-width: 16.4ch;
   font-family: var(--heading-font);
-  font-size: clamp(3.2rem, 5.6vw, 5.8rem);
-  line-height: 1;
+  font-size: clamp(3rem, 5vw, 5.15rem);
+  line-height: 0.98;
   letter-spacing: -0.06em;
   font-weight: 950;
   text-wrap: balance;
 }
 
 .description {
-  margin-top: 20px;
+  margin: 20px 0 0;
   max-width: 650px;
   color: rgba(236, 253, 245, 0.82);
   font-size: clamp(1.04rem, 1.25vw, 1.16rem);
@@ -312,12 +313,13 @@
   align-self: center;
   min-width: 0;
   padding-top: 28px;
+  padding-bottom: 72px;
 }
 
 .visualFrame {
   position: relative;
   width: min(100%, 640px);
-  padding: 18px;
+  padding: 16px;
   border-radius: 42px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background:
@@ -369,8 +371,8 @@
 .floatCardTop {
   top: 38px;
   right: 12px;
-  width: 220px;
-  padding: 18px 20px;
+  width: 260px;
+  padding: 15px 18px;
   border-radius: 24px;
   animation: floatY 5.5s ease-in-out infinite;
 }
@@ -388,21 +390,22 @@
 .floatCardTop strong,
 .floatCardBottom strong {
   display: block;
-  margin-top: 8px;
+  margin-top: 4px;
   color: var(--white);
-  font-size: 0.98rem;
-  line-height: 1.45;
+  font-size: 0.92rem;
+  line-height: 1.15;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .floatCardBottom {
   left: 12px;
-  bottom: 48px;
+  bottom: 82px;
   display: flex;
   align-items: center;
   gap: 13px;
-  width: 250px;
-  padding: 18px;
+  width: 300px;
+  padding: 15px 18px;
   border-radius: 24px;
   animation: floatY 6s ease-in-out infinite;
   animation-delay: 1s;
@@ -426,6 +429,7 @@
   color: rgba(255, 255, 255, 0.9);
   font-size: 0.86rem;
   font-weight: 900;
+  z-index: 2;
 }
 
 .visualBadge svg {
@@ -493,14 +497,14 @@
   }
 
   .title {
-    margin-top: 18px;
+    margin: 18px 0 0;
     max-width: 100%;
     font-size: clamp(2.4rem, 11vw, 3.5rem);
     letter-spacing: -0.05em;
   }
 
   .description {
-    margin-top: 18px;
+    margin: 18px 0 0;
     max-width: 100%;
     font-size: 0.98rem;
     line-height: 1.72;
@@ -538,6 +542,10 @@
     width: 100%;
     padding: 12px;
     border-radius: 30px;
+  }
+
+  .visual {
+    padding-bottom: 0;
   }
 
   .visualFrame::before {

@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Shaykh Abu Ibrahim
 
-## Getting Started
+Shaykh Abu Ibrahim is a multilingual Islamic academy platform built with Next.js, Prisma, NextAuth, and PostgreSQL/Neon.
 
-First, run the development server:
+It currently includes:
+
+- public academy website
+- admin management panel
+- student dashboard
+- teacher dashboard
+- admissions and contact workflows
+- course, blog, and book management
+- enrollment flow
+- certificate issuing and verification
+
+## Stack
+
+- Next.js 16 App Router
+- React 19
+- Prisma 7
+- NextAuth credentials authentication
+- PostgreSQL / Neon
+- CSS Modules
+
+## Local Setup
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Add environment variables in `.env`
+
+Typical values:
+
+```bash
+DATABASE_URL=
+POSTGRES_PRISMA_URL=
+NEXTAUTH_URL=
+NEXTAUTH_SECRET=
+NEXT_PUBLIC_APP_URL=
+SUPER_ADMIN_EMAIL=
+SUPER_ADMIN_PASSWORD=
+SUPER_ADMIN_NAME=
+```
+
+3. Generate Prisma client
+
+```bash
+npm run db:generate
+```
+
+4. Push schema
+
+```bash
+npm run db:push
+```
+
+5. Seed data if required
+
+```bash
+npm run db:seed-admin
+npm run db:seed-academy
+```
+
+6. Start local server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Main Routes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `/` homepage
+- `/courses` public course listing
+- `/books` public book listing
+- `/blog` public articles
+- `/teachers` teacher listing
+- `/admission` admission form
+- `/contact` contact form
+- `/login` role-based login
+- `/admin` admin panel
+- `/student` student dashboard
+- `/teacher` teacher dashboard
+- `/certificates/[verificationId]` certificate verification
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Current Product State
 
-## Learn More
+Implemented:
 
-To learn more about Next.js, take a look at the following resources:
+- multilingual public UI
+- DB-backed admissions, contact submissions, certificates
+- admin CRUD for blogs, books, and courses
+- public search
+- enrollment flow
+- certificate issue + verification flow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Still evolving:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- richer teacher workflows
+- teacher management workspace
+- media upload pipeline
+- lesson / quiz / assignment management UI
+- full database-only content with no fallback/static merge

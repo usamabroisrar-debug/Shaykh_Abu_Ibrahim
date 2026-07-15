@@ -36,7 +36,7 @@ export function NavLinks({ locale }: NavLinksProps) {
           {content.nav.courses} <ChevronDown size={15} />
         </button>
 
-        <MegaMenu />
+        <MegaMenu locale={locale} />
       </div>
 
       {primaryNavigation.slice(2).map((link) => (

@@ -12,9 +12,17 @@ import { MobileMenu } from "./MobileMenu";
 
 type NavbarProps = {
   locale: SiteLocale;
+  brandName?: string;
+  subtitle?: string;
+  logoSrc?: string;
 };
 
-export function Navbar({ locale }: NavbarProps) {
+export function Navbar({
+  locale,
+  brandName = "Shaykh Abu Ibrahim",
+  subtitle,
+  logoSrc = "/images/logo-transparent.webp",
+}: NavbarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const content = getLocaleContent(locale);
 
@@ -24,8 +32,8 @@ export function Navbar({ locale }: NavbarProps) {
         <div className={styles.container}>
           <Link href="/" className={styles.logoWrap}>
             <Image
-              src="/images/logo-transparent.webp"
-              alt="Shaykh Abu Ibrahim"
+              src={logoSrc}
+              alt={brandName}
               width={58}
               height={58}
               priority
@@ -33,8 +41,8 @@ export function Navbar({ locale }: NavbarProps) {
             />
 
             <div>
-              <span className={styles.logoTitle}>Shaykh Abu Ibrahim</span>
-              <p className={styles.logoText}>{content.subtitle}</p>
+              <span className={styles.logoTitle}>{brandName}</span>
+              <p className={styles.logoText}>{subtitle || content.subtitle}</p>
             </div>
           </Link>
 

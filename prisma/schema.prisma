@@ -115,6 +115,7 @@ model TeacherProfile {
   bio       String?
   expertise String?
   headline  String?
+  localeContent Json?
   createdAt DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -139,6 +140,7 @@ model Course {
   slug        String        @unique
   description String?
   content     String?
+  localeContent Json?
   status      PublishStatus @default(DRAFT)
   teacherId   String?
   level       String?
@@ -206,6 +208,7 @@ model Blog {
   slug        String        @unique
   excerpt     String?
   content     String?
+  localeContent Json?
   status      PublishStatus @default(DRAFT)
   authorId    String?
   categoryId  String?
@@ -225,6 +228,7 @@ model LibraryBook {
   pages        Int           @default(1)
   summary      String
   featuredNote String?
+  localeContent Json?
   status       PublishStatus @default(PUBLISHED)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

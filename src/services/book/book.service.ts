@@ -1,11 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { isDatabaseConfigured } from "@/lib/server";
-import {
-  books as staticBooks,
-  getBookBySlug as getStaticBookBySlug,
-  type Book,
-  type BookCategory,
-} from "@/data/books";
+import { shouldUseDatabaseReads } from "@/lib/server";
+import { type Book, type BookCategory } from "@/data/books";
 import { normalizeSlug } from "@/utils/slug";
 
 const categories: BookCategory[] = ["Aqidah", "Fiqh", "Quran", "Character"];
@@ -18,6 +13,38 @@ function normalizeCategory(value?: string | null): BookCategory {
   return match ?? "Quran";
 }
 
+type BookLocaleContent = {
+  title?: Partial<Record<"en" | "ur" | "ar", string>>;
+  summary?: Partial<Record<"en" | "ur" | "ar", string>>;
+  featuredNote?: Partial<Record<"en" | "ur" | "ar", string>>;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function normalizeLocaleContent(value: unknown): BookLocaleContent {
+  return isRecord(value) ? (value as BookLocaleContent) : {};
+}
+
+function stringifyLocaleField(
+  value: Partial<Record<"en" | "ur" | "ar", string>> | undefined,
+  fallback: string | null | undefined,
+  headings: Record<"en" | "ur" | "ar", string>
+) {
+  const parts: string[] = [];
+
+  for (const locale of ["en", "ur", "ar"] as const) {
+    const content = value?.[locale]?.trim();
+
+    if (content) {
+      parts.push(`${headings[locale]}\n${content}`);
+    }
+  }
+
+  return parts.length ? parts.join("\n\n") : fallback?.trim() || "";
+}
+
 function mapDatabaseBook(book: {
   id: string;
   title: string;
@@ -27,22 +54,40 @@ function mapDatabaseBook(book: {
   pages: number;
   summary: string;
   featuredNote: string | null;
+  localeContent: unknown;
 }): Book {
+  const localeContent = normalizeLocaleContent(book.localeContent);
+  const title = stringifyLocaleField(localeContent.title, book.title, {
+    en: "English",
+    ur: "Urdu",
+    ar: "Arabic",
+  });
+  const summary = stringifyLocaleField(localeContent.summary, book.summary, {
+    en: "English Summary",
+    ur: "Urdu Summary",
+    ar: "Arabic Summary",
+  });
+  const featuredNote = stringifyLocaleField(localeContent.featuredNote, book.featuredNote, {
+    en: "English Featured Note",
+    ur: "Urdu Featured Note",
+    ar: "Arabic Featured Note",
+  });
+
   return {
     id: book.id,
-    title: book.title,
+    title: title || book.title,
     slug: book.slug,
     category: normalizeCategory(book.category),
     format: book.format,
     pages: book.pages,
-    summary: book.summary,
+    summary: summary || book.summary,
     featuredNote:
-      book.featuredNote?.trim() || "Useful companion for guided academy study.",
+      featuredNote || "Useful companion for guided academy study.",
   };
 }
 
 async function getDatabasePublishedBooks() {
-  if (!isDatabaseConfigured()) {
+  if (!shouldUseDatabaseReads()) {
     return [];
   }
 
@@ -62,19 +107,13 @@ async function getDatabasePublishedBooks() {
 
 export async function getPublicBooks(limit?: number) {
   const databaseBooks = await getDatabasePublishedBooks();
-  const mappedDatabaseBooks = databaseBooks.map(mapDatabaseBook);
-  const databaseSlugs = new Set(mappedDatabaseBooks.map((book) => book.slug));
-
-  const merged = [
-    ...mappedDatabaseBooks,
-    ...staticBooks.filter((book) => !databaseSlugs.has(book.slug)),
-  ];
+  const merged = databaseBooks.map(mapDatabaseBook);
 
   return typeof limit === "number" ? merged.slice(0, limit) : merged;
 }
 
 export async function getPublicBookBySlug(slug: string) {
-  if (isDatabaseConfigured()) {
+  if (shouldUseDatabaseReads()) {
     try {
       const databaseBook = await prisma.libraryBook.findFirst({
         where: {
@@ -87,15 +126,15 @@ export async function getPublicBookBySlug(slug: string) {
         return mapDatabaseBook(databaseBook);
       }
     } catch {
-      // Fall back to bundled data when the database is unavailable.
+      return undefined;
     }
   }
 
-  return getStaticBookBySlug(slug);
+  return undefined;
 }
 
 export async function getAdminBooks() {
-  if (!isDatabaseConfigured()) {
+  if (!shouldUseDatabaseReads()) {
     return [];
   }
 
@@ -118,6 +157,7 @@ export async function createAdminBook(input: {
   pages: number;
   summary: string;
   featuredNote?: string;
+  localeContent?: BookLocaleContent;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
 }) {
   const title = input.title.trim();
@@ -131,6 +171,7 @@ export async function createAdminBook(input: {
       pages: Math.max(1, input.pages || 1),
       summary: input.summary.trim(),
       featuredNote: input.featuredNote?.trim() || null,
+      localeContent: input.localeContent,
       status: input.status,
     },
   });
@@ -145,6 +186,7 @@ export async function updateAdminBook(input: {
   pages: number;
   summary: string;
   featuredNote?: string;
+  localeContent?: BookLocaleContent;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
 }) {
   const title = input.title.trim();
@@ -161,6 +203,7 @@ export async function updateAdminBook(input: {
       pages: Math.max(1, input.pages || 1),
       summary: input.summary.trim(),
       featuredNote: input.featuredNote?.trim() || null,
+      localeContent: input.localeContent,
       status: input.status,
     },
   });

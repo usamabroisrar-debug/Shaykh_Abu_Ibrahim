@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { Button, Container, Section, SectionTitle } from "@/components/shared";
+import { resolveLocalizedInlineText, resolveLocalizedRichText } from "@/lib/content-localization";
 import { getLocaleFromCookies } from "@/lib/locale";
 import { getPublicBooks } from "@/services/book/book.service";
 import styles from "./BooksSection.module.css";
@@ -53,13 +54,13 @@ export async function BooksSection() {
           {books.map((book) => (
             <article key={book.id} className={styles.card}>
               <span className={styles.category}>{book.category}</span>
-              <h3>{book.title}</h3>
-              <p>{book.summary}</p>
+              <h3>{resolveLocalizedInlineText(book.title, locale)}</h3>
+              <p>{resolveLocalizedRichText(book.summary, locale)}</p>
               <div className={styles.meta}>
                 <strong>{book.format}</strong>
                 <span>{book.pages} {content.pages}</span>
               </div>
-              <small>{book.featuredNote}</small>
+              <small>{resolveLocalizedRichText(book.featuredNote, locale)}</small>
             </article>
           ))}
         </div>

@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { Button, Container, Section, SectionTitle } from "@/components/shared";
 import { getLocaleFromCookies } from "@/lib/locale";
-import { teachers } from "@/data/teachers";
+import { getPublicTeachers } from "@/services/teacher/teacher.service";
 import { TeacherCard } from "./TeacherCard";
 import styles from "./Teachers.module.css";
 
@@ -35,6 +35,7 @@ const copy = {
 export async function Teachers() {
   const locale = getLocaleFromCookies(await cookies());
   const content = copy[locale];
+  const teachers = await getPublicTeachers();
 
   return (
     <Section variant="white" className={styles.section}>

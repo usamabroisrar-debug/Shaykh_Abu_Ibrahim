@@ -1,17 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { isDatabaseConfigured } from "@/lib/server";
+import { shouldUseDatabaseReads } from "@/lib/server";
 import {
-  blogs as staticBlogs,
-  getBlogBySlug as getStaticBlogBySlug,
   type BlogCategory,
   type BlogPost,
 } from "@/data/blogs";
 import { normalizeSlug } from "@/utils/slug";
 
-export type PublicBlogPost = BlogPost & {
-  content: string;
-  source: "database" | "static";
-};
+export type PublicBlogPost = BlogPost & { content: string };
 
 const blogCategories: BlogCategory[] = [
   "Quran",
@@ -35,20 +30,36 @@ function normalizeCategory(category?: string | null): BlogCategory {
   return match ?? "Quran";
 }
 
-function buildStaticContent(post: BlogPost) {
-  return [
-    post.excerpt,
-    "This article supports students, parents, and families who want a steadier Islamic learning rhythm with practical steps and reflective guidance.",
-    "Use the ideas here as a starting point, then build consistency through teacher support, regular revision, and realistic weekly goals.",
-  ].join("\n\n");
+type BlogLocaleContent = {
+  title?: Partial<Record<"en" | "ur" | "ar", string>>;
+  excerpt?: Partial<Record<"en" | "ur" | "ar", string>>;
+  content?: Partial<Record<"en" | "ur" | "ar", string>>;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
-function mapStaticBlog(post: BlogPost): PublicBlogPost {
-  return {
-    ...post,
-    content: buildStaticContent(post),
-    source: "static",
-  };
+function normalizeLocaleContent(value: unknown): BlogLocaleContent {
+  return isRecord(value) ? (value as BlogLocaleContent) : {};
+}
+
+function stringifyLocaleField(
+  value: Partial<Record<"en" | "ur" | "ar", string>> | undefined,
+  fallback: string | null | undefined,
+  headings: Record<"en" | "ur" | "ar", string>
+) {
+  const parts: string[] = [];
+
+  for (const locale of ["en", "ur", "ar"] as const) {
+    const content = value?.[locale]?.trim();
+
+    if (content) {
+      parts.push(`${headings[locale]}\n${content}`);
+    }
+  }
+
+  return parts.length ? parts.join("\n\n") : fallback?.trim() || "";
 }
 
 function mapDbBlog(post: {
@@ -57,18 +68,37 @@ function mapDbBlog(post: {
   slug: string;
   excerpt: string | null;
   content: string | null;
+  localeContent: unknown;
   createdAt: Date;
   author: { name: string | null } | null;
   category: { name: string } | null;
 }): PublicBlogPost {
-  const content = post.content?.trim() || post.excerpt?.trim() || post.title;
+  const localeContent = normalizeLocaleContent(post.localeContent);
+  const title = stringifyLocaleField(localeContent.title, post.title, {
+    en: "English",
+    ur: "Urdu",
+    ar: "Arabic",
+  });
+  const excerpt = stringifyLocaleField(localeContent.excerpt, post.excerpt, {
+    en: "English Summary",
+    ur: "Urdu Summary",
+    ar: "Arabic Summary",
+  });
+  const content =
+    stringifyLocaleField(localeContent.content, post.content, {
+      en: "English Content",
+      ur: "Urdu Content",
+      ar: "Arabic Content",
+    }) ||
+    excerpt ||
+    title;
 
   return {
     id: post.id,
-    title: post.title,
+    title: title || post.title,
     slug: post.slug,
     excerpt:
-      post.excerpt?.trim() ||
+      excerpt ||
       `${post.title} for students, parents, and learners building a stronger Islamic study routine.`,
     category: normalizeCategory(post.category?.name),
     author: post.author?.name?.trim() || "Shaykh Abu Ibrahim",
@@ -76,12 +106,11 @@ function mapDbBlog(post: {
     readingTime: estimateReadingTime(content),
     tags: [normalizeCategory(post.category?.name), "Islamic Learning"],
     content,
-    source: "database",
   };
 }
 
 async function getDatabasePublishedBlogs() {
-  if (!isDatabaseConfigured()) {
+  if (!shouldUseDatabaseReads()) {
     return [];
   }
 
@@ -113,21 +142,15 @@ async function getDatabasePublishedBlogs() {
 
 export async function getPublishedBlogs(limit?: number) {
   const databaseBlogs = await getDatabasePublishedBlogs();
-  const mappedDatabaseBlogs = databaseBlogs.map(mapDbBlog);
-  const databaseSlugs = new Set(mappedDatabaseBlogs.map((post) => post.slug));
-
-  const merged = [
-    ...mappedDatabaseBlogs,
-    ...staticBlogs
-      .filter((post) => !databaseSlugs.has(post.slug))
-      .map(mapStaticBlog),
-  ].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt));
+  const merged = databaseBlogs
+    .map(mapDbBlog)
+    .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt));
 
   return typeof limit === "number" ? merged.slice(0, limit) : merged;
 }
 
 export async function getPublishedBlogBySlug(slug: string) {
-  if (isDatabaseConfigured()) {
+  if (shouldUseDatabaseReads()) {
     try {
       const databaseBlog = await prisma.blog.findFirst({
         where: {
@@ -152,16 +175,15 @@ export async function getPublishedBlogBySlug(slug: string) {
         return mapDbBlog(databaseBlog);
       }
     } catch {
-      // Fall back to bundled content when the database is unavailable.
+      return undefined;
     }
   }
 
-  const staticBlog = getStaticBlogBySlug(slug);
-  return staticBlog ? mapStaticBlog(staticBlog) : undefined;
+  return undefined;
 }
 
 export async function getAdminBlogs() {
-  if (!isDatabaseConfigured()) {
+  if (!shouldUseDatabaseReads()) {
     return [];
   }
 
@@ -195,6 +217,7 @@ export async function createAdminBlog(input: {
   slug?: string;
   excerpt: string;
   content: string;
+  localeContent?: BlogLocaleContent;
   categoryName: string;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   authorId: string;
@@ -209,6 +232,7 @@ export async function createAdminBlog(input: {
       slug,
       excerpt: input.excerpt.trim(),
       content: input.content.trim(),
+      localeContent: input.localeContent,
       status: input.status,
       author: {
         connect: {
@@ -236,6 +260,7 @@ export async function updateAdminBlog(input: {
   slug?: string;
   excerpt: string;
   content: string;
+  localeContent?: BlogLocaleContent;
   categoryName: string;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
 }) {
@@ -252,6 +277,7 @@ export async function updateAdminBlog(input: {
       slug,
       excerpt: input.excerpt.trim(),
       content: input.content.trim(),
+      localeContent: input.localeContent,
       status: input.status,
       category: {
         connectOrCreate: {

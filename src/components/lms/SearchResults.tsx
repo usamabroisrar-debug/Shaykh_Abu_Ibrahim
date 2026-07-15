@@ -7,8 +7,8 @@ type SearchResultsProps = {
   query: string;
 };
 
-export function SearchResults({ query }: SearchResultsProps) {
-  const results = searchSiteContent(query);
+export async function SearchResults({ query }: SearchResultsProps) {
+  const results = await searchSiteContent(query);
 
   return (
     <Section variant="white">

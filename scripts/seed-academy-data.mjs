@@ -8,7 +8,20 @@ function normalizeConnectionString(value) {
     return undefined;
   }
 
-  return value.trim().replace(/^['"]|['"]$/g, "").trim();
+  const cleaned = value.trim().replace(/^['"]|['"]$/g, "").trim();
+
+  try {
+    const url = new URL(cleaned);
+    const sslMode = url.searchParams.get("sslmode");
+
+    if (sslMode === "prefer" || sslMode === "require" || sslMode === "verify-ca") {
+      url.searchParams.set("sslmode", "verify-full");
+    }
+
+    return url.toString();
+  } catch {
+    return cleaned.replace(/sslmode=(prefer|require|verify-ca)\b/i, "sslmode=verify-full");
+  }
 }
 
 const connectionString =
@@ -135,7 +148,7 @@ async function main() {
 
   const teacher = await upsertUser({
     email: "teacher@shaykhabuibrahim.com",
-    name: "Shaykh Abdul Hadi",
+    name: "Shaykh Abu Ibrahim",
     role: "TEACHER",
     phone: "+92 301 1111111",
     image: "/images/logo-transparent.webp",
@@ -300,13 +313,64 @@ async function main() {
     featured: false,
   });
 
+  const nazraCourse = await upsertCourse({
+    slug: "nazra-quran-program",
+    title: "Nazra Quran Program / ناظرہ قرآن پروگرام",
+    description:
+      "English Description\nA guided Quran reading course for students who have completed Qaida and want fluency with correction and supervision.\n\nUrdu Description\nان طلبہ کے لیے رہنمائی والا قرآن خوانی کورس جو قائدہ مکمل کر چکے ہوں اور روانی، اصلاح، اور نگرانی کے ساتھ ناظرہ پڑھنا چاہتے ہوں۔",
+    content:
+      "English Curriculum / Notes\nDaily Quran reading\nCorrection sessions\nFluency building\n\nUrdu Curriculum / Notes\nروزانہ قرآن خوانی\nاصلاحی نشستیں\nروانی پیدا کرنا",
+    status: "PUBLISHED",
+    teacherId: teacher.id,
+    level: "Beginner",
+    duration: "8 Weeks",
+    price: 40,
+    featured: true,
+  });
+
+  const tafseerCourse = await upsertCourse({
+    slug: "tafseer-guidance-program",
+    title: "Tafseer Guidance Program / تفسیر رہنمائی پروگرام",
+    description:
+      "English Description\nA structured course for understanding themes, context, and practical guidance from selected Quran passages.\n\nUrdu Description\nمنتخب قرآنی مقامات کے موضوعات، پس منظر، اور عملی رہنمائی کو سمجھنے کے لیے ایک منظم کورس۔",
+    content:
+      "English Curriculum / Notes\nSurah themes\nContext of revelation\nPractical lessons\n\nUrdu Curriculum / Notes\nسورہ کے موضوعات\nشان نزول اور پس منظر\nعملی اسباق",
+    status: "PUBLISHED",
+    teacherId: teacher.id,
+    level: "Advanced",
+    duration: "16 Weeks",
+    price: 65,
+    featured: true,
+  });
+
+  const darsENizamiCourse = await upsertCourse({
+    slug: "dars-e-nizami-program",
+    title: "Dars e Nizami Program / درس نظامی پروگرام",
+    description:
+      "English Description\nA long-term classical Islamic studies track covering Arabic, fiqh, usool, and text-based learning with teacher guidance.\n\nUrdu Description\nعربی، فقہ، اصول، اور متنی تعلیم کے ساتھ کلاسیکی اسلامی علوم کے لیے طویل مدتی منظم پروگرام۔",
+    content:
+      "English Curriculum / Notes\nNahw and Sarf\nFoundations of fiqh\nText reading\n\nUrdu Curriculum / Notes\nنحو و صرف\nفقہ کی بنیادیں\nمتن خوانی",
+    status: "PUBLISHED",
+    teacherId: teacher.id,
+    level: "Advanced",
+    duration: "2 Years",
+    price: 95,
+    featured: true,
+  });
+
   await Promise.all([
     upsertLesson(qaidaCourse.id, 1, "Arabic Letters and Sounds", "Letter recognition and articulation."),
     upsertLesson(qaidaCourse.id, 2, "Harakat and Joining Rules", "Learning vowels and connected reading."),
+    upsertLesson(nazraCourse.id, 1, "Daily Reading Flow", "Fluency-focused guided recitation."),
+    upsertLesson(nazraCourse.id, 2, "Correction and Confidence", "Correcting mistakes with teacher feedback."),
     upsertLesson(tajweedCourse.id, 1, "Makharij Drill Session", "Daily articulation practice."),
     upsertLesson(tajweedCourse.id, 2, "Madd and Qalqalah Practice", "Controlled recitation rhythm."),
     upsertLesson(hifzCourse.id, 1, "Sabaq Planning", "Weekly memorization planning."),
     upsertLesson(hifzCourse.id, 2, "Revision Accountability", "Monitoring revision consistency."),
+    upsertLesson(tafseerCourse.id, 1, "Theme Mapping", "Understanding major Quranic themes."),
+    upsertLesson(tafseerCourse.id, 2, "Applied Reflection", "Turning tafseer into practical lessons."),
+    upsertLesson(darsENizamiCourse.id, 1, "Nahw and Sarf Foundations", "Core Arabic grammar preparation."),
+    upsertLesson(darsENizamiCourse.id, 2, "Fiqh Text Reading", "Introductory classical study workflow."),
   ]);
 
   await prisma.enrollment.upsert({

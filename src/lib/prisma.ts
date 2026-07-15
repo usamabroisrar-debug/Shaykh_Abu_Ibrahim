@@ -1,23 +1,13 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import { getDatabaseUrl } from "@/lib/database-url";
 
 declare global {
   var prismaGlobal: PrismaClient | undefined;
 }
 
-function normalizeConnectionString(value?: string) {
-  if (!value) {
-    return undefined;
-  }
-
-  return value.trim().replace(/^['"]|['"]$/g, "").trim();
-}
-
 const connectionString =
-  normalizeConnectionString(process.env.POSTGRES_URL_NON_POOLING) ||
-  normalizeConnectionString(process.env.DATABASE_URL_UNPOOLED) ||
-  normalizeConnectionString(process.env.POSTGRES_PRISMA_URL) ||
-  normalizeConnectionString(process.env.DATABASE_URL) ||
+  getDatabaseUrl() ||
   "postgresql://postgres:postgres@localhost:5432/shaykh_abu_ibrahim";
 
 const adapter = new PrismaPg({

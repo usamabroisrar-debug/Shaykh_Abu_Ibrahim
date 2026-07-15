@@ -1,8 +1,11 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   min-width: 0;
+  font-family: var(--body-font);
+  flex: 1 1 auto;
+  justify-content: center;
 }
 
 .link,
@@ -11,6 +14,7 @@
   border: 0;
   background: transparent;
   color: #334155;
+  font-family: var(--body-font);
   font-size: 0.88rem;
   font-weight: 800;
   text-decoration: none;
@@ -18,6 +22,19 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+:global(body[data-locale="ur"]) .link,
+:global(body[data-locale="ur"]) .dropdownButton {
+  font-family: var(--urdu-font);
+  font-size: 0.97rem;
+  line-height: 1.35;
+}
+
+:global(body[data-locale="ar"]) .link,
+:global(body[data-locale="ar"]) .dropdownButton {
+  font-size: 0.82rem;
+  line-height: 1.25;
 }
 
 .link::after,

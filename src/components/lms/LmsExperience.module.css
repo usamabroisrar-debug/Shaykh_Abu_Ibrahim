@@ -316,6 +316,41 @@
   margin-top: 12px;
 }
 
+.inlineForm {
+  margin-top: 12px;
+}
+
+.inlineForm button,
+.stackForm button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 12px;
+  padding: 0 16px;
+  background: var(--secondary);
+  color: var(--white);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.stackForm {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.stackForm input,
+.stackForm textarea,
+.stackForm select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+}
+
 @media (max-width: 1024px) {
   .heroCard,
   .dashboardPanels,

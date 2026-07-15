@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { isDatabaseConfigured } from "@/lib/server";
 
 export async function createAdmission(input: {
   name: string;
@@ -32,8 +33,16 @@ export async function createAdmission(input: {
 }
 
 export async function getRecentAdmissions(limit = 8) {
-  return prisma.admission.findMany({
-    orderBy: { createdAt: "desc" },
-    take: limit,
-  });
+  if (!isDatabaseConfigured()) {
+    return [];
+  }
+
+  try {
+    return await prisma.admission.findMany({
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    });
+  } catch {
+    return [];
+  }
 }

@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
 import { courseNavigation, footerNavigation } from "@/data/navigation";
 import { getLocaleContent, type SiteLocale } from "@/lib/locale";
 import { SocialIcon } from "@/components/shared/SocialIcon";
@@ -8,42 +7,69 @@ import styles from "./Footer.module.css";
 
 type FooterProps = {
   locale: SiteLocale;
+  brandName?: string;
+  subtitle?: string;
+  footerText?: string;
+  logoSrc?: string;
+  socials?: {
+    youtube: string;
+    facebook: string;
+    instagram: string;
+    tiktok: string;
+    whatsapp: string;
+    whatsappChat: string;
+  };
 };
 
-export function Footer({ locale }: FooterProps) {
+export function Footer({
+  locale,
+  brandName = "Shaykh Abu Ibrahim",
+  subtitle,
+  footerText,
+  logoSrc = "/images/logo-transparent.webp",
+  socials,
+}: FooterProps) {
   const content = getLocaleContent(locale);
+  const socialData = socials || {
+    youtube: "",
+    facebook: "",
+    instagram: "",
+    tiktok: "",
+    whatsapp: "",
+    whatsappChat: "",
+  };
   const socialLinks = [
     {
       label: "YouTube",
-      href: siteConfig.socials.youtube,
+      href: socialData.youtube,
       icon: <SocialIcon name="youtube" size={18} />,
     },
     {
       label: "Facebook",
-      href: siteConfig.socials.facebook,
+      href: socialData.facebook,
       icon: <SocialIcon name="facebook" size={18} />,
     },
     {
       label: "Instagram",
-      href: siteConfig.socials.instagram,
+      href: socialData.instagram,
       icon: <SocialIcon name="instagram" size={18} />,
     },
     {
       label: "TikTok",
-      href: siteConfig.socials.tiktok,
+      href: socialData.tiktok,
       icon: <SocialIcon name="tiktok" size={18} />,
     },
     {
       label: content.footer.whatsappChat,
-      href: siteConfig.socials.whatsappChat,
+      href: socialData.whatsappChat,
       icon: <SocialIcon name="whatsapp" size={18} />,
     },
     {
       label: content.footer.whatsappChannel,
-      href: siteConfig.socials.whatsapp,
+      href: socialData.whatsapp,
       icon: <SocialIcon name="whatsapp" size={18} />,
     },
-  ];
+  ].filter((item) => Boolean(item.href));
 
   return (
     <footer className={styles.footer}>
@@ -52,23 +78,20 @@ export function Footer({ locale }: FooterProps) {
           <div className={styles.brand}>
             <div className={styles.brandMark}>
               <Image
-                src="/images/logo-transparent.webp"
-                alt="Shaykh Abu Ibrahim"
+                src={logoSrc}
+                alt={brandName}
                 width={58}
                 height={58}
                 className={styles.brandLogo}
               />
             </div>
             <div>
-              <p className={styles.brandTitle}>Shaykh Abu Ibrahim</p>
-              <p className={styles.brandSubtitle}>{content.subtitle}</p>
+              <p className={styles.brandTitle}>{brandName}</p>
+              <p className={styles.brandSubtitle}>{subtitle || content.subtitle}</p>
             </div>
           </div>
 
-          <p className={styles.brandText}>
-            Quran, Hadith, Fiqh, Tafseer, and guided Islamic learning in a more
-            refined online experience for students and families.
-          </p>
+          <p className={styles.brandText}>{footerText || content.footer.followText}</p>
         </div>
 
         <div className={styles.column}>
@@ -126,7 +149,7 @@ export function Footer({ locale }: FooterProps) {
       </div>
 
       <div className={styles.bottomBar}>
-        Copyright {new Date().getFullYear()} Shaykh Abu Ibrahim. {content.footer.rights}
+        Copyright {new Date().getFullYear()} {brandName}. {content.footer.rights}
       </div>
     </footer>
   );

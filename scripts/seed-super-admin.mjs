@@ -3,11 +3,32 @@ import bcrypt from "bcrypt";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
+function normalizeConnectionString(value) {
+  if (!value) {
+    return undefined;
+  }
+
+  const cleaned = value.trim().replace(/^['"]|['"]$/g, "").trim();
+
+  try {
+    const url = new URL(cleaned);
+    const sslMode = url.searchParams.get("sslmode");
+
+    if (sslMode === "prefer" || sslMode === "require" || sslMode === "verify-ca") {
+      url.searchParams.set("sslmode", "verify-full");
+    }
+
+    return url.toString();
+  } catch {
+    return cleaned.replace(/sslmode=(prefer|require|verify-ca)\b/i, "sslmode=verify-full");
+  }
+}
+
 const connectionString =
-  process.env.POSTGRES_URL_NON_POOLING ||
-  process.env.DATABASE_URL_UNPOOLED ||
-  process.env.POSTGRES_PRISMA_URL ||
-  process.env.DATABASE_URL;
+  normalizeConnectionString(process.env.POSTGRES_URL_NON_POOLING) ||
+  normalizeConnectionString(process.env.DATABASE_URL_UNPOOLED) ||
+  normalizeConnectionString(process.env.POSTGRES_PRISMA_URL) ||
+  normalizeConnectionString(process.env.DATABASE_URL);
 
 if (!connectionString) {
   throw new Error("Database connection string is missing.");

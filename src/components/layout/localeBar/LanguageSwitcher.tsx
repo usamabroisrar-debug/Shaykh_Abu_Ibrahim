@@ -10,6 +10,12 @@ type LanguageSwitcherProps = {
   labels: Record<SiteLocale, string>;
 };
 
+const languageLabel: Record<SiteLocale, string> = {
+  en: "Language",
+  ur: "زبان",
+  ar: "اللغة",
+};
+
 export function LanguageSwitcher({
   activeLocale,
   labels,
@@ -24,7 +30,7 @@ export function LanguageSwitcher({
   return (
     <div className={styles.languageDropdown}>
       <label className={styles.languageLabel} htmlFor="site-language">
-        {activeLocale === "en" ? "Language" : activeLocale === "ur" ? "زبان" : "اللغة"}
+        {languageLabel[activeLocale]}
       </label>
       <div className={styles.selectWrap}>
         <select

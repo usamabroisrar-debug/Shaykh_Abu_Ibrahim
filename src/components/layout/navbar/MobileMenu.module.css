@@ -99,3 +99,10 @@
   background: #ecfdf5;
   color: #047857;
 }
+
+:global(body[data-locale="ur"]) .brand strong,
+:global(body[data-locale="ur"]) .brand span,
+:global(body[data-locale="ur"]) .links a {
+  font-family: var(--urdu-font);
+  line-height: 1.45;
+}

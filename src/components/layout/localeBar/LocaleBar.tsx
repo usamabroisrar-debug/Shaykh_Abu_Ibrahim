@@ -29,9 +29,9 @@ export function LocaleBar({ locale }: LocaleBarProps) {
         <LanguageSwitcher
           activeLocale={locale}
           labels={{
-            en: "English",
-            ur: "اردو",
-            ar: "العربية",
+            en: getLocaleContent("en").nativeLabel,
+            ur: getLocaleContent("ur").nativeLabel,
+            ar: getLocaleContent("ar").nativeLabel,
           }}
         />
       </div>

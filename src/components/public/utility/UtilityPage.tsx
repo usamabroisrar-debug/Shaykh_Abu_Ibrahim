@@ -7,6 +7,9 @@ type UtilityPageProps = {
   eyebrow: string;
   title: string;
   description: string;
+  detailsEyebrow: string;
+  detailsTitle: string;
+  detailsDescription: string;
   sections: Array<{
     title: string;
     body: string;
@@ -26,6 +29,9 @@ export function UtilityPage({
   eyebrow,
   title,
   description,
+  detailsEyebrow,
+  detailsTitle,
+  detailsDescription,
   sections,
   highlights = [],
   primaryCta,
@@ -59,9 +65,9 @@ export function UtilityPage({
       <Section>
         <Container>
           <SectionTitle
-            eyebrow="Details"
-            title="Important information"
-            description="Clear, readable sections so students and families can understand expectations without friction."
+            eyebrow={detailsEyebrow}
+            title={detailsTitle}
+            description={detailsDescription}
           />
           <div className={styles.grid}>
             {sections.map((section) => (
