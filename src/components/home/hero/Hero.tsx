@@ -2,24 +2,16 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  BookOpen,
   CheckCircle2,
   GraduationCap,
   PlayCircle,
   ShieldCheck,
   Sparkles,
   Star,
-  Users,
 } from "lucide-react";
 import { getLocaleFromCookies } from "@/lib/locale";
 import { getLocalizedHomepageHeroSettings } from "@/services/settings/site-settings.service";
 import styles from "./Hero.module.css";
-
-const statIcons = [
-  <BookOpen size={24} key="courses" />,
-  <Users size={24} key="students" />,
-  <ShieldCheck size={24} key="authentic" />,
-];
 
 export async function Hero() {
   const locale = getLocaleFromCookies(await cookies());
@@ -90,15 +82,6 @@ export async function Hero() {
             </div>
           </div>
 
-          <div className={styles.statsGrid}>
-            {content.stats.map((stat, index) => (
-              <div className={styles.statCard} key={`${stat.label}-${index}`}>
-                <div className={styles.statIcon}>{statIcons[index] || statIcons[0]}</div>
-                <strong>{stat.value}</strong>
-                <span>{stat.label}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div className={styles.visual}>

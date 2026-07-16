@@ -6,37 +6,39 @@ import { getFeaturedPublicCourses } from "@/services/course/course.service";
 import { CourseCard } from "./CourseCard";
 import styles from "./CoursesSection.module.css";
 
+const copy = {
+  en: {
+    eyebrow: "Core Courses",
+    title: "Choose the right Quran and Islamic studies pathway",
+    description:
+      "Start with Qaida, Nazra, Hifz, Tajweed, Tafseer, or Dars-e-Nizami through guided online classes.",
+    note:
+      "Every course is built around live teaching, clear milestones, and family-friendly scheduling.",
+    cta: "View All Courses",
+  },
+  ur: {
+    eyebrow: "اہم کورسز",
+    title: "قرآن اور اسلامی علوم کے لیے درست تعلیمی راستہ منتخب کریں",
+    description:
+      "قاعدہ، ناظرہ، حفظ، تجوید، تفسیر، یا درسِ نظامی کی تعلیم رہنمائی والی آن لائن کلاسز کے ذریعے حاصل کریں۔",
+    note:
+      "ہر کورس لائیو تدریس، واضح مراحل، اور خاندان کے لیے آسان شیڈول کے ساتھ بنایا گیا ہے۔",
+    cta: "تمام کورسز دیکھیں",
+  },
+  ar: {
+    eyebrow: "الدورات الأساسية",
+    title: "اختر المسار المناسب للقرآن والدراسات الإسلامية",
+    description:
+      "ابدأ بالقاعدة أو القراءة أو الحفظ أو التجويد أو التفسير أو درس نظامي من خلال دروس مباشرة موجهة.",
+    note:
+      "كل دورة مبنية على تعليم مباشر ومراحل واضحة وجدول مناسب للعائلات.",
+    cta: "عرض جميع الدورات",
+  },
+} as const;
+
 export async function CoursesSection() {
   const locale = getLocaleFromCookies(await cookies());
-  const content = {
-    en: {
-      eyebrow: "Featured Courses",
-      title: "Structured Islamic learning for every stage of the journey",
-      description:
-        "Explore flagship programs built for recitation, memorization, understanding, and long-term spiritual growth.",
-      note:
-        "Each course is designed with live teaching, progress milestones, and certificate-ready completion pathways.",
-      cta: "View All Courses",
-    },
-    ur: {
-      eyebrow: "نمایاں کورسز",
-      title: "سفر کے ہر مرحلے کے لیے منظم اسلامی تعلیم",
-      description:
-        "ایسے اہم پروگرامز دیکھیں جو قراءت، حفظ، سمجھ، اور طویل مدتی روحانی ترقی کے لیے ترتیب دیے گئے ہیں۔",
-      note:
-        "ہر کورس لائیو تدریس، پیش رفت milestones، اور certificate-ready completion pathways کے ساتھ ڈیزائن کیا گیا ہے۔",
-      cta: "تمام کورسز دیکھیں",
-    },
-    ar: {
-      eyebrow: "الدورات المميزة",
-      title: "تعلم إسلامي منظم لكل مرحلة من الرحلة",
-      description:
-        "استكشف برامج أساسية بُنيت للتلاوة والحفظ والفهم والنمو الروحي طويل المدى.",
-      note:
-        "كل دورة مصممة بتعليم مباشر ومحطات تقدم ومسارات إكمال جاهزة للشهادة.",
-      cta: "عرض جميع الدورات",
-    },
-  }[locale];
+  const content = copy[locale];
   const featuredCourses = await getFeaturedPublicCourses(6);
 
   return (

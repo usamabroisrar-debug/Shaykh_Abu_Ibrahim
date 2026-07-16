@@ -1,68 +1,92 @@
 import { cookies } from "next/headers";
 import { Container, Section } from "@/components/shared";
 import { getLocaleFromCookies } from "@/lib/locale";
-import { statistics } from "@/data/statistics";
 import styles from "./Statistics.module.css";
 
-const statisticsTranslations = {
-  en: statistics,
+const trustStripCopy = {
+  en: [
+    {
+      id: "trust-1",
+      value: "Live 1:1",
+      label: "Personal classes",
+      detail: "Teacher-led Quran learning with individual attention.",
+    },
+    {
+      id: "trust-2",
+      value: "Flexible",
+      label: "Global timings",
+      detail: "Schedules for children, adults, and families.",
+    },
+    {
+      id: "trust-3",
+      value: "Guided",
+      label: "Progress pathway",
+      detail: "Clear milestones from Qaida to advanced study.",
+    },
+    {
+      id: "trust-4",
+      value: "Verified",
+      label: "Certificates",
+      detail: "Completion records for eligible students.",
+    },
+  ],
   ur: [
     {
-      id: "stat-1",
-      value: "1,200+",
-      label: "فعال طلبہ",
-      detail: "قرآن، حفظ، تجوید، اور اسلامی علوم کے مختلف پروگرامز میں",
+      id: "trust-1",
+      value: "لائیو 1:1",
+      label: "ذاتی کلاسز",
+      detail: "استاد کی براہ راست رہنمائی کے ساتھ قرآن کی تعلیم۔",
     },
     {
-      id: "stat-2",
-      value: "96%",
-      label: "ریٹینشن ریٹ",
-      detail: "منظم رہنمائی، فیڈبیک، اور لچکدار شیڈول کی بدولت",
+      id: "trust-2",
+      value: "لچکدار",
+      label: "عالمی اوقات",
+      detail: "بچوں، بڑوں، اور خاندانوں کے لیے مناسب شیڈول۔",
     },
     {
-      id: "stat-3",
-      value: "40+",
-      label: "ہفتہ وار لائیو سیشنز",
-      detail: "بچوں، بڑوں، بہنوں، اور سنجیدہ طلبہ کے لیے",
+      id: "trust-3",
+      value: "منظم",
+      label: "تعلیمی راستہ",
+      detail: "قاعدہ سے اعلیٰ اسلامی تعلیم تک واضح مراحل۔",
     },
     {
-      id: "stat-4",
-      value: "8",
-      label: "اہم پروگرامز",
-      detail: "ابتدائی حروف سے گہری دینی سمجھ تک رہنمائی کے لیے",
+      id: "trust-4",
+      value: "تصدیق شدہ",
+      label: "سرٹیفکیٹس",
+      detail: "اہل طلبہ کے لیے تکمیل کے سرٹیفکیٹس۔",
     },
   ],
   ar: [
     {
-      id: "stat-1",
-      value: "1,200+",
-      label: "طلاب نشطون",
-      detail: "عبر مسارات القرآن والحفظ والتجويد والدراسات الإسلامية",
+      id: "trust-1",
+      value: "مباشر 1:1",
+      label: "دروس شخصية",
+      detail: "تعلم القرآن مع توجيه مباشر من المعلم.",
     },
     {
-      id: "stat-2",
-      value: "96%",
-      label: "معدل الاستمرار",
-      detail: "مدفوع بالمسارات المنظمة والتغذية الراجعة والجدولة المرنة",
+      id: "trust-2",
+      value: "مرن",
+      label: "مواعيد عالمية",
+      detail: "جداول مناسبة للأطفال والبالغين والعائلات.",
     },
     {
-      id: "stat-3",
-      value: "40+",
-      label: "جلسات مباشرة أسبوعياً",
-      detail: "للأطفال والبالغين والأخوات والدارسين المتقدمين",
+      id: "trust-3",
+      value: "منظم",
+      label: "مسار تعليمي",
+      detail: "مراحل واضحة من القاعدة إلى الدراسات المتقدمة.",
     },
     {
-      id: "stat-4",
-      value: "8",
-      label: "برامج أساسية",
-      detail: "مصممة لدعم المتعلم من الحروف الأولى إلى الفهم العميق",
+      id: "trust-4",
+      value: "موثق",
+      label: "شهادات",
+      detail: "سجلات إتمام للطلاب المؤهلين.",
     },
   ],
 } as const;
 
 export async function Statistics() {
   const locale = getLocaleFromCookies(await cookies());
-  const items = statisticsTranslations[locale];
+  const items = trustStripCopy[locale];
 
   return (
     <Section variant="white" className={styles.section}>

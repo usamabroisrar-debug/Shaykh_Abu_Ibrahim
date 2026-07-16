@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { Container, Section, SectionTitle } from "@/components/shared";
 import { getLocaleFromCookies } from "@/lib/locale";
-import { academyFeatures } from "@/data/features";
 import styles from "./WhyChooseUs.module.css";
 
 const icons = [ShieldCheck, BookOpenCheck, Globe2, Clock3];
@@ -16,85 +15,106 @@ const icons = [ShieldCheck, BookOpenCheck, Globe2, Clock3];
 const copy = {
   en: {
     eyebrow: "Why Choose Us",
-    title: "Why families choose a clearer, more structured Quran learning experience",
+    title: "Clear, authentic, and family-friendly Quran learning",
     description:
-      "The academy is designed around trust, teacher quality, and a smoother online journey from trial class to consistent progress.",
+      "Shaykh Abu Ibrahim Academy is built around trust, teacher quality, and a calm online journey from trial class to steady progress.",
     assuranceTitle: "Designed for long-term learning",
     assuranceText:
-      "From the first class to sustained study, every touchpoint is organized to support clarity, accountability, and steady growth.",
-    personalTitle: "Personal attention",
-    personalText: "Live one-to-one guidance keeps every student supported at their own pace.",
-    globalTitle: "Global flexibility",
+      "Every touchpoint supports clarity, accountability, and consistency for students and families.",
+    personalTitle: "One-to-one attention",
+    personalText: "Live personal classes help each student learn at the right pace.",
+    globalTitle: "Flexible timings",
     globalText: "Schedules can adapt across time zones for children, adults, and families.",
-    features: academyFeatures,
-  },
-  ur: {
-    eyebrow: "ہمیں کیوں منتخب کریں",
-    title: "خاندان ایک زیادہ واضح اور منظم قرآنی تعلیمی تجربہ کیوں منتخب کرتے ہیں",
-    description:
-      "اکیڈمی کو اعتماد، معیاری اساتذہ، اور ٹرائل کلاس سے مستقل پیش رفت تک ایک ہموار آن لائن سفر کے گرد ترتیب دیا گیا ہے۔",
-    assuranceTitle: "طویل مدتی تعلیم کے لیے ترتیب دی گئی",
-    assuranceText:
-      "پہلی کلاس سے مستقل مطالعے تک ہر مرحلہ وضاحت، جوابدہی، اور مسلسل ترقی کو سہارا دینے کے لیے منظم ہے۔",
-    personalTitle: "ذاتی توجہ",
-    personalText: "ون ٹو ون لائیو رہنمائی ہر طالب علم کو اس کی رفتار کے مطابق سہارا دیتی ہے۔",
-    globalTitle: "عالمی لچک",
-    globalText: "بچوں، بڑوں، اور خاندانوں کے لیے مختلف ٹائم زونز کے مطابق شیڈول بنایا جا سکتا ہے۔",
     features: [
       {
         id: "feature-1",
-        title: "مستند نصاب",
-        description: "کورسز واضح، باادب، اور عملی اسلامی تعلیم کے مستند اصولوں پر بنائے گئے ہیں۔",
+        title: "Authentic guidance",
+        description: "Courses follow respectful, practical Islamic learning principles.",
       },
       {
         id: "feature-2",
-        title: "منظم راستے",
-        description: "ہر طالب علم ابتدائی بنیاد سے گہری سمجھ تک ایک واضح راستے پر چلتا ہے۔",
+        title: "Structured pathway",
+        description: "Students move from Qaida and Nazra to deeper Quran and Islamic studies.",
       },
       {
         id: "feature-3",
-        title: "لچکدار لائیو تدریس",
-        description: "لائیو آن لائن سیشنز مصروف خاندانوں، بڑوں، اور مختلف سطحوں کے طلبہ کے لیے موزوں ہیں۔",
+        title: "Online live classes",
+        description: "Classes are guided directly by teachers with regular correction.",
+      },
+      {
+        id: "feature-4",
+        title: "Progress tracking",
+        description: "Milestones, attendance, and feedback keep learning measurable.",
+      },
+    ],
+  },
+  ur: {
+    eyebrow: "ہمیں کیوں منتخب کریں",
+    title: "واضح، مستند، اور خاندان کے لیے آسان قرآنی تعلیم",
+    description:
+      "Shaykh Abu Ibrahim Academy اعتماد، معیاری تدریس، اور ٹرائل کلاس سے مستقل پیش رفت تک ایک آسان آن لائن سفر کے لیے بنائی گئی ہے۔",
+    assuranceTitle: "طویل مدتی تعلیم کے لیے منظم",
+    assuranceText:
+      "ہر مرحلہ طلبہ اور خاندانوں کے لیے وضاحت، جوابدہی، اور تسلسل کو مضبوط بناتا ہے۔",
+    personalTitle: "ون ٹو ون توجہ",
+    personalText: "لائیو ذاتی کلاسز ہر طالب علم کو اس کی رفتار کے مطابق مدد دیتی ہیں۔",
+    globalTitle: "لچکدار اوقات",
+    globalText: "بچوں، بڑوں، اور خاندانوں کے لیے مختلف ٹائم زونز کے مطابق شیڈول۔",
+    features: [
+      {
+        id: "feature-1",
+        title: "مستند رہنمائی",
+        description: "کورسز باادب اور عملی اسلامی تعلیم کے اصولوں پر مبنی ہیں۔",
+      },
+      {
+        id: "feature-2",
+        title: "منظم تعلیمی راستہ",
+        description: "طلبہ قاعدہ اور ناظرہ سے گہرے قرآنی اور اسلامی علوم تک بڑھتے ہیں۔",
+      },
+      {
+        id: "feature-3",
+        title: "لائیو آن لائن کلاسز",
+        description: "اساتذہ براہ راست رہنمائی اور باقاعدہ اصلاح فراہم کرتے ہیں۔",
       },
       {
         id: "feature-4",
         title: "پیش رفت کی نگرانی",
-        description: "اسیسمنٹس، حاضری، اور استاد کی فیڈبیک سیکھنے کو قابلِ پیمائش اور پائیدار بناتی ہے۔",
+        description: "مراحل، حاضری، اور فیڈبیک سے تعلیم قابلِ پیمائش رہتی ہے۔",
       },
     ],
   },
   ar: {
-    eyebrow: "لماذا نحن",
-    title: "لماذا تختار العائلات تجربة أوضح وأكثر تنظيماً لتعلم القرآن",
+    eyebrow: "لماذا تختارنا",
+    title: "تعلم قرآني واضح وموثوق ومناسب للعائلات",
     description:
-      "صُممت الأكاديمية حول الثقة وجودة المعلمين ورحلة تعليمية أكثر سلاسة من الحصة التجريبية إلى التقدم المستمر.",
-    assuranceTitle: "مصممة للتعلم الطويل المدى",
+      "أكاديمية Shaykh Abu Ibrahim مبنية على الثقة وجودة التعليم ورحلة إلكترونية هادئة من الحصة التجريبية إلى التقدم المستمر.",
+    assuranceTitle: "مصممة للتعلم المستمر",
     assuranceText:
-      "من الحصة الأولى إلى الدراسة المستمرة، تم تنظيم كل نقطة تواصل لدعم الوضوح والمسؤولية والنمو الثابت.",
-    personalTitle: "اهتمام شخصي",
-    personalText: "التوجيه المباشر الفردي يبقي كل طالب مدعوماً وفق سرعته الخاصة.",
-    globalTitle: "مرونة عالمية",
-    globalText: "يمكن تكييف الجداول عبر المناطق الزمنية للأطفال والبالغين والعائلات.",
+      "كل مرحلة تدعم الوضوح والمسؤولية والثبات للطلاب والعائلات.",
+    personalTitle: "اهتمام فردي",
+    personalText: "الدروس المباشرة الفردية تساعد كل طالب حسب سرعته.",
+    globalTitle: "مواعيد مرنة",
+    globalText: "جداول مناسبة للأطفال والبالغين والعائلات عبر المناطق الزمنية.",
     features: [
       {
         id: "feature-1",
-        title: "منهج موثوق",
-        description: "الدورات مبنية على تعلم إسلامي موثوق بوضوح وأدب وتطبيق عملي.",
+        title: "توجيه موثوق",
+        description: "الدورات مبنية على مبادئ تعليم إسلامي عملية ومحترمة.",
       },
       {
         id: "feature-2",
-        title: "مسارات منظمة",
-        description: "يتبع كل طالب طريقاً متدرجاً من الأساسيات إلى الفهم الأعمق.",
+        title: "مسار منظم",
+        description: "ينتقل الطلاب من القاعدة والقراءة إلى الدراسات الإسلامية الأعمق.",
       },
       {
         id: "feature-3",
-        title: "تعليم مباشر مرن",
-        description: "الجلسات المباشرة عبر الإنترنت مناسبة للعائلات المشغولة والبالغين والمستويات المختلفة.",
+        title: "دروس مباشرة",
+        description: "المعلمون يقدمون التوجيه والتصحيح المنتظم مباشرة.",
       },
       {
         id: "feature-4",
         title: "متابعة التقدم",
-        description: "التقييمات والحضور وملاحظات المعلم تجعل التعلم قابلاً للقياس والاستمرار.",
+        description: "المراحل والحضور والملاحظات تجعل التعلم قابلا للقياس.",
       },
     ],
   },

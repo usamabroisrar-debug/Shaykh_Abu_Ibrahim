@@ -9,6 +9,11 @@ type TeacherCardProps = {
 };
 
 export function TeacherCard({ teacher, locale }: TeacherCardProps) {
+  const labels = {
+    en: { students: "students", courses: "courses" },
+    ur: { students: "طلبہ", courses: "کورسز" },
+    ar: { students: "طلاب", courses: "دورات" },
+  }[locale];
   const initials = teacher.name
     .split(" ")
     .map((segment) => segment[0])
@@ -28,13 +33,11 @@ export function TeacherCard({ teacher, locale }: TeacherCardProps) {
       <div className={styles.meta}>
         <span>
           <Users size={15} />
-          {teacher.students}+{" "}
-          {locale === "en" ? "students" : locale === "ur" ? "طلبہ" : "طلاب"}
+          {teacher.students}+ {labels.students}
         </span>
         <span>
           <BookOpenText size={15} />
-          {teacher.courses}{" "}
-          {locale === "en" ? "courses" : locale === "ur" ? "کورسز" : "دورات"}
+          {teacher.courses} {labels.courses}
         </span>
         <span>
           <Languages size={15} />

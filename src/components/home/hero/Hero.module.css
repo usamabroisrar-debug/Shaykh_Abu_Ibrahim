@@ -1,6 +1,6 @@
 .hero {
   position: relative;
-  min-height: calc(100vh - var(--header-height));
+  min-height: min(780px, calc(100vh - var(--header-height)));
   overflow: hidden;
   color: var(--white);
   background:
@@ -75,13 +75,13 @@
   position: relative;
   z-index: 2;
   width: min(var(--max-width), calc(100% - var(--container-padding)));
-  min-height: calc(100vh - var(--header-height));
+  min-height: min(780px, calc(100vh - var(--header-height)));
   margin-inline: auto;
   display: grid;
   grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
   align-items: center;
   gap: 44px;
-  padding: 32px 0 58px;
+  padding: 28px 0 52px;
 }
 
 .content {
@@ -251,59 +251,6 @@
   color: var(--gold-light);
 }
 
-.statsGrid {
-  margin-top: 28px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-width: 720px;
-  gap: 18px;
-}
-
-.statCard {
-  position: relative;
-  overflow: hidden;
-  min-height: 144px;
-  padding: 24px;
-  border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
-  backdrop-filter: blur(26px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
-
-.statCard::after {
-  content: "";
-  position: absolute;
-  right: -34px;
-  bottom: -34px;
-  width: 90px;
-  height: 90px;
-  border-radius: var(--radius-full);
-  background: rgba(250, 204, 21, 0.12);
-}
-
-.statIcon {
-  color: var(--gold-light);
-  margin-bottom: 15px;
-}
-
-.statCard strong {
-  display: block;
-  font-size: 2.15rem;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-}
-
-.statCard span {
-  display: block;
-  margin-top: 8px;
-  color: rgba(236, 253, 245, 0.72);
-  font-size: 0.86rem;
-  font-weight: 500;
-}
-
 .visual {
   position: relative;
   min-height: 0;
@@ -455,8 +402,7 @@
     margin-right: auto;
   }
 
-  .description,
-  .statsGrid {
+  .description {
     margin-left: auto;
     margin-right: auto;
   }
@@ -528,14 +474,6 @@
 
   .trustRow {
     align-items: flex-start;
-  }
-
-  .statsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .statCard {
-    min-height: 110px;
   }
 
   .visualFrame {

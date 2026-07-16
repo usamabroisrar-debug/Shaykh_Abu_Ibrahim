@@ -8,27 +8,27 @@ import styles from "./Teachers.module.css";
 const copy = {
   en: {
     eyebrow: "Our Teachers",
-    title: "Meet teachers who combine scholarship, patience, and online teaching clarity",
+    title: "Learn with Shaykh Abu Ibrahim and a guided teaching team",
     description:
-      "Students learn better when the teacher is not only qualified, but calm, encouraging, and consistent in delivery.",
-    points: ["Qualified Quran guidance", "Student-friendly teaching", "Flexible one-to-one classes"],
+      "The academy focuses on patient instruction, correct recitation, and a learning rhythm families can trust.",
+    points: ["Quran-first guidance", "Student-friendly teaching", "Flexible one-to-one classes"],
     cta: "Meet The Faculty",
   },
   ur: {
     eyebrow: "ہمارے اساتذہ",
-    title: "ایسے اساتذہ سے ملیں جو علم، صبر، اور واضح آن لائن تدریس کو یکجا کرتے ہیں",
+    title: "Shaykh Abu Ibrahim اور رہنمائی کرنے والی تدریسی ٹیم سے سیکھیں",
     description:
-      "طلبہ بہتر اس وقت سیکھتے ہیں جب استاد صرف ماہر ہی نہیں بلکہ پُرسکون، حوصلہ افزا، اور مستقل مزاج بھی ہو۔",
-    points: ["ماہر قرآنی رہنمائی", "طالب علم دوست تدریس", "لچکدار ون ٹو ون کلاسز"],
+      "اکیڈمی صبر، درست قراءت، اور ایسے تعلیمی معمول پر توجہ دیتی ہے جس پر خاندان اعتماد کر سکیں۔",
+    points: ["قرآن پر مبنی رہنمائی", "طالب علم دوست تدریس", "لچکدار ون ٹو ون کلاسز"],
     cta: "اساتذہ سے ملیں",
   },
   ar: {
     eyebrow: "معلمونا",
-    title: "تعرّف على معلمين يجمعون بين العلم والصبر ووضوح التعليم عبر الإنترنت",
+    title: "تعلم مع Shaykh Abu Ibrahim وفريق تعليمي موجه",
     description:
-      "يتعلم الطلاب بصورة أفضل عندما يكون المعلم مؤهلاً وهادئاً ومشجعاً وثابتاً في أسلوبه.",
-    points: ["إرشاد قرآني مؤهل", "تدريس مناسب للطلاب", "دروس فردية مرنة"],
-    cta: "تعرّف على الهيئة التعليمية",
+      "تركز الأكاديمية على التعليم الهادئ والتلاوة الصحيحة وإيقاع تعلم تثق به العائلات.",
+    points: ["توجيه قرآني أولا", "تعليم مناسب للطلاب", "دروس فردية مرنة"],
+    cta: "تعرف على المعلمين",
   },
 } as const;
 
@@ -61,7 +61,7 @@ export async function Teachers() {
         </div>
 
         <div className={styles.grid}>
-          {teachers.map((teacher) => (
+          {teachers.slice(0, 3).map((teacher) => (
             <TeacherCard key={teacher.id} teacher={teacher} locale={locale} />
           ))}
         </div>

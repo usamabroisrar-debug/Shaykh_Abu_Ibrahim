@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { shouldUseDatabaseReads } from "@/lib/server";
+import { teachers as staticTeachers } from "@/data/teachers";
 import { normalizeSlug } from "@/utils/slug";
 
 export type PublicTeacher = {
@@ -163,7 +164,26 @@ async function getDatabaseTeachers() {
 
 export async function getPublicTeachers() {
   const teachers = await getDatabaseTeachers();
-  return teachers.map(mapTeacher);
+  const mappedTeachers = teachers.map(mapTeacher);
+
+  if (mappedTeachers.length) {
+    return mappedTeachers;
+  }
+
+  return staticTeachers.map((teacher) => ({
+    id: teacher.id,
+    name: teacher.name,
+    slug: teacher.slug,
+    image: "/images/logo-transparent.webp",
+    designation: teacher.designation,
+    specialty: teacher.specialty,
+    summary: teacher.summary,
+    headline: teacher.designation,
+    students: teacher.students,
+    courses: teacher.courses,
+    languages: teacher.languages,
+    badges: teacher.badges,
+  }));
 }
 
 export async function getPublicTeacherBySlug(slug: string) {

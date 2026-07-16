@@ -6,33 +6,33 @@ import styles from "./CTA.module.css";
 const copy = {
   en: {
     eyebrow: "Admissions Open",
-    title: "Start a more intentional Islamic learning journey today",
+    title: "Start your Quran learning journey with a clear next step",
     description:
-      "Whether the goal is strong Quran foundations, memorization, or a deeper connection to Islamic knowledge, the next step should feel clear and welcoming.",
+      "Choose the course, share the student details, and begin with a guided conversation before final enrollment.",
     benefits: ["Free trial class", "Flexible schedule", "Personal guidance"],
-    primary: "Start Free Trial",
-    secondary: "Speak With The Team",
+    primary: "Apply Now",
+    secondary: "Contact Us",
     note: "No upfront payment. Consultation first.",
   },
   ur: {
-    eyebrow: "داخلے کھلے ہیں",
-    title: "آج ہی ایک زیادہ بامقصد اسلامی تعلیمی سفر شروع کریں",
+    eyebrow: "داخلے جاری ہیں",
+    title: "واضح اگلے قدم کے ساتھ قرآن سیکھنے کا سفر شروع کریں",
     description:
-      "چاہے مقصد قرآن کی مضبوط بنیاد ہو، حفظ ہو، یا اسلامی علم سے گہرا تعلق، اگلا قدم واضح اور خوش آمدیدی ہونا چاہیے۔",
+      "کورس منتخب کریں، طالب علم کی معلومات دیں، اور حتمی داخلے سے پہلے رہنمائی والی گفتگو سے آغاز کریں۔",
     benefits: ["فری ٹرائل کلاس", "لچکدار شیڈول", "ذاتی رہنمائی"],
-    primary: "فری ٹرائل شروع کریں",
-    secondary: "ٹیم سے بات کریں",
+    primary: "ابھی اپلائی کریں",
+    secondary: "رابطہ کریں",
     note: "پیشگی ادائیگی نہیں۔ پہلے مشاورت۔",
   },
   ar: {
-    eyebrow: "القبول مفتوح",
-    title: "ابدأ اليوم رحلة تعليمية إسلامية أكثر قصداً",
+    eyebrow: "التسجيل مفتوح",
+    title: "ابدأ رحلة تعلم القرآن بخطوة واضحة",
     description:
-      "سواء كان الهدف تأسيساً قوياً في القرآن أو الحفظ أو ارتباطاً أعمق بالعلم الإسلامي، ينبغي أن تبدو الخطوة التالية واضحة ومرحبة.",
+      "اختر الدورة، وشارك بيانات الطالب، وابدأ بمحادثة موجهة قبل التسجيل النهائي.",
     benefits: ["حصة تجريبية مجانية", "جدول مرن", "إرشاد شخصي"],
-    primary: "ابدأ الحصة المجانية",
-    secondary: "تحدث مع الفريق",
-    note: "لا دفعة مقدمة. الاستشارة أولاً.",
+    primary: "قدم الآن",
+    secondary: "تواصل معنا",
+    note: "لا توجد دفعة مقدمة. الاستشارة أولا.",
   },
 } as const;
 

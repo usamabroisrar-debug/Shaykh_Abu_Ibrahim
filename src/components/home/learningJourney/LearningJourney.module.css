@@ -7,16 +7,16 @@
     linear-gradient(135deg, #031b16 0%, #064e3b 50%, #0f172a 100%);
 }
 
-.section :global(.title),
-.section :global(.description) {
+.section :global([class*="SectionTitle"][class*="title"]),
+.section :global([class*="SectionTitle"][class*="description"]) {
   color: #ffffff;
 }
 
-.section :global(.description) {
+.section :global([class*="SectionTitle"][class*="description"]) {
   color: rgba(255, 255, 255, 0.74);
 }
 
-.section :global(.eyebrow) {
+.section :global([class*="SectionTitle"][class*="eyebrow"]) {
   color: #fde68a;
 }
 
