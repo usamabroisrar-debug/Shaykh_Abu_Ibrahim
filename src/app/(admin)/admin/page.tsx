@@ -1546,6 +1546,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
             <form
               action={createBookAction}
               className={styles.adminForm}
+              autoComplete="off"
             >
               <input type="hidden" name="view" value="books" />
               <div className={styles.formSplit}>
@@ -1610,11 +1611,21 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Book file URL</span>
-                  <input name="fileUrl" type="url" placeholder="https://.../book.pdf" />
+                  <input
+                    name="fileUrl"
+                    type="url"
+                    placeholder="https://.../book.pdf"
+                    autoComplete="off"
+                  />
                 </label>
                 <label className={styles.field}>
                   <span>Cover image URL</span>
-                  <input name="coverUrl" type="url" placeholder="https://.../cover.webp" />
+                  <input
+                    name="coverUrl"
+                    type="url"
+                    placeholder="https://.../cover.webp"
+                    autoComplete="off"
+                  />
                 </label>
               </div>
               <div className={styles.formSplit}>

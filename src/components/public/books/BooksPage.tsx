@@ -65,17 +65,22 @@ export async function BooksPage() {
                   </span>
                 </div>
                 <div className={styles.actions}>
-                  <Link href={`/books/${book.slug}`} className={styles.link}>
-                    {copy.cta}
-                  </Link>
                   {book.fileUrl ? (
                     <a
                       href={book.fileUrl}
-                      className={styles.downloadLink}
+                      className={styles.link}
                       target="_blank"
                       rel="noreferrer"
-                      download
                     >
+                      {copy.cta}
+                    </a>
+                  ) : (
+                    <Link href={`/books/${book.slug}`} className={styles.link}>
+                      {copy.cta}
+                    </Link>
+                  )}
+                  {book.fileUrl ? (
+                    <a href={book.fileUrl} className={styles.downloadLink} download>
                       {copy.download}
                     </a>
                   ) : null}
