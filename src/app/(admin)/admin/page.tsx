@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { StructuredEditor } from "@/components/admin/StructuredEditor";
@@ -29,7 +29,7 @@ import {
   issueCertificateAction,
   saveHomepageHeroSettingsAction,
   saveSiteSettingsAction,
-  seedDemoContentAction,
+  importAcademyContentAction,
   updateAdmissionStatusAction,
   updateBookAction,
   updateBlogAction,
@@ -127,176 +127,7 @@ function normalizeWorkspaceView(value?: string): WorkspaceView {
     : "overview";
 }
 
-function getAdminCopy(locale: SiteLocale) {
-  if (locale === "ur" || locale === "ar") {
-    return {
-      workspace: "ایڈمن ورک اسپیس",
-      sidebarTitle: "انتظامی پینل",
-      role: "رول",
-      views: {
-        overview: "ڈیش بورڈ",
-        operations: "آپریشنز",
-        blogs: "بلاگز",
-        courses: "کورسز",
-        books: "کتب",
-      },
-      heroEyebrow: "اکیڈمی کنٹرول سینٹر",
-      heroTitle: "منظم اور پروفیشنل ایڈمن ورک اسپیس",
-      heroText:
-        "اب ہر شعبہ الگ ورک اسپیس میں رکھا گیا ہے تاکہ ٹیم بلاگز، کورسز، کتب، اور آپریشنل کام واضح انداز میں سنبھال سکے۔",
-      heroBadge: "لائیو سسٹم",
-      signedInAs: "سائن اِن بطور",
-      health: "ورک اسپیس ہیلتھ",
-      liveItems: "لائیو آئٹمز",
-      admissionsQueue: "داخلہ قطار",
-      contactsQueue: "رابطہ پیغامات",
-      contentDrafts: "کانٹینٹ ڈرافٹس",
-      stats: {
-        users: "کل صارفین",
-        library: "کل کانٹینٹ",
-        payments: "ادائیگیاں",
-        certificates: "سرٹیفکیٹس",
-      },
-      statsText: {
-        users: "رجسٹرڈ طلبہ، اساتذہ، ایڈمنز، اور والدین۔",
-        library: "بلاگز، کورسز، اور کتب کی موجودہ لائبریری۔",
-        payments: "حالیہ مالی سرگرمی اور فالو اپ۔",
-        certificates: "جاری شدہ تکمیلی اسناد۔",
-      },
-      notice: {
-        blogCreated: "بلاگ کامیابی سے محفوظ ہو گیا۔",
-        blogDeleted: "بلاگ کامیابی سے حذف ہو گیا۔",
-        courseCreated: "کورس کامیابی سے محفوظ ہو گیا۔",
-        courseDeleted: "کورس کامیابی سے حذف ہو گیا۔",
-        bookCreated: "کتاب کامیابی سے محفوظ ہو گئی۔",
-        bookDeleted: "کتاب کامیابی سے حذف ہو گئی۔",
-        blogFailed: "بلاگ محفوظ نہیں ہو سکا۔ مطلوبہ فیلڈز یا سلگ چیک کریں۔",
-        courseFailed: "کورس محفوظ نہیں ہو سکا۔ سلگ یا فیلڈز چیک کریں۔",
-        bookFailed: "کتاب محفوظ نہیں ہو سکی۔",
-        seedOk: "اسٹیٹک ویب سائٹ کانٹینٹ کامیابی سے ڈیٹابیس میں امپورٹ ہو گیا۔",
-        seedFail: "ویب سائٹ کانٹینٹ ڈیٹابیس میں امپورٹ نہیں ہو سکا۔",
-      },
-      overview: {
-        title: "فوری جائزہ",
-        description:
-          "ایک ہی جگہ سے پتا چلتا ہے کہ کس شعبے میں توجہ درکار ہے اور کون سا کانٹینٹ پبلش یا ڈرافٹ حالت میں ہے۔",
-        priority: "اہم ترجیحات",
-        priorityItems: [
-          {
-            label: "ریویو کے منتظر داخلے",
-            hint: "دلچسپی رکھنے والے خاندانوں سے فالو اپ کریں۔",
-          },
-          {
-            label: "نئے رابطہ پیغامات",
-            hint: "سرد ہونے سے پہلے جواب دیں۔",
-          },
-          {
-            label: "ڈرافٹ کانٹینٹ",
-            hint: "پبلش یا آرکائیو کرنے کا فیصلہ کریں۔",
-          },
-        ],
-        workflowTitle: "ایڈیٹوریل ورک فلو",
-        workflowText:
-          "کانٹینٹ ڈیسک اب انگلش اور اردو دونوں کے لیے تیار ہے، لیکن ہر ورک اسپیس اپنی چیز الگ سنبھالتا ہے۔",
-      },
-      operations: {
-        title: "آپریشنز ورک اسپیس",
-        description:
-          "داخلہ، رابطہ، سبمشن، ادائیگی، اور سرٹیفکیٹ سرگرمی کو الگ آپریشنل پینلز میں دیکھیں۔",
-        admissions: "حالیہ داخلے",
-        admissionsSub: "خاندانی انٹیک پائپ لائن",
-        contacts: "رابطہ ڈیسک",
-        contactsSub: "تازہ انکوائریز",
-        submissions: "اکیڈمک ورک فلو",
-        submissionsSub: "سسٹم میں موجود سبمشنز",
-        payments: "ادائیگیاں",
-        paymentsSub: "مالی سرگرمی",
-        certificates: "سرٹیفکیٹس",
-        certificatesSub: "جاری شدہ ریکارڈ",
-        emptyAdmissions: "داخلہ فارم جمع ہوں گے تو یہاں نظر آئیں گے۔",
-        emptyContacts: "رابطہ فارم سبمٹ ہوتے ہی یہاں ترتیب سے آئیں گے۔",
-        emptySubmissions: "اسائنمنٹ ایکٹیویٹی ابھی دستیاب نہیں ہے۔",
-        emptyPayments: "ادائیگیاں آتے ہی یہاں تازہ ریکارڈ نظر آئے گا۔",
-        emptyCertificates: "سرٹیفکیٹس جاری ہوں گے تو یہاں دکھائی دیں گے۔",
-      },
-      filters: {
-        searchPlaceholder: "تلاش کریں...",
-        allStatuses: "تمام اسٹیٹس",
-        published: "پبلشڈ",
-        draft: "ڈرافٹ",
-        archived: "آرکائیوڈ",
-        apply: "فلٹر لگائیں",
-        demo: "ویب سائٹ کانٹینٹ امپورٹ کریں",
-      },
-      common: {
-        totalItems: "کل آئٹمز",
-        slug: "سلگ",
-        status: "اسٹیٹس",
-        title: "عنوان",
-        titleUrdu: "اردو عنوان",
-        category: "کیٹیگری",
-        customCategory: "کسٹم کیٹیگری",
-        excerpt: "خلاصہ",
-        excerptUrdu: "اردو خلاصہ",
-        content: "مواد",
-        contentUrdu: "اردو مواد",
-        description: "تفصیل",
-        descriptionUrdu: "اردو تفصیل",
-        summary: "سمری",
-        summaryUrdu: "اردو سمری",
-        featuredNote: "نمایاں نوٹ",
-        featuredNoteUrdu: "اردو نمایاں نوٹ",
-        duration: "دورانیہ",
-        level: "لیول",
-        price: "قیمت",
-        format: "فارمیٹ",
-        pages: "صفحات",
-        featuredHome: "ہوم پیج پر نمایاں کریں",
-        create: "بنائیں",
-        save: "تبدیلیاں محفوظ کریں",
-        delete: "حذف کریں",
-        edit: "ایڈٹ کریں",
-        noRecords: "ابھی ریکارڈ موجود نہیں۔",
-      },
-      modules: {
-        blogs: {
-          title: "بلاگ ورک اسپیس",
-          description: "یہاں صرف مضامین، اعلان، اور بلاگ مینجمنٹ کا کام رکھیں۔",
-          createTitle: "نیا بلاگ شائع کریں",
-          listTitle: "موجودہ بلاگز",
-          create: "بلاگ شائع کریں",
-          empty: "ابھی کوئی بلاگ موجود نہیں۔",
-        },
-        courses: {
-          title: "کورس ورک اسپیس",
-          description: "یہ حصہ صرف کورسز، نصاب، اور کورس مینجمنٹ کے لیے ہے۔",
-          createTitle: "نیا کورس بنائیں",
-          listTitle: "موجودہ کورسز",
-          create: "کورس بنائیں",
-          empty: "ابھی کوئی کورس موجود نہیں۔",
-        },
-        books: {
-          title: "کتب ورک اسپیس",
-          description: "یہاں صرف کتب، PDFs، اور لائبریری ریسورسز منظم کریں۔",
-          createTitle: "نئی کتاب شامل کریں",
-          listTitle: "موجودہ کتب",
-          create: "کتاب بنائیں",
-          empty: "ابھی کوئی کتاب موجود نہیں۔",
-        },
-      },
-      meta: {
-        general: "جنرل",
-        noAuthor: "مصنف موجود نہیں",
-        allLevels: "تمام لیولز",
-        featured: "ہوم پیج پر نمایاں",
-        standard: "معمول کی ویزیبلٹی",
-        paymentFallback: "ادائیگی",
-        issued: "جاری شدہ",
-        recent: "حال ہی میں",
-      },
-    };
-  }
-
+function getAdminCopy() {
   return {
     workspace: "Admin Workspace",
     sidebarTitle: "Management Panel",
@@ -341,8 +172,8 @@ function getAdminCopy(locale: SiteLocale) {
       blogFailed: "Blog could not be saved. Check required fields or slug.",
       courseFailed: "Course could not be saved. Check required fields or slug.",
       bookFailed: "Book could not be saved.",
-      seedOk: "Static website content was imported into the database successfully.",
-      seedFail: "Website content could not be imported into the database.",
+      seedOk: "Initial academy content was imported into the database successfully.",
+      seedFail: "Academy content could not be imported into the database.",
     },
     overview: {
       title: "Quick overview",
@@ -394,7 +225,7 @@ function getAdminCopy(locale: SiteLocale) {
       draft: "Draft",
       archived: "Archived",
       apply: "Apply filters",
-      demo: "Import website content",
+      importContent: "Import academy content",
     },
     common: {
       totalItems: "Total items",
@@ -487,18 +318,12 @@ function getStatusMessage(
     case "settings-saved":
       return {
         tone: "success",
-        text:
-          copy.workspace === "Admin Workspace"
-            ? "Site settings saved successfully."
-            : "سائٹ سیٹنگز کامیابی سے محفوظ ہو گئیں۔",
+        text: "Site settings saved successfully.",
       };
     case "hero-saved":
       return {
         tone: "success",
-        text:
-          copy.workspace === "Admin Workspace"
-            ? "Homepage hero content saved successfully."
-            : "ہوم پیج ہیرو کانٹینٹ کامیابی سے محفوظ ہو گیا۔",
+        text: "Homepage hero content saved successfully.",
       };
     case "blog-create-failed":
     case "blog-delete-failed":
@@ -512,18 +337,12 @@ function getStatusMessage(
     case "settings-save-failed":
       return {
         tone: "error",
-        text:
-          copy.workspace === "Admin Workspace"
-            ? "Site settings could not be saved."
-            : "سائٹ سیٹنگز محفوظ نہیں ہو سکیں۔",
+        text: "Site settings could not be saved.",
       };
     case "hero-save-failed":
       return {
         tone: "error",
-        text:
-          copy.workspace === "Admin Workspace"
-            ? "Homepage hero content could not be saved."
-            : "ہوم پیج ہیرو کانٹینٹ محفوظ نہیں ہو سکا۔",
+        text: "Homepage hero content could not be saved.",
       };
     case "certificate-issued":
       return {
@@ -621,7 +440,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
   }
 
   const locale = getLocaleFromCookies(cookieStore);
-  const copy = getAdminCopy(locale);
+  const copy = getAdminCopy();
   const view = normalizeWorkspaceView(
     typeof searchParams.view === "string" ? searchParams.view : undefined
   );
@@ -708,7 +527,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
     { view: "books", label: copy.views.books },
     {
       view: "settings",
-      label: locale === "ur" ? "سیٹنگز" : locale === "ar" ? "الإعدادات" : "Settings",
+      label: "Settings",
     },
   ] satisfies Array<{ view: WorkspaceView; label: string }>;
 
@@ -759,9 +578,9 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
           </button>
         </form>
 
-        <form action={seedDemoContentAction}>
+        <form action={importAcademyContentAction}>
           <button type="submit" className={styles.secondaryAction}>
-            {copy.filters.demo}
+            {copy.filters.importContent}
           </button>
         </form>
       </div>
@@ -1332,7 +1151,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 </label>
                 <label className={styles.field}>
                   <span>{copy.common.titleUrdu}</span>
-                  <input name="titleUrdu" dir="rtl" placeholder="اردو عنوان" />
+                  <input name="titleUrdu" dir="rtl" placeholder="Urdu title" />
                 </label>
               </div>
               <div className={styles.formTriple}>
@@ -1391,7 +1210,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 name="contentUrdu"
                 label={copy.common.contentUrdu}
                 dir="rtl"
-                placeholder="اردو مکمل مواد"
+                placeholder="Urdu full content"
               />
               <button type="submit" className={styles.primaryAction}>
                 {copy.modules.blogs.create}
@@ -1534,7 +1353,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 </label>
                 <label className={styles.field}>
                   <span>{copy.common.titleUrdu}</span>
-                  <input name="titleUrdu" dir="rtl" placeholder="اردو کورس عنوان" />
+                  <input name="titleUrdu" dir="rtl" placeholder="Urdu course title" />
                 </label>
               </div>
               <div className={styles.formSplit}>
@@ -1601,7 +1420,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 name="contentUrdu"
                 label={copy.common.contentUrdu}
                 dir="rtl"
-                placeholder="ہر لائن ایک نصابی پوائنٹ ہو سکتی ہے"
+                placeholder="Each line can be one Urdu curriculum point"
               />
               <button type="submit" className={styles.primaryAction}>
                 {copy.modules.courses.create}
@@ -1724,7 +1543,10 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 <h3>{copy.modules.books.createTitle}</h3>
               </div>
             </div>
-            <form action={createBookAction} className={styles.adminForm}>
+            <form
+              action={createBookAction}
+              className={styles.adminForm}
+            >
               <input type="hidden" name="view" value="books" />
               <div className={styles.formSplit}>
                 <label className={styles.field}>
@@ -1733,7 +1555,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 </label>
                 <label className={styles.field}>
                   <span>{copy.common.titleUrdu}</span>
-                  <input name="titleUrdu" dir="rtl" placeholder="اردو کتاب عنوان" />
+                  <input name="titleUrdu" dir="rtl" placeholder="Urdu book title" />
                 </label>
               </div>
               <div className={styles.formSplit}>
@@ -1775,6 +1597,26 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 <span>{copy.common.format}</span>
                 <input name="format" defaultValue="PDF Guide" required />
               </label>
+              <div className={styles.formSplit}>
+                <label className={styles.field}>
+                  <span>Upload book from PC</span>
+                  <input name="bookFile" type="file" accept=".pdf,.doc,.docx,.epub" />
+                </label>
+                <label className={styles.field}>
+                  <span>Upload cover from PC</span>
+                  <input name="coverFile" type="file" accept="image/*" />
+                </label>
+              </div>
+              <div className={styles.formSplit}>
+                <label className={styles.field}>
+                  <span>Book file URL</span>
+                  <input name="fileUrl" type="url" placeholder="https://.../book.pdf" />
+                </label>
+                <label className={styles.field}>
+                  <span>Cover image URL</span>
+                  <input name="coverUrl" type="url" placeholder="https://.../cover.webp" />
+                </label>
+              </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>{copy.common.summary}</span>
@@ -1822,7 +1664,10 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                     </p>
                     <details className={styles.editDetails}>
                       <summary className={styles.editSummary}>{copy.common.edit}</summary>
-                      <form action={updateBookAction} className={styles.editForm}>
+                      <form
+                        action={updateBookAction}
+                        className={styles.editForm}
+                      >
                         <input type="hidden" name="id" value={book.id} />
                         <input type="hidden" name="view" value="books" />
                         <div className={styles.formSplit}>
@@ -1859,6 +1704,36 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                             ))}
                           </select>
                         </label>
+                        <div className={styles.formSplit}>
+                          <label className={styles.field}>
+                            <span>Upload book from PC</span>
+                            <input name="bookFile" type="file" accept=".pdf,.doc,.docx,.epub" />
+                          </label>
+                          <label className={styles.field}>
+                            <span>Upload cover from PC</span>
+                            <input name="coverFile" type="file" accept="image/*" />
+                          </label>
+                        </div>
+                        <div className={styles.formSplit}>
+                          <label className={styles.field}>
+                            <span>Book file URL</span>
+                            <input
+                              name="fileUrl"
+                              type="url"
+                              defaultValue={book.fileUrl || ""}
+                              placeholder="https://.../book.pdf"
+                            />
+                          </label>
+                          <label className={styles.field}>
+                            <span>Cover image URL</span>
+                            <input
+                              name="coverUrl"
+                              type="url"
+                              defaultValue={book.coverUrl || ""}
+                              placeholder="https://.../cover.webp"
+                            />
+                          </label>
+                        </div>
                         <label className={styles.field}>
                           <span>{copy.common.summary}</span>
                           <textarea name="summary" defaultValue={book.summary} required />
@@ -1893,33 +1768,13 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
 
   function renderSettingsWorkspace() {
     const settingsCopy = {
-      title: locale === "ur" ? "سائٹ سیٹنگز" : locale === "ar" ? "إعدادات الموقع" : "Site settings",
+      title: "Site settings",
       description:
-        locale === "ur"
-          ? "ہوم پیج ہیرو، برانڈنگ، لوگو، اور سوشل لنکس کو یہاں سے کنٹرول کریں۔"
-          : locale === "ar"
-            ? "تحكم في بطل الصفحة الرئيسية والعلامة التجارية والشعار وروابط التواصل من هنا."
-            : "Control homepage hero content, branding, logo, and key social links from here.",
-      identityTitle:
-        locale === "ur"
-          ? "برانڈ اور رابطہ سیٹنگز"
-          : locale === "ar"
-            ? "إعدادات العلامة والتواصل"
-            : "Brand and contact settings",
-      heroTitle:
-        locale === "ur" ? "ہوم پیج ہیرو" : locale === "ar" ? "بطل الصفحة الرئيسية" : "Homepage hero",
-      saveIdentity:
-        locale === "ur"
-          ? "سائٹ سیٹنگز محفوظ کریں"
-          : locale === "ar"
-            ? "احفظ إعدادات الموقع"
-            : "Save site settings",
-      saveHero:
-        locale === "ur"
-          ? "ہیرو کانٹینٹ محفوظ کریں"
-          : locale === "ar"
-            ? "احفظ محتوى البطل"
-            : "Save hero content",
+        "Control homepage hero content, branding, logo, and key social links from here.",
+      identityTitle: "Brand and contact settings",
+      heroTitle: "Homepage hero",
+      saveIdentity: "Save site settings",
+      saveHero: "Save hero content",
     };
 
     const socials = siteSettings.socials;
@@ -2315,3 +2170,4 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
     </div>
   );
 }
+

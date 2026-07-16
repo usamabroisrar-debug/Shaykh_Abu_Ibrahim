@@ -9,6 +9,8 @@ export type Book = {
   pages: number;
   summary: string;
   featuredNote: string;
+  fileUrl?: string | null;
+  coverUrl?: string | null;
 };
 
 export const books: Book[] = [

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+﻿import { prisma } from "@/lib/prisma";
 import { shouldUseDatabaseReads } from "@/lib/server";
 import { type Book, type BookCategory } from "@/data/books";
 import { normalizeSlug } from "@/utils/slug";
@@ -45,6 +45,30 @@ function stringifyLocaleField(
   return parts.length ? parts.join("\n\n") : fallback?.trim() || "";
 }
 
+async function buildUniqueBookSlug(baseValue: string, existingId?: string) {
+  const baseSlug = normalizeSlug(baseValue) || "book";
+  let candidate = baseSlug;
+  let suffix = 2;
+
+  while (true) {
+    const existing = await prisma.libraryBook.findUnique({
+      where: {
+        slug: candidate,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!existing || existing.id === existingId) {
+      return candidate;
+    }
+
+    candidate = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+}
+
 function mapDatabaseBook(book: {
   id: string;
   title: string;
@@ -54,6 +78,8 @@ function mapDatabaseBook(book: {
   pages: number;
   summary: string;
   featuredNote: string | null;
+  fileUrl?: string | null;
+  coverUrl?: string | null;
   localeContent: unknown;
 }): Book {
   const localeContent = normalizeLocaleContent(book.localeContent);
@@ -83,6 +109,8 @@ function mapDatabaseBook(book: {
     summary: summary || book.summary,
     featuredNote:
       featuredNote || "Useful companion for guided academy study.",
+    fileUrl: book.fileUrl || null,
+    coverUrl: book.coverUrl || null,
   };
 }
 
@@ -157,20 +185,25 @@ export async function createAdminBook(input: {
   pages: number;
   summary: string;
   featuredNote?: string;
+  fileUrl?: string;
+  coverUrl?: string;
   localeContent?: BookLocaleContent;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
 }) {
   const title = input.title.trim();
+  const slug = await buildUniqueBookSlug(input.slug?.trim() || title);
 
   return prisma.libraryBook.create({
     data: {
       title,
-      slug: normalizeSlug(input.slug?.trim() || title),
+      slug,
       category: normalizeCategory(input.category),
       format: input.format.trim(),
       pages: Math.max(1, input.pages || 1),
       summary: input.summary.trim(),
       featuredNote: input.featuredNote?.trim() || null,
+      fileUrl: input.fileUrl?.trim() || null,
+      coverUrl: input.coverUrl?.trim() || null,
       localeContent: input.localeContent,
       status: input.status,
     },
@@ -186,10 +219,13 @@ export async function updateAdminBook(input: {
   pages: number;
   summary: string;
   featuredNote?: string;
+  fileUrl?: string;
+  coverUrl?: string;
   localeContent?: BookLocaleContent;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
 }) {
   const title = input.title.trim();
+  const slug = await buildUniqueBookSlug(input.slug?.trim() || title, input.id);
 
   return prisma.libraryBook.update({
     where: {
@@ -197,12 +233,14 @@ export async function updateAdminBook(input: {
     },
     data: {
       title,
-      slug: normalizeSlug(input.slug?.trim() || title),
+      slug,
       category: normalizeCategory(input.category),
       format: input.format.trim(),
       pages: Math.max(1, input.pages || 1),
       summary: input.summary.trim(),
       featuredNote: input.featuredNote?.trim() || null,
+      fileUrl: input.fileUrl?.trim() || null,
+      coverUrl: input.coverUrl?.trim() || null,
       localeContent: input.localeContent,
       status: input.status,
     },
@@ -216,38 +254,69 @@ export async function seedAdminBooks() {
     return;
   }
 
-  const demoBooks = [
+  const academyBooks = [
     {
-      title: "Foundations of Daily Adhkar / روزانہ اذکار کی بنیادیں",
+      title: "Foundations of Daily Adhkar",
       slug: "foundations-of-daily-adhkar",
       category: "Character",
       format: "PDF Guide",
       pages: 42,
       summary:
-        "English Summary\nA concise student companion for morning and evening adhkar with transliteration cues and short reflections.\n\nUrdu Summary\nصبح و شام کے اذکار کے لیے مختصر رہنما جس میں تلفظی اشارے اور مختصر نصیحتیں شامل ہیں۔",
-      featuredNote:
-        "English Featured Note\nIdeal for new students and families.\n\nUrdu Featured Note\nنئے طلبہ اور خاندانوں کے لیے بہترین۔",
+        "A concise student companion for morning and evening adhkar with transliteration cues and short reflections.",
+      featuredNote: "Ideal for new students and families.",
+      localeContent: {
+        title: {
+          en: "Foundations of Daily Adhkar",
+          ur: "روزانہ اذکار کی بنیادیں",
+          ar: "أسس أذكار اليوم والليلة",
+        },
+        summary: {
+          en: "A concise student companion for morning and evening adhkar with transliteration cues and short reflections.",
+          ur: "صبح و شام کے اذکار کے لیے مختصر رہنما جس میں تلفظی اشارے اور مختصر نصیحتیں شامل ہیں۔",
+          ar: "رفيق مختصر للطلاب في أذكار الصباح والمساء مع إرشادات نطق وتأملات قصيرة.",
+        },
+        featuredNote: {
+          en: "Ideal for new students and families.",
+          ur: "نئے طلبہ اور خاندانوں کے لیے بہترین۔",
+          ar: "مناسب للطلاب الجدد والعائلات.",
+        },
+      },
       status: "PUBLISHED" as const,
     },
     {
-      title: "Tajweed Essentials Workbook / تجوید ضروریات ورک بک",
+      title: "Tajweed Essentials Workbook",
       slug: "tajweed-essentials-workbook",
       category: "Quran",
       format: "Practice Workbook",
       pages: 64,
       summary:
-        "English Summary\nPractice sheets covering makharij, madd, qalqalah, and common live-recitation errors.\n\nUrdu Summary\nمخارج، مد، قلقلہ، اور عام قرأت کی غلطیوں پر مبنی مشقی صفحات۔",
-      featuredNote:
-        "English Featured Note\nPairs well with weekly Tajweed review.\n\nUrdu Featured Note\nہفتہ وار تجوید ریویو کے ساتھ بہترین رہتا ہے۔",
+        "Practice sheets covering makharij, madd, qalqalah, and common live-recitation errors.",
+      featuredNote: "Pairs well with weekly Tajweed review.",
+      localeContent: {
+        title: {
+          en: "Tajweed Essentials Workbook",
+          ur: "تجوید ضروریات ورک بک",
+          ar: "كراسة أساسيات التجويد",
+        },
+        summary: {
+          en: "Practice sheets covering makharij, madd, qalqalah, and common live-recitation errors.",
+          ur: "مخارج، مد، قلقلہ، اور عام قرأت غلطیوں پر مبنی مشقی صفحات۔",
+          ar: "أوراق تدريبية تغطي المخارج والمدود والقلقلة وأخطاء التلاوة الشائعة.",
+        },
+        featuredNote: {
+          en: "Pairs well with weekly Tajweed review.",
+          ur: "ہفتہ وار تجوید ریویو کے ساتھ بہترین رہتا ہے۔",
+          ar: "مناسب مع مراجعة التجويد الأسبوعية.",
+        },
+      },
       status: "PUBLISHED" as const,
     },
   ];
 
-  for (const book of demoBooks) {
+  for (const book of academyBooks) {
     await createAdminBook(book);
   }
 }
-
 export async function deleteAdminBook(id: string) {
   return prisma.libraryBook.delete({
     where: {
@@ -255,3 +324,4 @@ export async function deleteAdminBook(id: string) {
     },
   });
 }
+

@@ -1,8 +1,11 @@
 "use server";
 
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import { getInlineLanguageLabelValues } from "@/lib/content-localization";
 import { prisma } from "@/lib/prisma";
 import { importStaticContentToDatabase } from "@/services/content/import-static-content.service";
 import {
@@ -72,6 +75,62 @@ function buildLocaleField(english: string, urdu: string, arabic = "") {
     ur: urdu.trim(),
     ar: arabic.trim(),
   };
+}
+
+function isUploadedFile(value: FormDataEntryValue | null): value is File {
+  return typeof File !== "undefined" && value instanceof File && value.size > 0;
+}
+
+function cleanFilename(value: string) {
+  const parsed = path.parse(value || "upload");
+  const safeName = normalizeSlug(parsed.name || "book-file");
+  const safeExt = parsed.ext.toLowerCase().replace(/[^a-z0-9.]/g, "");
+
+  return `${safeName || "book-file"}${safeExt || ""}`;
+}
+
+function titleFromFile(value: FormDataEntryValue | null) {
+  if (!isUploadedFile(value)) {
+    return "";
+  }
+
+  return path.parse(value.name).name.replace(/[-_]+/g, " ").trim();
+}
+
+function hasLocaleParts(value: Partial<Record<"en" | "ur" | "ar" | "default", string>>) {
+  return Boolean(value.en || value.ur || value.ar || value.default);
+}
+
+function splitBookTitle(rawTitle: string, rawUrduTitle: string, fallbackTitle: string) {
+  const source = rawTitle || fallbackTitle;
+  const parts = getInlineLanguageLabelValues(source);
+  const hasParts = hasLocaleParts(parts);
+  const englishTitle = parts.en?.trim() || (!hasParts ? source.trim() : "");
+  const urduTitle = rawUrduTitle.trim() || parts.ur?.trim() || "";
+  const arabicTitle = parts.ar?.trim() || "";
+
+  return {
+    englishTitle,
+    urduTitle,
+    arabicTitle,
+    storageTitle: englishTitle || urduTitle || arabicTitle || source.trim(),
+  };
+}
+
+async function saveLocalBookAsset(value: FormDataEntryValue | null, folder: "files" | "covers") {
+  if (!isUploadedFile(value)) {
+    return "";
+  }
+
+  const filename = `${Date.now()}-${cleanFilename(value.name)}`;
+  const uploadDir = path.join(process.cwd(), "public", "uploads", "books", folder);
+  const outputPath = path.join(uploadDir, filename);
+  const bytes = Buffer.from(await value.arrayBuffer());
+
+  await mkdir(uploadDir, { recursive: true });
+  await writeFile(outputPath, bytes);
+
+  return `/uploads/books/${folder}/${filename}`;
 }
 
 function resolveCategory(
@@ -307,20 +366,32 @@ export async function updateCourseAction(formData: FormData) {
 export async function createBookAction(formData: FormData) {
   await requireAdminAccess();
   const view = cleanValue(formData.get("view")) || "books";
-  const title = cleanValue(formData.get("title"));
-  const titleUrdu = cleanValue(formData.get("titleUrdu"));
-  const summary = cleanValue(formData.get("summary"));
+  const bookFile = formData.get("bookFile");
+  const coverFile = formData.get("coverFile");
+  const rawTitle = cleanValue(formData.get("title"));
+  const detectedTitle = titleFromFile(bookFile);
+  const { englishTitle, urduTitle, arabicTitle, storageTitle } = splitBookTitle(
+    rawTitle,
+    cleanValue(formData.get("titleUrdu")),
+    detectedTitle
+  );
+  const summary =
+    cleanValue(formData.get("summary")) ||
+    (storageTitle ? `Study resource for ${storageTitle}.` : "");
   const summaryUrdu = cleanValue(formData.get("summaryUrdu"));
   const featuredNote = cleanValue(formData.get("featuredNote"));
   const featuredNoteUrdu = cleanValue(formData.get("featuredNoteUrdu"));
 
-  if (!requireAtLeastOne(title, titleUrdu) || !requireAtLeastOne(summary, summaryUrdu)) {
+  if (!requireAtLeastOne(englishTitle, urduTitle, arabicTitle)) {
     redirect(buildAdminRedirect("error=book-create-failed", view));
   }
 
   try {
+    const uploadedFileUrl = await saveLocalBookAsset(bookFile, "files");
+    const uploadedCoverUrl = await saveLocalBookAsset(coverFile, "covers");
+
     await createAdminBook({
-      title: joinInlineTranslations(title, titleUrdu),
+      title: storageTitle,
       slug: cleanValue(formData.get("slug")),
       category: cleanValue(formData.get("category")) || "Quran",
       format: cleanValue(formData.get("format")) || "PDF Guide",
@@ -332,8 +403,10 @@ export async function createBookAction(formData: FormData) {
         "Urdu Featured Note",
         featuredNoteUrdu
       ),
+      fileUrl: uploadedFileUrl || cleanValue(formData.get("fileUrl")),
+      coverUrl: uploadedCoverUrl || cleanValue(formData.get("coverUrl")),
       localeContent: {
-        title: buildLocaleField(title, titleUrdu),
+        title: buildLocaleField(englishTitle, urduTitle, arabicTitle),
         summary: buildLocaleField(summary, summaryUrdu),
         featuredNote: buildLocaleField(featuredNote, featuredNoteUrdu),
       },
@@ -342,7 +415,8 @@ export async function createBookAction(formData: FormData) {
         | "PUBLISHED"
         | "ARCHIVED",
     });
-  } catch {
+  } catch (error) {
+    console.error("Book create failed", error);
     redirect(buildAdminRedirect("error=book-create-failed", view));
   }
 
@@ -373,18 +447,43 @@ export async function updateBookAction(formData: FormData) {
   const view = cleanValue(formData.get("view")) || "books";
 
   try {
+    const bookFile = formData.get("bookFile");
+    const coverFile = formData.get("coverFile");
+    const uploadedFileUrl = await saveLocalBookAsset(bookFile, "files");
+    const uploadedCoverUrl = await saveLocalBookAsset(coverFile, "covers");
+    const rawTitle = cleanValue(formData.get("title"));
+    const { englishTitle, urduTitle, arabicTitle, storageTitle } = splitBookTitle(
+      rawTitle,
+      cleanValue(formData.get("titleUrdu")),
+      titleFromFile(bookFile)
+    );
+    const summary =
+      cleanValue(formData.get("summary")) ||
+      (storageTitle ? `Study resource for ${storageTitle}.` : "Study resource for academy students.");
+
     await updateAdminBook({
       id: cleanValue(formData.get("id")),
-      title: cleanValue(formData.get("title")),
+      title: storageTitle,
       slug: cleanValue(formData.get("slug")),
       category: cleanValue(formData.get("category")) || "Quran",
       format: cleanValue(formData.get("format")) || "PDF Guide",
       pages: Number(formData.get("pages") || 1),
-      summary: cleanValue(formData.get("summary")),
+      summary,
       featuredNote: cleanValue(formData.get("featuredNote")),
+      fileUrl: uploadedFileUrl || cleanValue(formData.get("fileUrl")),
+      coverUrl: uploadedCoverUrl || cleanValue(formData.get("coverUrl")),
+      localeContent: {
+        title: buildLocaleField(englishTitle, urduTitle, arabicTitle),
+        summary: buildLocaleField(summary, cleanValue(formData.get("summaryUrdu"))),
+        featuredNote: buildLocaleField(
+          cleanValue(formData.get("featuredNote")),
+          cleanValue(formData.get("featuredNoteUrdu"))
+        ),
+      },
       status: cleanValue(formData.get("status")) as "DRAFT" | "PUBLISHED" | "ARCHIVED",
     });
-  } catch {
+  } catch (error) {
+    console.error("Book update failed", error);
     redirect(buildAdminRedirect("error=book-create-failed", view));
   }
 
@@ -394,13 +493,14 @@ export async function updateBookAction(formData: FormData) {
   redirect(buildAdminRedirect("success=book-created", view));
 }
 
-export async function seedDemoContentAction() {
+export async function importAcademyContentAction() {
   const user = await requireAdminAccess();
   const view = "overview";
 
   try {
     await importStaticContentToDatabase(user.id);
-  } catch {
+  } catch (error) {
+    console.error("Academy content import failed", error);
     redirect(buildAdminRedirect("error=seed-failed", view));
   }
 

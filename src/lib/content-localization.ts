@@ -13,16 +13,6 @@ const sectionLocaleMatchers: Array<{ locale: SiteLocale; pattern: RegExp }> = [
   { locale: "ar", pattern: /^arabic\b/i },
 ];
 
-const unavailableCopy: Record<SiteLocale, string> = {
-  en: "Content is not available in this language yet.",
-  ur: "اس زبان میں مواد ابھی دستیاب نہیں ہے۔",
-  ar: "المحتوى غير متاح بهذه اللغة بعد.",
-};
-
-function getUnavailableCopy(locale: SiteLocale) {
-  return unavailableCopy[locale] || unavailableCopy.en;
-}
-
 export function hasArabicScript(value: string) {
   return /[\u0600-\u06ff\u0750-\u077f\u08a0-\u08ff]/.test(value);
 }
@@ -92,6 +82,67 @@ function detectInlineLocaleParts(value: string) {
   return buckets;
 }
 
+function cleanInlineSegment(value: string) {
+  return value
+    .replace(/^[\s:：\-–—|/]+/, "")
+    .replace(/[\s:：\-–—|/]+$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function getInlineLanguageLabelValues(value: string | null | undefined) {
+  const normalized = value?.trim() || "";
+
+  if (!normalized) {
+    return {} as LocaleBucket;
+  }
+
+  const matches = Array.from(normalized.matchAll(/\b(English|Urdu|Arabic)\b/gi));
+
+  if (matches.length < 2) {
+    return {} as LocaleBucket;
+  }
+
+  const usefulMatches = matches.filter((match, index) => {
+    const label = match[1]?.toLowerCase();
+
+    if (label !== "arabic") {
+      return true;
+    }
+
+    const start = (match.index || 0) + match[0].length;
+    const nextStart = matches[index + 1]?.index ?? normalized.length;
+    const segment = normalized.slice(start, nextStart);
+
+    return hasArabicScript(segment);
+  });
+
+  if (usefulMatches.length < 2) {
+    return {} as LocaleBucket;
+  }
+
+  const buckets: LocaleBucket = {};
+
+  usefulMatches.forEach((match, index) => {
+    const label = match[1]?.toLowerCase();
+    const locale = label === "urdu" ? "ur" : label === "arabic" ? "ar" : "en";
+    const start = (match.index || 0) + match[0].length;
+    const end = usefulMatches[index + 1]?.index ?? normalized.length;
+    const segment = cleanInlineSegment(normalized.slice(start, end));
+
+    if (segment) {
+      buckets[locale] = segment;
+    }
+  });
+
+  return buckets;
+}
+
+function cleanMixedLanguageLabelText(value: string, locale: SiteLocale) {
+  const bucket = getInlineLanguageLabelValues(value);
+  return pickBestLocalizedValue(bucket, locale) || pickFallbackLocalizedValue(bucket) || value;
+}
+
 function normalizeLocalizedObject(value: Exclude<LocalizedTextValue, string | null | undefined>) {
   const bucket: LocaleBucket = {};
 
@@ -106,28 +157,25 @@ function normalizeLocalizedObject(value: Exclude<LocalizedTextValue, string | nu
   return bucket;
 }
 
-function pickBestLocalizedValue(
-  bucket: LocaleBucket,
-  locale: SiteLocale,
-  options?: { allowDefault?: boolean }
-) {
-  const value = bucket[locale]?.trim();
+function pickBestLocalizedValue(bucket: LocaleBucket, locale: SiteLocale) {
+  return bucket[locale]?.trim() || "";
+}
 
-  if (value) {
-    return value;
-  }
-
-  if (options?.allowDefault) {
-    return bucket.default?.trim() || "";
-  }
-
-  return "";
+function pickFallbackLocalizedValue(bucket: LocaleBucket) {
+  return (
+    bucket.en?.trim() ||
+    bucket.default?.trim() ||
+    bucket.ur?.trim() ||
+    bucket.ar?.trim() ||
+    ""
+  );
 }
 
 function resolveStructuredValue(value: LocalizedTextValue, locale: SiteLocale) {
   if (typeof value === "object" && value !== null) {
     const bucket = normalizeLocalizedObject(value);
-    return pickBestLocalizedValue(bucket, locale, { allowDefault: locale === "en" });
+    const selected = pickBestLocalizedValue(bucket, locale) || pickFallbackLocalizedValue(bucket);
+    return selected ? cleanMixedLanguageLabelText(selected, locale) : "";
   }
 
   return "";
@@ -162,29 +210,34 @@ export function resolveLocalizedInlineText(value: LocalizedTextValue, locale: Si
     return structured;
   }
 
-  if (typeof value === "object" && value !== null) {
-    return getUnavailableCopy(locale);
-  }
-
-  const normalized = value?.trim() || "";
+  const normalized = typeof value === "string" ? value.trim() : "";
 
   if (!normalized) {
     return "";
   }
 
+  const sectioned = parseSectionedContent(normalized);
+  const sectionedValue = pickBestLocalizedValue(sectioned, locale);
+
+  if (sectionedValue) {
+    return sectionedValue.replace(/\s+/g, " ").trim();
+  }
+
   const inlineParts = detectInlineLocaleParts(normalized);
-  const hasInlineLocaleParts = Object.values(inlineParts).some(Boolean);
   const localized = pickBestLocalizedValue(inlineParts, locale);
 
   if (localized) {
     return localized;
   }
 
-  if (hasInlineLocaleParts) {
-    return getUnavailableCopy(locale);
+  const languageLabelParts = getInlineLanguageLabelValues(normalized);
+  const languageLabelValue = pickBestLocalizedValue(languageLabelParts, locale);
+
+  if (languageLabelValue) {
+    return languageLabelValue;
   }
 
-  return locale === "en" ? normalized : getUnavailableCopy(locale);
+  return pickFallbackLocalizedValue(inlineParts) || pickFallbackLocalizedValue(languageLabelParts) || normalized;
 }
 
 export function resolveLocalizedRichText(value: LocalizedTextValue, locale: SiteLocale) {
@@ -194,29 +247,20 @@ export function resolveLocalizedRichText(value: LocalizedTextValue, locale: Site
     return structured;
   }
 
-  if (typeof value === "object" && value !== null) {
-    return getUnavailableCopy(locale);
-  }
-
-  const normalized = value?.trim() || "";
+  const normalized = typeof value === "string" ? value.trim() : "";
 
   if (!normalized) {
     return "";
   }
 
   const sectioned = parseSectionedContent(normalized);
-  const hasSectionedContent = Object.values(sectioned).some(Boolean);
   const localized = pickBestLocalizedValue(sectioned, locale);
 
   if (localized) {
     return localized;
   }
 
-  if (hasSectionedContent) {
-    return getUnavailableCopy(locale);
-  }
-
-  return locale === "en" ? normalized : getUnavailableCopy(locale);
+  return pickFallbackLocalizedValue(sectioned) || normalized;
 }
 
 export function resolveLocalizedParagraphs(

@@ -149,7 +149,7 @@ const localeContent: Record<SiteLocale, LocaleContent> = {
         "If you want help choosing the right pathway or are preparing to enroll a child or family member, this is the best place to start.",
       admissionsSupport: "Admissions support",
       admissionsSupportText:
-        "The academy now supports saved contact submissions as well, so you can either message us directly on social platforms or leave a structured inquiry for admissions and course guidance.",
+        "The academy saves structured contact submissions, so families can ask about admissions, timings, and the right course pathway.",
       chatWhatsapp: "Chat on WhatsApp",
       joinChannel: "Join WhatsApp Channel",
       visitYoutube: "Visit YouTube",
@@ -210,7 +210,7 @@ const localeContent: Record<SiteLocale, LocaleContent> = {
       secureAccess: "محفوظ رسائی",
       loginJourney: "اپنے اسلامی تعلیمی سفر کو جاری رکھنے کے لیے لاگ اِن کریں",
       loginDescription:
-        "طلبہ، والدین، اساتذہ، اور منتظمین اب داخلہ، انرولمنٹ، پیش رفت، اور اکیڈمی انتظامات کے لیے اپنے مخصوص ڈیش بورڈز میں جا سکتے ہیں۔",
+        "طلبہ، والدین، اساتذہ، اور منتظمین داخلہ، انرولمنٹ، پیش رفت، اور اکیڈمی انتظامات کے لیے اپنے مخصوص ڈیش بورڈز استعمال کر سکتے ہیں۔",
       roleDashboards: "رول کے مطابق ڈیش بورڈز",
       roleDashboardsText:
         "ہر اکاؤنٹ مطالعہ، تدریس، یا انتظامیہ کے لیے درست جگہ پر پہنچتا ہے۔",
@@ -219,31 +219,31 @@ const localeContent: Record<SiteLocale, LocaleContent> = {
         "جمع شدہ فارم، کورس سرگرمی، اور جاری پیش رفت ایک ہی جگہ پر دیکھیں۔",
       nextSteps: "منظم اگلے مراحل",
       nextStepsText:
-        "داخلہ سے لے کر سرٹیفکیٹ تک، اب پورا تجربہ ایک منظم نظام کے ساتھ موجود ہے۔",
+        "داخلہ سے لے کر انرولمنٹ اور سرٹیفکیٹ تک، پورا تجربہ ایک منظم نظام کے ساتھ موجود ہے۔",
       login: "لاگ اِن",
       welcomeBack: "خوش آمدید",
       useCredentials:
-        "اپنے اکیڈمی اکاؤنٹ سے لاگ اِن کریں اور کورسز، داخلہ، اور اپنے نجی ڈیش بورڈ تک رسائی حاصل کریں۔",
+        "اپنے اکیڈمی اکاؤنٹ سے لاگ اِن کریں اور کورسز، داخلہ، اور نجی ڈیش بورڈ تک رسائی حاصل کریں۔",
     },
     contact: {
       eyebrow: "رابطہ",
       title: "داخلہ، کورس رہنمائی، اور اکیڈمی اپڈیٹس کے لیے ہم سے رابطہ کریں",
       description:
-        "اگر آپ درست تعلیمی راستہ منتخب کرنے میں مدد چاہتے ہیں یا اپنے بچے یا خاندان کے کسی فرد کے داخلے کی تیاری کر رہے ہیں تو یہاں سے آغاز کریں۔",
+        "اگر آپ درست تعلیمی راستہ منتخب کرنے میں مدد چاہتے ہیں یا کسی بچے یا فیملی ممبر کا داخلہ کروانا چاہتے ہیں تو یہاں سے آغاز کریں۔",
       admissionsSupport: "داخلہ رہنمائی",
       admissionsSupportText:
-        "اکیڈمی میں محفوظ رابطہ فارم کی سہولت بھی موجود ہے، لہٰذا آپ براہِ راست سوشل پلیٹ فارمز پر پیغام بھیج سکتے ہیں یا داخلہ اور کورس رہنمائی کے لیے باقاعدہ درخواست چھوڑ سکتے ہیں۔",
+        "اکیڈمی رابطہ فارم کو محفوظ کرتی ہے تاکہ داخلہ، اوقات، اور کورس رہنمائی کے سوالات منظم طریقے سے فالو اپ ہو سکیں۔",
       chatWhatsapp: "واٹس ایپ پر چیٹ کریں",
       joinChannel: "واٹس ایپ چینل جوائن کریں",
       visitYoutube: "یوٹیوب دیکھیں",
       whatsappChat: "واٹس ایپ چیٹ",
-      whatsappChatText: "داخلہ، اوقات، اور کورس رہنمائی کے لیے براہِ راست پیغام کریں۔",
+      whatsappChatText: "داخلہ، اوقات، اور کورس رہنمائی کے لیے براہ راست پیغام کریں۔",
       whatsappChannel: "واٹس ایپ چینل",
       whatsappChannelText: "روزانہ اپڈیٹس، یاد دہانیاں، اور داخلہ معلومات۔",
       instagram: "انسٹاگرام",
-      instagramText: "ویژول اپڈیٹس اور اکیڈمی جھلکیاں۔",
+      instagramText: "اکیڈمی اپڈیٹس اور جھلکیاں۔",
       facebook: "فیس بک",
-      facebookText: "کمیونٹی موجودگی اور اعلانات۔",
+      facebookText: "کمیونٹی اعلانات اور اہم معلومات۔",
     },
   },
   ar: {
@@ -253,7 +253,7 @@ const localeContent: Record<SiteLocale, LocaleContent> = {
     label: "Arabic",
     nativeLabel: "العربية",
     subtitle: "منصة تعليمية إسلامية",
-    bismillah: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
+    bismillah: "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ",
     datesTitle: "تاريخ اليوم",
     nav: {
       home: "الرئيسية",
@@ -293,16 +293,16 @@ const localeContent: Record<SiteLocale, LocaleContent> = {
       secureAccess: "دخول آمن",
       loginJourney: "سجّل الدخول لمتابعة رحلتك التعليمية الإسلامية",
       loginDescription:
-        "يمكن للطلاب وأولياء الأمور والمعلمين والإداريين الانتقال الآن إلى لوحاتهم المخصصة للقبول والتسجيل ومتابعة التقدم وإدارة الأكاديمية.",
-      roleDashboards: "لوحات بحسب الدور",
+        "يمكن للطلاب وأولياء الأمور والمعلمين والإداريين الوصول إلى لوحاتهم الخاصة للقبول والتسجيل ومتابعة التقدم وإدارة الأكاديمية.",
+      roleDashboards: "لوحات حسب الدور",
       roleDashboardsText:
-        "يصل كل حساب إلى المساحة المناسبة للتعلم أو التدريس أو الإدارة.",
+        "ينتقل كل حساب إلى المساحة المناسبة للتعلم أو التدريس أو الإدارة.",
       records: "سجلات القبول والتعلم",
       recordsText:
-        "ابقَ قريباً من الطلبات وحركة الدورات والتقدم المستمر في مكان واحد.",
+        "تابع الطلبات وحركة الدورات والتقدم المستمر في مكان واحد.",
       nextSteps: "خطوات منظمة",
       nextStepsText:
-        "من القبول إلى الالتحاق إلى الشهادات، أصبحت التجربة الآن قائمة على نظام حقيقي.",
+        "من القبول إلى التسجيل ثم الشهادات، أصبحت التجربة قائمة على نظام واضح.",
       login: "تسجيل الدخول",
       welcomeBack: "مرحباً بعودتك",
       useCredentials:
@@ -315,14 +315,14 @@ const localeContent: Record<SiteLocale, LocaleContent> = {
         "إذا كنت تريد مساعدة في اختيار المسار المناسب أو تستعد لتسجيل طفل أو أحد أفراد العائلة، فهذا أفضل مكان للبداية.",
       admissionsSupport: "دعم القبول",
       admissionsSupportText:
-        "تدعم الأكاديمية الآن حفظ نماذج التواصل أيضاً، لذلك يمكنك مراسلتنا مباشرة عبر المنصات الاجتماعية أو إرسال استفسار منظم للقبول والإرشاد الدراسي.",
+        "تحفظ الأكاديمية نماذج التواصل حتى يمكن متابعة أسئلة القبول والمواعيد والإرشاد الدراسي بطريقة منظمة.",
       chatWhatsapp: "تحدث عبر واتساب",
       joinChannel: "انضم إلى قناة واتساب",
       visitYoutube: "زيارة يوتيوب",
       whatsappChat: "محادثة واتساب",
       whatsappChatText: "رسالة مباشرة للقبول والمواعيد والإرشاد الدراسي.",
       whatsappChannel: "قناة واتساب",
-      whatsappChannelText: "تحديثات يومية وتذكيرات ولمسات قبول مفيدة.",
+      whatsappChannelText: "تحديثات يومية وتذكيرات ومعلومات مفيدة للقبول.",
       instagram: "إنستغرام",
       instagramText: "تحديثات مرئية ولمحات عن الأكاديمية.",
       facebook: "فيسبوك",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useEffect, useState } from "react";
+import { startTransition, useDeferredValue, useEffect, useState } from "react";
 import type { SearchResult } from "@/services/search/search.service";
 
 export function useSiteSearch(initialQuery = "") {
@@ -10,13 +10,16 @@ export function useSiteSearch(initialQuery = "") {
 
   useEffect(() => {
     const search = deferredQuery.trim();
+    const controller = new AbortController();
 
     if (!search) {
-      setResults([]);
+      queueMicrotask(() => {
+        if (!controller.signal.aborted) {
+          startTransition(() => setResults([]));
+        }
+      });
       return;
     }
-
-    const controller = new AbortController();
 
     fetch(`/api/search?q=${encodeURIComponent(search)}`, {
       signal: controller.signal,
@@ -30,11 +33,11 @@ export function useSiteSearch(initialQuery = "") {
         return (await response.json()) as SearchResult[];
       })
       .then((items) => {
-        setResults(items);
+        startTransition(() => setResults(items));
       })
       .catch(() => {
         if (!controller.signal.aborted) {
-          setResults([]);
+          startTransition(() => setResults([]));
         }
       });
 

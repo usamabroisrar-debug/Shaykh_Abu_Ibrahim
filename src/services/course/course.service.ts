@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+﻿import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured, shouldUseDatabaseReads } from "@/lib/server";
 import {
   courses as staticCourses,
@@ -280,6 +280,53 @@ export async function getCourseBySlugFromDb(slug: string) {
   }
 }
 
+export async function ensureCourseRecordBySlug(slug: string) {
+  if (!isDatabaseConfigured()) {
+    return null;
+  }
+
+  const databaseCourse = await getCourseBySlugFromDb(slug);
+
+  if (databaseCourse) {
+    return databaseCourse;
+  }
+
+  const staticCourse = staticCourses.find(
+    (course) => course.slug === slug && course.status === "Published"
+  );
+
+  if (!staticCourse) {
+    return null;
+  }
+
+  try {
+    return await prisma.course.create({
+      data: {
+        title: staticCourse.title,
+        slug: staticCourse.slug,
+        description: staticCourse.description,
+        content: staticCourse.curriculum.join("\n"),
+        localeContent: {
+          title: { en: staticCourse.title },
+          description: { en: staticCourse.description },
+          content: { en: staticCourse.curriculum.join("\n") },
+        },
+        status: "PUBLISHED",
+        level: staticCourse.level,
+        duration: staticCourse.duration,
+        price: staticCourse.price,
+        featured: staticCourse.featured,
+      },
+      include: {
+        lessons: true,
+        enrollments: true,
+      },
+    });
+  } catch {
+    return getCourseBySlugFromDb(slug);
+  }
+}
+
 export async function getTeacherCourses(teacherId: string) {
   if (!isDatabaseConfigured()) {
     return [];
@@ -485,14 +532,30 @@ export async function seedAdminCourses() {
     return;
   }
 
-  const demoCourses = [
+  const academyCourses = [
     {
-      title: "Qaida Foundation Program / قائدہ فاؤنڈیشن پروگرام",
+      title: "Qaida Foundation Program",
       slug: "qaida-foundation-program",
       description:
-        "English Description\nA beginner course for Arabic letters, pronunciation, and smooth transition into Quran reading.\n\nUrdu Description\nعربی حروف، درست تلفظ، اور قرآن پڑھنے کی مضبوط بنیاد کے لیے ابتدائی کورس۔",
-      content:
-        "English Curriculum / Notes\nArabic letters\nHarakat and joining rules\nBasic reading fluency\n\nUrdu Curriculum / Notes\nعربی حروف\nحرکات اور جوڑنے کے قواعد\nابتدائی روانی",
+        "A beginner course for Arabic letters, pronunciation, and smooth transition into Quran reading.",
+      content: "Arabic letters\nHarakat and joining rules\nBasic reading fluency",
+      localeContent: {
+        title: {
+          en: "Qaida Foundation Program",
+          ur: "قاعدہ فاؤنڈیشن پروگرام",
+          ar: "برنامج قاعدة التأسيسي",
+        },
+        description: {
+          en: "A beginner course for Arabic letters, pronunciation, and smooth transition into Quran reading.",
+          ur: "عربی حروف، درست تلفظ، اور قرآن پڑھنے کی مضبوط بنیاد کے لیے ابتدائی کورس۔",
+          ar: "دورة تأسيسية للحروف العربية والنطق والانتقال السلس إلى قراءة القرآن.",
+        },
+        content: {
+          en: "Arabic letters\nHarakat and joining rules\nBasic reading fluency",
+          ur: "عربی حروف\nحرکات اور جوڑنے کے قواعد\nابتدائی روانی",
+          ar: "الحروف العربية\nالحركات وقواعد الوصل\nالطلاقة الأساسية",
+        },
+      },
       level: "Beginner",
       duration: "6 Weeks",
       status: "PUBLISHED" as const,
@@ -500,12 +563,28 @@ export async function seedAdminCourses() {
       price: 26,
     },
     {
-      title: "Tajweed Improvement Track / تجوید امپروومنٹ ٹریک",
+      title: "Tajweed Improvement Track",
       slug: "tajweed-improvement-track",
       description:
-        "English Description\nA structured correction path for learners who want clearer recitation and stronger Tajweed application.\n\nUrdu Description\nان طلبہ کے لیے منظم اصلاحی راستہ جو بہتر قرأت اور مضبوط تجویدی اطلاق چاہتے ہیں۔",
-      content:
-        "English Curriculum / Notes\nMakharij drills\nMadd practice\nSurah recitation feedback\n\nUrdu Curriculum / Notes\nمخارج کی مشق\nمد کی مشق\nسورہ قرأت فیڈ بیک",
+        "A structured correction path for learners who want clearer recitation and stronger Tajweed application.",
+      content: "Makharij drills\nMadd practice\nSurah recitation feedback",
+      localeContent: {
+        title: {
+          en: "Tajweed Improvement Track",
+          ur: "تجوید بہتری کورس",
+          ar: "مسار تحسين التجويد",
+        },
+        description: {
+          en: "A structured correction path for learners who want clearer recitation and stronger Tajweed application.",
+          ur: "ان طلبہ کے لیے منظم اصلاحی راستہ جو بہتر قرأت اور مضبوط تجویدی اطلاق چاہتے ہیں۔",
+          ar: "مسار تصحيحي منظم للمتعلمين الراغبين في تلاوة أوضح وتطبيق أقوى للتجويد.",
+        },
+        content: {
+          en: "Makharij drills\nMadd practice\nSurah recitation feedback",
+          ur: "مخارج کی مشق\nمد کی مشق\nسورہ قرأت فیڈ بیک",
+          ar: "تدريبات المخارج\nتدريب المدود\nملاحظات على تلاوة السور",
+        },
+      },
       level: "Intermediate",
       duration: "8 Weeks",
       status: "PUBLISHED" as const,
@@ -513,12 +592,28 @@ export async function seedAdminCourses() {
       price: 52,
     },
     {
-      title: "Hifz Support & Revision Circle / حفظ سپورٹ اور ریویژن سرکل",
+      title: "Hifz Support & Revision Circle",
       slug: "hifz-support-revision-circle",
       description:
-        "English Description\nSupport for memorization students with sabaq planning, revision discipline, and teacher accountability.\n\nUrdu Description\nحفظ کے طلبہ کے لیے سبق پلاننگ، ریویژن نظم، اور استاد کی نگرانی کے ساتھ معاونت۔",
-      content:
-        "English Curriculum / Notes\nSabaq planning\nRevision checkpoints\nParent progress guidance\n\nUrdu Curriculum / Notes\nسبق پلاننگ\nریویژن چیک پوائنٹس\nوالدین کے لیے پیش رفت رہنمائی",
+        "Support for memorization students with sabaq planning, revision discipline, and teacher accountability.",
+      content: "Sabaq planning\nRevision checkpoints\nParent progress guidance",
+      localeContent: {
+        title: {
+          en: "Hifz Support & Revision Circle",
+          ur: "حفظ سپورٹ اور دہرائی حلقہ",
+          ar: "حلقة دعم الحفظ والمراجعة",
+        },
+        description: {
+          en: "Support for memorization students with sabaq planning, revision discipline, and teacher accountability.",
+          ur: "حفظ کے طلبہ کے لیے سبق پلاننگ، دہرائی نظم، اور استاد کی نگرانی کے ساتھ معاونت۔",
+          ar: "دعم لطلاب الحفظ من خلال تخطيط الدرس والانضباط في المراجعة ومتابعة المعلم.",
+        },
+        content: {
+          en: "Sabaq planning\nRevision checkpoints\nParent progress guidance",
+          ur: "سبق پلاننگ\nدہرائی چیک پوائنٹس\nوالدین کے لیے پیش رفت رہنمائی",
+          ar: "تخطيط الدرس\nنقاط متابعة المراجعة\nإرشاد أولياء الأمور حول التقدم",
+        },
+      },
       level: "All Levels",
       duration: "Ongoing",
       status: "PUBLISHED" as const,
@@ -527,11 +622,10 @@ export async function seedAdminCourses() {
     },
   ];
 
-  for (const course of demoCourses) {
+  for (const course of academyCourses) {
     await createAdminCourse(course);
   }
 }
-
 export async function deleteAdminCourse(id: string) {
   return prisma.course.delete({
     where: {
@@ -539,3 +633,4 @@ export async function deleteAdminCourse(id: string) {
     },
   });
 }
+

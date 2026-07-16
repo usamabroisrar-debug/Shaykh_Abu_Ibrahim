@@ -22,6 +22,7 @@ export async function BookDetailPage({ slug }: BookDetailPageProps) {
   const relatedBooks = (await getPublicBooks())
     .filter((item) => item.slug !== book.slug)
     .slice(0, 3);
+
   const copy = {
     en: {
       valueEyebrow: "Study Value",
@@ -30,40 +31,52 @@ export async function BookDetailPage({ slug }: BookDetailPageProps) {
         "Library resources are selected to reinforce live classes, revision habits, and practical understanding.",
       practicalUse: "Practical use",
       practicalText:
-        "This material is intended to support structured learning, not sit passively in a library archive.",
+        "This material supports structured learning and can be used alongside live classes or revision routines.",
       classroomAlignment: "Classroom alignment",
       classroomText:
-        "The academy library is being shaped to connect directly with teaching pathways and revision goals.",
+        "The academy library connects directly with teaching pathways, student practice, and guided review.",
+      download: "Open Book",
       relatedEyebrow: "More Resources",
       relatedTitle: "Explore related books",
       relatedDescription: "Continue browsing materials that complement the wider academy experience.",
       relatedCta: "View details",
+      pages: "pages",
     },
     ur: {
       valueEyebrow: "مطالعہ کی اہمیت",
       valueTitle: "یہ وسیلہ تعلیمی سفر میں کیسے مدد دیتا ہے",
-      valueDescription: "لائبریری کے وسائل لائیو کلاسز، ریویژن عادات، اور عملی فہم کو مضبوط کرنے کے لیے منتخب کیے جاتے ہیں۔",
+      valueDescription:
+        "لائبریری وسائل live classes، دہرائی، اور عملی سمجھ کو مضبوط کرنے کے لیے منتخب کیے جاتے ہیں۔",
       practicalUse: "عملی استعمال",
-      practicalText: "یہ مواد منظم تعلیم کی مدد کے لیے ہے، صرف لائبریری میں رکھے رہنے کے لیے نہیں۔",
-      classroomAlignment: "کلاس روم مطابقت",
-      classroomText: "اکیڈمی لائبریری کو تدریسی راستوں اور ریویژن مقاصد سے براہ راست جوڑا جا رہا ہے۔",
+      practicalText:
+        "یہ مواد منظم تعلیم، live classes، اور revision routine کے ساتھ استعمال کے لیے ہے۔",
+      classroomAlignment: "کلاس سے مطابقت",
+      classroomText:
+        "اکیڈمی لائبریری تدریسی راستوں، طلبہ کی مشق، اور رہنمائی کے ساتھ دہرائی سے جڑی ہوئی ہے۔",
+      download: "کتاب کھولیں",
       relatedEyebrow: "مزید وسائل",
       relatedTitle: "متعلقہ کتب دیکھیں",
-      relatedDescription: "ایسے مزید مواد دیکھیں جو اکیڈمی کے مجموعی تعلیمی تجربے کو مکمل کرتے ہیں۔",
+      relatedDescription: "ایسا مزید مواد دیکھیں جو اکیڈمی کے مجموعی تعلیمی تجربے کو مکمل کرتا ہے۔",
       relatedCta: "تفصیل دیکھیں",
+      pages: "صفحات",
     },
     ar: {
       valueEyebrow: "قيمة دراسية",
       valueTitle: "كيف يدعم هذا المورد رحلة التعلم",
-      valueDescription: "تُختار موارد المكتبة لتعزيز الدروس المباشرة وعادات المراجعة والفهم العملي.",
+      valueDescription:
+        "تختار الأكاديمية موارد المكتبة لتعزيز الدروس المباشرة والمراجعة والفهم العملي.",
       practicalUse: "استخدام عملي",
-      practicalText: "تهدف هذه المادة إلى دعم التعلم المنظم، لا أن تبقى ساكنة في أرشيف المكتبة.",
-      classroomAlignment: "الارتباط بالفصل",
-      classroomText: "تُبنى مكتبة الأكاديمية لتتصل مباشرة بمسارات التدريس وأهداف المراجعة.",
+      practicalText:
+        "هذه المادة تدعم التعلم المنظم ويمكن استخدامها مع الدروس المباشرة وروتين المراجعة.",
+      classroomAlignment: "ارتباط بالفصل",
+      classroomText:
+        "ترتبط مكتبة الأكاديمية بمسارات التدريس وتدريب الطلاب والمراجعة الموجهة.",
+      download: "فتح الكتاب",
       relatedEyebrow: "موارد إضافية",
       relatedTitle: "استكشف كتبًا ذات صلة",
-      relatedDescription: "واصل تصفح المواد التي تكمل التجربة الأكاديمية الأوسع.",
+      relatedDescription: "واصل تصفح المواد التي تكمل تجربة الأكاديمية.",
       relatedCta: "عرض التفاصيل",
+      pages: "صفحة",
     },
   }[locale];
 
@@ -77,12 +90,29 @@ export async function BookDetailPage({ slug }: BookDetailPageProps) {
             </Badge>
             <h1>{resolveLocalizedInlineText(book.title, locale)}</h1>
             <p>{resolveLocalizedRichText(book.summary, locale)}</p>
+            {book.fileUrl ? (
+              <a
+                href={book.fileUrl}
+                className={styles.downloadButton}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {copy.download}
+              </a>
+            ) : null}
           </div>
 
           <div className={styles.panel}>
+            {book.coverUrl ? (
+              <span
+                className={styles.cover}
+                style={{ backgroundImage: `url(${book.coverUrl})` }}
+                aria-hidden="true"
+              />
+            ) : null}
             <strong>{resolveLocalizedInlineText(book.format, locale)}</strong>
             <span>
-              {book.pages} {locale === "ur" ? "صفحات" : locale === "ar" ? "صفحة" : "pages"}
+              {book.pages} {copy.pages}
             </span>
             <p>{resolveLocalizedRichText(book.featuredNote, locale)}</p>
           </div>

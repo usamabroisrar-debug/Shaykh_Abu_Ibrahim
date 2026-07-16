@@ -228,6 +228,8 @@ model LibraryBook {
   pages        Int           @default(1)
   summary      String
   featuredNote String?
+  fileUrl      String?
+  coverUrl     String?
   localeContent Json?
   status       PublishStatus @default(PUBLISHED)
   createdAt    DateTime      @default(now())

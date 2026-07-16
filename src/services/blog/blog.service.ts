@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+﻿import { prisma } from "@/lib/prisma";
 import { shouldUseDatabaseReads } from "@/lib/server";
 import {
   type BlogCategory,
@@ -301,47 +301,97 @@ export async function seedAdminBlogs(authorId: string) {
     return;
   }
 
-  const demoBlogs = [
+  const academyBlogs = [
     {
-      title: "How to Build a Consistent Quran Routine at Home / گھر میں مستقل قرآن روٹین کیسے بنائیں",
+      title: "How to Build a Consistent Quran Routine at Home",
       slug: "consistent-quran-routine-at-home",
       excerpt:
-        "English Summary\nA practical framework for families and solo learners to create a calm, repeatable Quran study rhythm that actually lasts.\n\nUrdu Summary\nخاندانوں اور انفرادی طلبہ کے لیے ایک عملی طریقہ کار جو پُرسکون اور مستقل قرآن مطالعہ روٹین بنانے میں مدد دے۔",
+        "A practical framework for families and solo learners to create a calm, repeatable Quran study rhythm.",
       content:
-        "English Content\nStart with a realistic weekly schedule, choose a fixed revision slot, and keep communication open with the teacher.\n\nUrdu Content\nحقیقی ہفتہ وار شیڈول بنائیں، ریویژن کے لیے مقرر وقت رکھیں، اور استاد کے ساتھ رابطہ واضح رکھیں۔",
+        "Start with a realistic weekly schedule, choose a fixed revision slot, and keep communication open with the teacher.",
+      localeContent: {
+        title: {
+          en: "How to Build a Consistent Quran Routine at Home",
+          ur: "گھر میں مستقل قرآن روٹین کیسے بنائیں",
+          ar: "كيف تبني روتينًا ثابتًا لتعلم القرآن في المنزل",
+        },
+        excerpt: {
+          en: "A practical framework for families and solo learners to create a calm, repeatable Quran study rhythm.",
+          ur: "خاندانوں اور انفرادی طلبہ کے لیے ایک عملی طریقہ جو پرسکون اور مستقل قرآن مطالعہ روٹین بناتا ہے۔",
+          ar: "إطار عملي للعائلات والمتعلمين الأفراد لبناء روتين هادئ ومتكرر لدراسة القرآن.",
+        },
+        content: {
+          en: "Start with a realistic weekly schedule, choose a fixed revision slot, and keep communication open with the teacher.",
+          ur: "حقیقی ہفتہ وار شیڈول بنائیں، دہرائی کے لیے مقرر وقت رکھیں، اور استاد کے ساتھ رابطہ واضح رکھیں۔",
+          ar: "ابدأ بجدول أسبوعي واقعي، وحدد وقتًا ثابتًا للمراجعة، واجعل التواصل مع المعلم واضحًا.",
+        },
+      },
       categoryName: "Quran",
       status: "PUBLISHED" as const,
       authorId,
     },
     {
-      title: "Three Tajweed Mistakes New Learners Can Fix Quickly / نئی تجوید کی تین غلطیاں",
+      title: "Three Tajweed Mistakes New Learners Can Fix Quickly",
       slug: "tajweed-mistakes-new-learners-can-fix",
       excerpt:
-        "English Summary\nCommon pronunciation issues can be corrected quickly when listening, repetition, and teacher feedback work together.\n\nUrdu Summary\nدرست سماعت، بار بار مشق، اور استاد کی رہنمائی سے تجوید کی عام غلطیاں جلد درست ہو سکتی ہیں۔",
+        "Common pronunciation issues can be corrected quickly when listening, repetition, and teacher feedback work together.",
       content:
-        "English Content\nFocus on makharij, madd length, and heavy-light letter distinction during the first stage of Tajweed correction.\n\nUrdu Content\nتجوید کی ابتدائی اصلاح میں مخارج، مد کی مقدار، اور حروف کی تفخیم و ترقیق پر توجہ دیں۔",
+        "Focus on makharij, madd length, and heavy-light letter distinction during the first stage of Tajweed correction.",
+      localeContent: {
+        title: {
+          en: "Three Tajweed Mistakes New Learners Can Fix Quickly",
+          ur: "نئے طلبہ تجوید کی تین غلطیاں جلد کیسے درست کر سکتے ہیں",
+          ar: "ثلاثة أخطاء في التجويد يمكن للمبتدئين تصحيحها بسرعة",
+        },
+        excerpt: {
+          en: "Common pronunciation issues can be corrected quickly when listening, repetition, and teacher feedback work together.",
+          ur: "درست سماعت، بار بار مشق، اور استاد کی رہنمائی سے عام تجویدی غلطیاں جلد درست ہو سکتی ہیں۔",
+          ar: "يمكن تصحيح مشكلات النطق الشائعة بسرعة عند الجمع بين الاستماع والتكرار وتوجيه المعلم.",
+        },
+        content: {
+          en: "Focus on makharij, madd length, and heavy-light letter distinction during the first stage of Tajweed correction.",
+          ur: "تجوید کی ابتدائی اصلاح میں مخارج، مد کی مقدار، اور حروف کی تفخیم و ترقیق پر توجہ دیں۔",
+          ar: "ركز على المخارج ومقادير المد والتمييز بين الحروف المفخمة والمرققة في البداية.",
+        },
+      },
       categoryName: "Tajweed",
       status: "PUBLISHED" as const,
       authorId,
     },
     {
-      title: "What Parents Should Expect From an Online Hifz Program / آن لائن حفظ پروگرام سے والدین کیا توقع رکھیں",
+      title: "What Parents Should Expect From an Online Hifz Program",
       slug: "what-parents-should-expect-from-online-hifz",
       excerpt:
-        "English Summary\nParents should look for a structured sabaq plan, revision system, and transparent progress reporting.\n\nUrdu Summary\nوالدین کو منظم سبق پلان، مضبوط ریویژن نظام، اور واضح پروگریس رپورٹنگ دیکھنی چاہیے۔",
+        "Parents should look for a structured sabaq plan, revision system, and transparent progress reporting.",
       content:
-        "English Content\nA serious Hifz journey depends on revision accountability, teacher consistency, and realistic memorization pacing.\n\nUrdu Content\nکامیاب حفظ سفر کے لیے ریویژن کی پابندی، استاد کی مستقل مزاجی، اور حفظ کی مناسب رفتار ضروری ہے۔",
+        "A serious Hifz journey depends on revision accountability, teacher consistency, and realistic memorization pacing.",
+      localeContent: {
+        title: {
+          en: "What Parents Should Expect From an Online Hifz Program",
+          ur: "آن لائن حفظ پروگرام سے والدین کیا توقع رکھیں",
+          ar: "ما الذي ينبغي أن يتوقعه الوالدان من برنامج حفظ عبر الإنترنت",
+        },
+        excerpt: {
+          en: "Parents should look for a structured sabaq plan, revision system, and transparent progress reporting.",
+          ur: "والدین کو منظم سبق پلان، مضبوط دہرائی نظام، اور واضح پیش رفت رپورٹنگ دیکھنی چاہیے۔",
+          ar: "ينبغي للوالدين البحث عن خطة درس منظمة ونظام مراجعة وتقارير تقدم واضحة.",
+        },
+        content: {
+          en: "A serious Hifz journey depends on revision accountability, teacher consistency, and realistic memorization pacing.",
+          ur: "کامیاب حفظ سفر کے لیے دہرائی کی پابندی، استاد کی مستقل مزاجی، اور حفظ کی مناسب رفتار ضروری ہے۔",
+          ar: "تعتمد رحلة الحفظ الجادة على متابعة المراجعة وثبات المعلم وسرعة حفظ واقعية.",
+        },
+      },
       categoryName: "Parenting",
       status: "PUBLISHED" as const,
       authorId,
     },
   ];
 
-  for (const blog of demoBlogs) {
+  for (const blog of academyBlogs) {
     await createAdminBlog(blog);
   }
 }
-
 export async function deleteAdminBlog(id: string) {
   return prisma.blog.delete({
     where: {
@@ -349,3 +399,4 @@ export async function deleteAdminBlog(id: string) {
     },
   });
 }
+

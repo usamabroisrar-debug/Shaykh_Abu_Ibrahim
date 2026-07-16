@@ -13,7 +13,7 @@ export type SearchResult = {
 };
 
 function includesQuery(haystack: Array<string | undefined>, query: string) {
-  return haystack.join(" ").toLowerCase().includes(query);
+  return haystack.filter(Boolean).join(" ").toLowerCase().includes(query);
 }
 
 export async function searchSiteContent(rawQuery: string) {

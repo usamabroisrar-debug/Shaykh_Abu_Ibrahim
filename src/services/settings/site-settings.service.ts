@@ -54,7 +54,7 @@ const defaultSiteSettings: SiteSettings = {
   description:
     "English\nJoin Shaykh Abu Ibrahim Islamic Academy for Quran, Tajweed, Tafseer, Hadith, Fiqh, and online Islamic classes for children, adults, and families worldwide.\n\nUrdu\nشیخ ابو ابراہیم اسلامی اکیڈمی میں قرآن، تجوید، تفسیر، حدیث، فقہ، اور بچوں، بڑوں، اور خاندانوں کے لیے آن لائن اسلامی کلاسز میں شامل ہوں۔\n\nArabic\nانضم إلى أكاديمية شيخ أبو إبراهيم الإسلامية لتعلم القرآن والتجويد والتفسير والحديث والفقه والدروس الإسلامية عبر الإنترنت للأطفال والكبار والأسر حول العالم.",
   footerText:
-    "English\nQuran, Hadith, Fiqh, Tafseer, and guided Islamic learning in a more refined online experience for students and families.\n\nUrdu\nقرآن، حدیث، فقہ، تفسیر، اور طلبہ و خاندانوں کے لیے بہتر آن لائن اسلامی رہنمائی۔\n\nArabic\nتعلم القرآن والحديث والفقه والتفسير بإرشاد إسلامي في تجربة تعليمية إلكترونية أكثر تنظيماً للطلاب والأسر.",
+    "English\nQuran, Hadith, Fiqh, Tafseer, and guided Islamic learning in a refined online experience for students and families.\n\nUrdu\nقرآن، حدیث، فقہ، تفسیر، اور طلبہ و خاندانوں کے لیے بہتر آن لائن اسلامی رہنمائی۔\n\nArabic\nتعلم القرآن والحديث والفقه والتفسير بإرشاد إسلامي في تجربة تعليمية إلكترونية منظمة للطلاب والأسر.",
   logoSrc: "/images/logo-transparent.webp",
   socials: {
     youtube: siteConfig.socials.youtube,
@@ -110,7 +110,7 @@ const defaultHomepageHeroSettings: HomepageHeroSettings = {
   liveDetail:
     "English\nQuran • Hadith • Tafseer\n\nUrdu\nقرآن • حدیث • تفسیر\n\nArabic\nالقرآن • الحديث • التفسير",
   verified:
-    "English\nVerified Islamic Learning\n\nUrdu\nتصدیق شدہ اسلامی تعلیم\n\nArabic\nتعلم إسلامي موثق",
+    "English\nVerified Islamic Learning\n\nUrdu\nتصدیق شدہ اسلامی تعلیم\n\nArabic\nتعلم إسلامي موثوق",
   imageAlt:
     "English\nOnline Quran and Islamic learning\n\nUrdu\nآن لائن قرآن اور اسلامی تعلیم\n\nArabic\nتعلم القرآن والعلوم الإسلامية عبر الإنترنت",
   imageSrc: "/images/hero.webp",
@@ -141,7 +141,7 @@ function isUnavailableLocaleCopy(value: string) {
     normalized.includes("content is not available") ||
     normalized.includes("دستیاب نہیں") ||
     normalized.includes("غير متاح") ||
-    normalized.includes("Ø¯Ø³ØªÛŒØ§Ø¨")
+    normalized.includes("Ã˜Â¯Ã˜Â³Ã˜ÂªÃ›Å’Ã˜Â§Ã˜Â¨")
   );
 }
 
@@ -192,6 +192,7 @@ export async function getLocalizedHomepageHeroSettings(locale: SiteLocale) {
   const settings = await getHomepageHeroSettings();
 
   return {
+    ...settings,
     badge: resolveLocalizedRichText(settings.badge, locale),
     title: resolveLocalizedRichText(settings.title, locale),
     description: resolveLocalizedRichText(settings.description, locale),
@@ -203,8 +204,8 @@ export async function getLocalizedHomepageHeroSettings(locale: SiteLocale) {
     curriculum: resolveLocalizedRichText(settings.curriculum, locale),
     teachers: resolveLocalizedRichText(settings.teachers, locale),
     stats: settings.stats.map((stat) => ({
+      ...stat,
       label: resolveLocalizedRichText(stat.label, locale),
-      value: stat.value,
     })),
     certificate: resolveLocalizedRichText(settings.certificate, locale),
     certificateDetail: resolveLocalizedRichText(settings.certificateDetail, locale),
@@ -212,7 +213,6 @@ export async function getLocalizedHomepageHeroSettings(locale: SiteLocale) {
     liveDetail: resolveLocalizedRichText(settings.liveDetail, locale),
     verified: resolveLocalizedRichText(settings.verified, locale),
     imageAlt: resolveLocalizedRichText(settings.imageAlt, locale),
-    imageSrc: settings.imageSrc,
   };
 }
 
@@ -221,11 +221,11 @@ export async function updateSiteSettings(input: SiteSettings) {
     where: {
       key: SITE_SETTINGS_KEY,
     },
-    update: {
-      value: input,
-    },
     create: {
       key: SITE_SETTINGS_KEY,
+      value: input,
+    },
+    update: {
       value: input,
     },
   });
@@ -236,11 +236,11 @@ export async function updateHomepageHeroSettings(input: HomepageHeroSettings) {
     where: {
       key: HOMEPAGE_HERO_SETTINGS_KEY,
     },
-    update: {
-      value: input,
-    },
     create: {
       key: HOMEPAGE_HERO_SETTINGS_KEY,
+      value: input,
+    },
+    update: {
       value: input,
     },
   });

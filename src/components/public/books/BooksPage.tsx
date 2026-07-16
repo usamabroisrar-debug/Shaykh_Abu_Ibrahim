@@ -16,21 +16,27 @@ export async function BooksPage() {
       title: "Guided reading resources and study companions for academy students",
       description:
         "Browse the academy's developing digital library of practical references, workbooks, and supporting materials.",
-      cta: "View Book Details",
+      cta: "Preview",
+      download: "Download",
+      pages: "pages",
     },
     ur: {
       eyebrow: "کتب",
-      title: "اکیڈمی طلبہ کے لیے رہنمائی پر مبنی مطالعہ وسائل اور معاون کتابیں",
+      title: "اکیڈمی طلبہ کے لیے رہنمائی پر مبنی مطالعہ وسائل",
       description:
         "عملی حوالہ جات، ورک بکس، اور معاون تعلیمی مواد پر مشتمل اکیڈمی کی ڈیجیٹل لائبریری دیکھیں۔",
-      cta: "کتاب کی تفصیل دیکھیں",
+      cta: "پری ویو",
+      download: "ڈاؤن لوڈ",
+      pages: "صفحات",
     },
     ar: {
       eyebrow: "الكتب",
-      title: "موارد قراءة موجهة ورفقاء دراسة لطلاب الأكاديمية",
+      title: "موارد قراءة موجهة لطلاب الأكاديمية",
       description:
-        "تصفح مكتبة الأكاديمية الرقمية المتنامية من المراجع العملية ودفاتر العمل والمواد المساندة.",
-      cta: "عرض تفاصيل الكتاب",
+        "تصفح مكتبة الأكاديمية الرقمية من المراجع العملية ودفاتر العمل والمواد المساندة.",
+      cta: "معاينة",
+      download: "تنزيل",
+      pages: "صفحة",
     },
   }[locale];
 
@@ -46,20 +52,43 @@ export async function BooksPage() {
         <Container className={styles.grid}>
           {books.map((book) => (
             <Card key={book.id} className={styles.card}>
-              <span className={styles.category}>
-                {resolveLocalizedInlineText(book.category, locale) || book.category}
-              </span>
-              <h2>{resolveLocalizedInlineText(book.title, locale)}</h2>
-              <p>{resolveLocalizedRichText(book.summary, locale)}</p>
-              <div className={styles.meta}>
-                <span>{resolveLocalizedInlineText(book.format, locale)}</span>
-                <span>
-                  {book.pages} {locale === "ur" ? "صفحات" : locale === "ar" ? "صفحة" : "pages"}
+              <div className={styles.content}>
+                <span className={styles.category}>
+                  {resolveLocalizedInlineText(book.category, locale) || book.category}
                 </span>
+                <h2>{resolveLocalizedInlineText(book.title, locale)}</h2>
+                <p>{resolveLocalizedRichText(book.summary, locale)}</p>
+                <div className={styles.meta}>
+                  <span>{resolveLocalizedInlineText(book.format, locale)}</span>
+                  <span>
+                    {book.pages} {copy.pages}
+                  </span>
+                </div>
+                <div className={styles.actions}>
+                  <Link href={`/books/${book.slug}`} className={styles.link}>
+                    {copy.cta}
+                  </Link>
+                  {book.fileUrl ? (
+                    <a
+                      href={book.fileUrl}
+                      className={styles.downloadLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      download
+                    >
+                      {copy.download}
+                    </a>
+                  ) : null}
+                </div>
               </div>
-              <Link href={`/books/${book.slug}`} className={styles.link}>
-                {copy.cta}
-              </Link>
+
+              {book.coverUrl ? (
+                <span
+                  className={styles.cover}
+                  style={{ backgroundImage: `url(${book.coverUrl})` }}
+                  aria-hidden="true"
+                />
+              ) : null}
             </Card>
           ))}
         </Container>

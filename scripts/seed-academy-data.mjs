@@ -875,7 +875,7 @@ async function main() {
   console.log(`Teacher: ${teacher.email}`);
   console.log(`Student: ${student.email}`);
   console.log(`Parent: ${parent.email}`);
-  console.log(`Seed password for demo users: ${defaultPassword}`);
+  console.log(`Seed password for bootstrap users: ${defaultPassword}`);
 }
 
 main()

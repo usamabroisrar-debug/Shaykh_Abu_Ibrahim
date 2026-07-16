@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
-import { getCourseBySlugFromDb } from "@/services/course/course.service";
+import { ensureCourseRecordBySlug } from "@/services/course/course.service";
 import { enrollStudentInCourse } from "@/services/enrollment/enrollment.service";
 
 const enrollmentSchema = z.object({
@@ -34,7 +34,7 @@ export default async function handler(
       });
     }
 
-    const course = await getCourseBySlugFromDb(parsed.data.courseSlug);
+    const course = await ensureCourseRecordBySlug(parsed.data.courseSlug);
 
     if (!course) {
       return response.status(404).json({

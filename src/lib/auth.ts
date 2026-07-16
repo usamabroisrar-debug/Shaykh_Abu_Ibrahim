@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
         );
         const isConfiguredSuperAdmin = email === configuredSuperAdminEmail;
 
-        let user = isConfiguredSuperAdmin
+        const user = isConfiguredSuperAdmin
           ? await ensureSuperAdminUser().catch(() => null)
           : await getUserByEmail(email).catch(() => null);
 
