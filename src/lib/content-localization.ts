@@ -264,7 +264,7 @@ export function resolveLocalizedRichText(value: LocalizedTextValue, locale: Site
 }
 
 export function resolveLocalizedParagraphs(
-  value: string | null | undefined,
+  value: LocalizedTextValue,
   locale: SiteLocale
 ) {
   return resolveLocalizedRichText(value, locale)
@@ -273,7 +273,7 @@ export function resolveLocalizedParagraphs(
     .filter(Boolean);
 }
 
-export function resolveLocalizedLines(value: string | null | undefined, locale: SiteLocale) {
+export function resolveLocalizedLines(value: LocalizedTextValue, locale: SiteLocale) {
   return resolveLocalizedRichText(value, locale)
     .split(/\r?\n/)
     .map((item) => item.replace(/^[-*]\s*/, "").trim())

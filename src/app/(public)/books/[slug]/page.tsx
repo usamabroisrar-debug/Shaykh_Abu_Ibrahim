@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BookDetailPage } from "@/components/public/books/BookDetailPage";
+import { resolveLocalizedInlineText, resolveLocalizedRichText } from "@/lib/content-localization";
 import { buildMetadata } from "@/lib/metadata";
 import { getPublicBookBySlug } from "@/services/book/book.service";
 
@@ -18,10 +19,10 @@ export async function generateMetadata(
   }
 
   return buildMetadata({
-    title: book.title,
-    description: book.summary,
+    title: resolveLocalizedInlineText(book.title, "en"),
+    description: resolveLocalizedRichText(book.summary, "en"),
     path: `/books/${book.slug}`,
-    keywords: [book.title, book.category, "Islamic study resources"],
+    keywords: [resolveLocalizedInlineText(book.title, "en"), book.category, "Islamic study resources"],
   });
 }
 

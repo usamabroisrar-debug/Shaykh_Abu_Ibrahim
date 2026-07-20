@@ -2,7 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Award, Clock3, Star, Users } from "lucide-react";
 import type { Course } from "@/data/courses";
-import { resolveLocalizedInlineText, resolveLocalizedRichText } from "@/lib/content-localization";
+import {
+  resolveLocalizedInlineText,
+  resolveLocalizedRichText,
+  type LocalizedTextValue,
+} from "@/lib/content-localization";
 import type { SiteLocale } from "@/lib/locale";
 import { getCourseImagePath } from "@/utils/course-image";
 import styles from "./CourseCard.module.css";
@@ -92,7 +96,7 @@ function hasUnavailableCopy(value: string) {
 }
 
 function resolveText(
-  value: string | null | undefined,
+  value: LocalizedTextValue,
   locale: SiteLocale,
   resolver: typeof resolveLocalizedInlineText | typeof resolveLocalizedRichText
 ) {
@@ -102,7 +106,7 @@ function resolveText(
     return resolved;
   }
 
-  return resolver(value, "en").trim() || value?.trim() || "";
+  return resolver(value, "en").trim() || String(value || "").trim();
 }
 
 export function CourseCard({ course, locale }: CourseCardProps) {

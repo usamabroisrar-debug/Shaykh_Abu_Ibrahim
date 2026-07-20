@@ -1,12 +1,10 @@
 ﻿import { prisma } from "@/lib/prisma";
 import { shouldUseDatabaseReads } from "@/lib/server";
-import {
-  type BlogCategory,
-  type BlogPost,
-} from "@/data/blogs";
+import { type BlogCategory, type BlogPost } from "@/data/blogs";
+import type { LocalizedTextValue } from "@/lib/content-localization";
 import { normalizeSlug } from "@/utils/slug";
 
-export type PublicBlogPost = BlogPost & { content: string };
+export type PublicBlogPost = BlogPost & { content: LocalizedTextValue };
 
 const blogCategories: BlogCategory[] = [
   "Quran",
@@ -44,22 +42,17 @@ function normalizeLocaleContent(value: unknown): BlogLocaleContent {
   return isRecord(value) ? (value as BlogLocaleContent) : {};
 }
 
-function stringifyLocaleField(
+function resolveLocaleBucket(
   value: Partial<Record<"en" | "ur" | "ar", string>> | undefined,
-  fallback: string | null | undefined,
-  headings: Record<"en" | "ur" | "ar", string>
+  fallback: string | null | undefined
 ) {
-  const parts: string[] = [];
+  const bucket = {
+    en: value?.en?.trim() || fallback?.trim() || "",
+    ur: value?.ur?.trim() || "",
+    ar: value?.ar?.trim() || "",
+  };
 
-  for (const locale of ["en", "ur", "ar"] as const) {
-    const content = value?.[locale]?.trim();
-
-    if (content) {
-      parts.push(`${headings[locale]}\n${content}`);
-    }
-  }
-
-  return parts.length ? parts.join("\n\n") : fallback?.trim() || "";
+  return bucket.en || bucket.ur || bucket.ar ? bucket : fallback?.trim() || "";
 }
 
 function mapDbBlog(post: {
@@ -74,24 +67,13 @@ function mapDbBlog(post: {
   category: { name: string } | null;
 }): PublicBlogPost {
   const localeContent = normalizeLocaleContent(post.localeContent);
-  const title = stringifyLocaleField(localeContent.title, post.title, {
-    en: "English",
-    ur: "Urdu",
-    ar: "Arabic",
-  });
-  const excerpt = stringifyLocaleField(localeContent.excerpt, post.excerpt, {
-    en: "English Summary",
-    ur: "Urdu Summary",
-    ar: "Arabic Summary",
-  });
-  const content =
-    stringifyLocaleField(localeContent.content, post.content, {
-      en: "English Content",
-      ur: "Urdu Content",
-      ar: "Arabic Content",
-    }) ||
-    excerpt ||
-    title;
+  const title = resolveLocaleBucket(localeContent.title, post.title);
+  const excerpt = resolveLocaleBucket(localeContent.excerpt, post.excerpt);
+  const content = resolveLocaleBucket(localeContent.content, post.content);
+  const readingText =
+    (typeof content === "string" ? content : content.en || content.ur || content.ar) ||
+    (typeof excerpt === "string" ? excerpt : excerpt.en || excerpt.ur || excerpt.ar) ||
+    (typeof title === "string" ? title : title.en || title.ur || title.ar);
 
   return {
     id: post.id,
@@ -103,9 +85,9 @@ function mapDbBlog(post: {
     category: normalizeCategory(post.category?.name),
     author: post.author?.name?.trim() || "Shaykh Abu Ibrahim",
     publishedAt: post.createdAt.toISOString().slice(0, 10),
-    readingTime: estimateReadingTime(content),
+    readingTime: estimateReadingTime(readingText),
     tags: [normalizeCategory(post.category?.name), "Islamic Learning"],
-    content,
+    content: content || excerpt || title || post.title,
   };
 }
 

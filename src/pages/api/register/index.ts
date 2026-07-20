@@ -2,15 +2,20 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { registerUser } from "@/services/auth/auth.service";
 
+const optionalText = z.preprocess(
+  (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+  z.string().trim().optional()
+);
+
 const registerSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
+  name: z.string().trim().min(2),
+  email: z.string().trim().email(),
   password: z.string().min(8),
   role: z.enum(["STUDENT", "PARENT", "TEACHER"]).default("STUDENT"),
-  phone: z.string().min(7).optional(),
-  guardianName: z.string().optional(),
-  guardianPhone: z.string().optional(),
-  timezone: z.string().optional(),
+  phone: optionalText,
+  guardianName: optionalText,
+  guardianPhone: optionalText,
+  timezone: optionalText,
 });
 
 export default async function handler(
@@ -33,7 +38,7 @@ export default async function handler(
 
     const user = await registerUser(parsed.data);
 
-    return response.status(200).json({
+    return response.status(201).json({
       message: "Account created successfully.",
       user,
     });

@@ -37,18 +37,18 @@ function isUnavailableCopy(value: string) {
   );
 }
 
-function localizedInline(value: string, locale: "en" | "ur" | "ar") {
+function localizedInline(value: Parameters<typeof resolveLocalizedInlineText>[0], locale: "en" | "ur" | "ar") {
   const resolved = resolveLocalizedInlineText(value, locale).trim();
   return resolved && !isUnavailableCopy(resolved)
     ? resolved
-    : resolveLocalizedInlineText(value, "en").trim() || value;
+    : resolveLocalizedInlineText(value, "en").trim() || String(value || "");
 }
 
-function localizedRich(value: string, locale: "en" | "ur" | "ar") {
+function localizedRich(value: Parameters<typeof resolveLocalizedRichText>[0], locale: "en" | "ur" | "ar") {
   const resolved = resolveLocalizedRichText(value, locale).trim();
   return resolved && !isUnavailableCopy(resolved)
     ? resolved
-    : resolveLocalizedRichText(value, "en").trim() || value;
+    : resolveLocalizedRichText(value, "en").trim() || String(value || "");
 }
 
 export async function CoursesPage() {
@@ -62,6 +62,8 @@ export async function CoursesPage() {
         "Browse the academy's signature learning tracks designed for beginners, families, and committed students seeking depth with consistent guidance.",
       primaryCta: "Apply For Admission",
       detailsCta: "View Course Details",
+      lessons: "lessons",
+      students: "students",
     },
     ur: {
       eyebrow: "کورسز",
@@ -70,14 +72,18 @@ export async function CoursesPage() {
         "ابتدائی طلبہ، خاندانوں، اور سنجیدہ طلبہ کے لیے تیار کردہ اکیڈمی کے نمایاں تعلیمی راستے دیکھیں۔",
       primaryCta: "داخلے کے لیے اپلائی کریں",
       detailsCta: "کورس کی تفصیل دیکھیں",
+      lessons: "اسباق",
+      students: "طلبہ",
     },
     ar: {
       eyebrow: "الدورات",
       title: "برامج منظمة لتلاوة القرآن والحفظ والفهم والنمو الإسلامي",
       description:
-        "تصفح المسارات التعليمية المميزة في الأكاديمية والمصممة للمبتدئين والعائلات والطلاب الجادين الباحثين عن العمق مع التوجيه المستمر.",
+        "تصفح مسارات الأكاديمية التعليمية المصممة للمبتدئين والعائلات والطلاب الجادين مع توجيه مستمر.",
       primaryCta: "قدّم للقبول",
       detailsCta: "عرض تفاصيل الدورة",
+      lessons: "دروس",
+      students: "طلاب",
     },
   }[locale];
 
@@ -121,10 +127,10 @@ export async function CoursesPage() {
                 <div className={styles.meta}>
                   <span>{course.duration}</span>
                   <span>
-                    {course.lessons} {locale === "ur" ? "اسباق" : locale === "ar" ? "دروس" : "lessons"}
+                    {course.lessons} {copy.lessons}
                   </span>
                   <span>
-                    {course.students}+ {locale === "ur" ? "طلبہ" : locale === "ar" ? "طلاب" : "students"}
+                    {course.students}+ {copy.students}
                   </span>
                 </div>
                 <Link href={`/courses/${course.slug}`} className={styles.link}>

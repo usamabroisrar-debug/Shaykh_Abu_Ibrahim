@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BlogDetailPage } from "@/components/public/blog/BlogDetailPage";
+import { resolveLocalizedInlineText, resolveLocalizedRichText } from "@/lib/content-localization";
 import { buildMetadata } from "@/lib/metadata";
 import { getPublishedBlogBySlug } from "@/services/blog/blog.service";
 
@@ -18,8 +19,8 @@ export async function generateMetadata(
   }
 
   return buildMetadata({
-    title: post.title,
-    description: post.excerpt,
+    title: resolveLocalizedInlineText(post.title, "en"),
+    description: resolveLocalizedRichText(post.excerpt, "en"),
     path: `/blog/${post.slug}`,
     keywords: [...post.tags, post.category, post.author],
   });

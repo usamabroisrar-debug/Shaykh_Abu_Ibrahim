@@ -17,77 +17,78 @@ export default async function RegisterPage() {
   const copy = {
     en: {
       eyebrow: "New account",
-      title: "Create an academy account built for structured Islamic study",
+      title: "Create your Shaykh Abu Ibrahim academy account",
       description:
-        "Start with the role that matches your journey so we can connect admissions, enrollments, support, and future learning progress correctly.",
+        "Register as a student, parent, or teacher so admissions, course enrollment, dashboard access, and future learning records stay connected.",
       benefits: [
         {
           title: "Student and parent ready",
-          text: "Capture guardian details early so admissions and support stay family-friendly.",
+          text: "Keep admission details, guardian contact, enrollment, and learning progress in one place.",
         },
         {
           title: "Teacher onboarding path",
-          text: "Faculty accounts can now move into role-specific tools and operational workflows.",
+          text: "Teacher accounts can access role-specific tools as the academy workflow expands.",
         },
         {
           title: "Prepared for LMS growth",
-          text: "Profiles are shaped to support dashboards, certificates, quizzes, and future integrations.",
+          text: "Your account supports dashboards, certificates, quizzes, lessons, and future course activity.",
         },
       ],
       cardEyebrow: "Register",
       cardTitle: "Create your account",
       cardDescription:
-        "Register once, then use the same account for admission tracking, enrollment, course activity, and direct academy communication.",
+        "After registration, you will be signed in automatically and sent to the right dashboard.",
     },
     ur: {
       eyebrow: "نیا اکاؤنٹ",
-      title: "منظم اسلامی تعلیم کے لیے اکیڈمی اکاؤنٹ بنائیں",
+      title: "شیخ ابو ابراہیم اکیڈمی کا اکاؤنٹ بنائیں",
       description:
-        "اپنے سفر کے مطابق کردار منتخب کریں تاکہ ہم داخلہ، انرولمنٹ، سپورٹ، اور آئندہ تعلیمی پیش رفت کو درست طور پر جوڑ سکیں۔",
+        "طالب علم، والدین، یا استاد کے طور پر رجسٹر کریں تاکہ داخلہ، کورس انرولمنٹ، ڈیش بورڈ، اور تعلیمی ریکارڈ ایک جگہ محفوظ رہیں۔",
       benefits: [
         {
-          title: "طالب علم اور والدین کے لیے تیار",
-          text: "سرپرست معلومات ابتدا میں محفوظ کریں تاکہ داخلہ اور سپورٹ خاندان دوست رہے۔",
+          title: "طلبہ اور والدین کے لیے آسان",
+          text: "داخلہ معلومات، سرپرست رابطہ، انرولمنٹ، اور تعلیمی پیش رفت ایک ہی جگہ رہتی ہے۔",
         },
         {
-          title: "اساتذہ آن بورڈنگ راستہ",
-          text: "اساتذہ اکاؤنٹس اب کردار کے مطابق ٹولز اور عملی ورک فلو میں جا سکتے ہیں۔",
+          title: "اساتذہ کے لیے راستہ",
+          text: "استاد کا اکاؤنٹ اکیڈمی کے متعلقہ ٹولز اور ورک فلو تک رسائی دے سکتا ہے۔",
         },
         {
-          title: "LMS کی ترقی کے لیے تیار",
-          text: "پروفائلز کو اس طرح ترتیب دیا گیا ہے کہ ڈیش بورڈز، سرٹیفکیٹس، کوئزز، اور آئندہ انٹیگریشنز کی سپورٹ ہو۔",
+          title: "LMS کے لیے تیار",
+          text: "یہ اکاؤنٹ ڈیش بورڈ، اسباق، کوئزز، سرٹیفکیٹس، اور کورس سرگرمیوں کے لیے تیار ہے۔",
         },
       ],
       cardEyebrow: "رجسٹر",
       cardTitle: "اپنا اکاؤنٹ بنائیں",
       cardDescription:
-        "ایک بار رجسٹر کریں، پھر اسی اکاؤنٹ سے داخلہ ٹریکنگ، انرولمنٹ، کورس سرگرمی، اور براہ راست اکیڈمی رابطہ استعمال کریں۔",
+        "رجسٹریشن کے بعد آپ کو خودکار طور پر لاگ اِن کر کے درست ڈیش بورڈ پر بھیج دیا جائے گا۔",
     },
     ar: {
       eyebrow: "حساب جديد",
-      title: "أنشئ حسابًا أكاديميًا مبنيًا للدراسة الإسلامية المنظمة",
+      title: "أنشئ حسابك في أكاديمية شيخ أبو إبراهيم",
       description:
-        "ابدأ بالدور الذي يناسب رحلتك حتى نربط القبول والتسجيل والدعم والتقدم التعليمي المستقبلي بشكل صحيح.",
+        "سجل كطالب أو ولي أمر أو معلم حتى تبقى بيانات القبول والتسجيل والدروس والسجلات التعليمية مرتبطة في مكان واحد.",
       benefits: [
         {
           title: "جاهز للطلاب وأولياء الأمور",
-          text: "احفظ بيانات ولي الأمر مبكرًا حتى يبقى القبول والدعم ملائمين للأسرة.",
+          text: "تبقى بيانات القبول ومعلومات ولي الأمر والتسجيل والتقدم الدراسي في مكان واحد.",
         },
         {
-          title: "مسار انضمام المعلمين",
-          text: "يمكن لحسابات المعلمين الآن الانتقال إلى أدوات وتدفقات عمل خاصة بالأدوار.",
+          title: "مسار للمعلمين",
+          text: "يمكن لحساب المعلم الوصول إلى أدوات العمل المناسبة مع توسع نظام الأكاديمية.",
         },
         {
-          title: "مهيأ لنمو نظام التعلم",
-          text: "صُممت الملفات الشخصية لدعم اللوحات والشهادات والاختبارات والتكاملات المستقبلية.",
+          title: "مهيأ لنظام التعلم",
+          text: "يدعم الحساب اللوحات والدروس والاختبارات والشهادات ونشاط الدورات مستقبلا.",
         },
       ],
       cardEyebrow: "تسجيل",
       cardTitle: "أنشئ حسابك",
       cardDescription:
-        "سجّل مرة واحدة، ثم استخدم الحساب نفسه لمتابعة القبول والتسجيل ونشاط الدورات والتواصل المباشر مع الأكاديمية.",
+        "بعد التسجيل سيتم تسجيل دخولك تلقائيا وتحويلك إلى لوحة التحكم المناسبة.",
     },
   }[locale];
+
   return (
     <AuthShell
       eyebrow={copy.eyebrow}

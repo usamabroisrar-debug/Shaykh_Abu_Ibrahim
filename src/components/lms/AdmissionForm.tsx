@@ -2,82 +2,88 @@
 
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/shared";
-import { courses } from "@/data/courses";
 import { resolveLocalizedInlineText } from "@/lib/content-localization";
 import type { SiteLocale } from "@/lib/locale";
+import type { Course } from "@/data/courses";
 import styles from "./LmsExperience.module.css";
 
 type AdmissionFormProps = {
   locale: SiteLocale;
+  courses: Course[];
 };
 
-export function AdmissionForm({ locale }: AdmissionFormProps) {
-  const copy = {
-    en: {
-      studentName: "Student name",
-      email: "Email",
-      phone: "Phone / WhatsApp",
-      timezone: "Timezone",
-      guardianName: "Guardian name",
-      guardianPhone: "Guardian phone",
-      ageGroup: "Age group",
-      preferredCourse: "Preferred course",
-      goals: "Goals or notes",
-      goalsPlaceholder: "Tell us about current level, schedule, or goals.",
-      submitSuccess: "Admission request submitted. Our team will contact you soon.",
-      submitError: "Admission request could not be submitted.",
-      networkError: "The admission request could not be submitted due to a network issue.",
-      submitting: "Submitting...",
-      submit: "Submit Admission Request",
-      ageChildren: "Children",
-      ageTeen: "Teen",
-      ageAdult: "Adult",
-      ageFamily: "Family",
-    },
-    ur: {
-      studentName: "طالب علم کا نام",
-      email: "ای میل",
-      phone: "فون / واٹس ایپ",
-      timezone: "ٹائم زون",
-      guardianName: "سرپرست کا نام",
-      guardianPhone: "سرپرست کا فون",
-      ageGroup: "عمر کا گروپ",
-      preferredCourse: "پسندیدہ کورس",
-      goals: "اہداف یا نوٹس",
-      goalsPlaceholder: "اپنی موجودہ سطح، شیڈول، یا اہداف کے بارے میں بتائیں۔",
-      submitSuccess: "داخلہ درخواست جمع ہو گئی ہے۔ ہماری ٹیم جلد آپ سے رابطہ کرے گی۔",
-      submitError: "داخلہ درخواست جمع نہیں ہو سکی۔",
-      networkError: "نیٹ ورک مسئلے کی وجہ سے داخلہ درخواست جمع نہیں ہو سکی۔",
-      submitting: "جمع کیا جا رہا ہے...",
-      submit: "داخلہ درخواست جمع کریں",
-      ageChildren: "بچے",
-      ageTeen: "ٹین",
-      ageAdult: "بالغ",
-      ageFamily: "خاندان",
-    },
-    ar: {
-      studentName: "اسم الطالب",
-      email: "البريد الإلكتروني",
-      phone: "الهاتف / واتساب",
-      timezone: "المنطقة الزمنية",
-      guardianName: "اسم ولي الأمر",
-      guardianPhone: "هاتف ولي الأمر",
-      ageGroup: "الفئة العمرية",
-      preferredCourse: "الدورة المفضلة",
-      goals: "الأهداف أو الملاحظات",
-      goalsPlaceholder: "أخبرنا عن المستوى الحالي أو الجدول أو الأهداف.",
-      submitSuccess: "تم إرسال طلب القبول. سيتواصل معك فريقنا قريبًا.",
-      submitError: "تعذر إرسال طلب القبول.",
-      networkError: "تعذر إرسال طلب القبول بسبب مشكلة في الشبكة.",
-      submitting: "جارٍ الإرسال...",
-      submit: "إرسال طلب القبول",
-      ageChildren: "الأطفال",
-      ageTeen: "المراهقون",
-      ageAdult: "البالغون",
-      ageFamily: "العائلة",
-    },
-  }[locale];
+const formCopy = {
+  en: {
+    studentName: "Student name",
+    email: "Email",
+    phone: "Phone / WhatsApp",
+    timezone: "Timezone",
+    guardianName: "Guardian name",
+    guardianPhone: "Guardian phone",
+    ageGroup: "Age group",
+    preferredCourse: "Preferred course",
+    goals: "Goals or notes",
+    goalsPlaceholder: "Tell us about current level, schedule, or goals.",
+    submitSuccess: "Admission request submitted. Our team will contact you soon.",
+    submitError: "Admission request could not be submitted.",
+    networkError: "The admission request could not be submitted due to a network issue.",
+    submitting: "Submitting...",
+    submit: "Submit Admission Request",
+    noCourses: "No published courses are available yet.",
+    ageChildren: "Children",
+    ageTeen: "Teen",
+    ageAdult: "Adult",
+    ageFamily: "Family",
+  },
+  ur: {
+    studentName: "طالب علم کا نام",
+    email: "ای میل",
+    phone: "فون / واٹس ایپ",
+    timezone: "ٹائم زون",
+    guardianName: "سرپرست کا نام",
+    guardianPhone: "سرپرست کا فون",
+    ageGroup: "عمر کا گروپ",
+    preferredCourse: "پسندیدہ کورس",
+    goals: "اہداف یا نوٹس",
+    goalsPlaceholder: "اپنی موجودہ سطح، شیڈول، یا اہداف کے بارے میں بتائیں۔",
+    submitSuccess: "داخلہ درخواست جمع ہو گئی ہے۔ ہماری ٹیم جلد آپ سے رابطہ کرے گی۔",
+    submitError: "داخلہ درخواست جمع نہیں ہو سکی۔",
+    networkError: "نیٹ ورک مسئلے کی وجہ سے داخلہ درخواست جمع نہیں ہو سکی۔",
+    submitting: "جمع کیا جا رہا ہے...",
+    submit: "داخلہ درخواست جمع کریں",
+    noCourses: "ابھی کوئی شائع شدہ کورس دستیاب نہیں۔",
+    ageChildren: "بچے",
+    ageTeen: "ٹین",
+    ageAdult: "بالغ",
+    ageFamily: "خاندان",
+  },
+  ar: {
+    studentName: "اسم الطالب",
+    email: "البريد الإلكتروني",
+    phone: "الهاتف / واتساب",
+    timezone: "المنطقة الزمنية",
+    guardianName: "اسم ولي الأمر",
+    guardianPhone: "هاتف ولي الأمر",
+    ageGroup: "الفئة العمرية",
+    preferredCourse: "الدورة المفضلة",
+    goals: "الأهداف أو الملاحظات",
+    goalsPlaceholder: "أخبرنا عن مستواك الحالي أو جدولك أو أهدافك.",
+    submitSuccess: "تم إرسال طلب القبول. سيتواصل معك فريقنا قريباً.",
+    submitError: "تعذر إرسال طلب القبول.",
+    networkError: "تعذر إرسال طلب القبول بسبب مشكلة في الشبكة.",
+    submitting: "جارٍ الإرسال...",
+    submit: "إرسال طلب القبول",
+    noCourses: "لا توجد دورات منشورة حالياً.",
+    ageChildren: "الأطفال",
+    ageTeen: "المراهقون",
+    ageAdult: "البالغون",
+    ageFamily: "العائلة",
+  },
+};
 
+export function AdmissionForm({ locale, courses }: AdmissionFormProps) {
+  const copy = formCopy[locale];
+  const firstCourseSlug = courses[0]?.slug ?? "";
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -86,7 +92,7 @@ export function AdmissionForm({ locale }: AdmissionFormProps) {
     guardianPhone: "",
     timezone: "Asia/Karachi",
     ageGroup: copy.ageChildren,
-    course: courses[0]?.title ?? "",
+    course: firstCourseSlug,
     message: "",
   });
   const [message, setMessage] = useState("");
@@ -111,7 +117,6 @@ export function AdmissionForm({ locale }: AdmissionFormProps) {
         },
         body: JSON.stringify(form),
       });
-
       const data = await response.json();
 
       if (!response.ok) {
@@ -128,7 +133,7 @@ export function AdmissionForm({ locale }: AdmissionFormProps) {
         guardianPhone: "",
         timezone: "Asia/Karachi",
         ageGroup: copy.ageChildren,
-        course: courses[0]?.title ?? "",
+        course: firstCourseSlug,
         message: "",
       });
     } catch {
@@ -227,12 +232,17 @@ export function AdmissionForm({ locale }: AdmissionFormProps) {
             id="admission-course"
             value={form.course}
             onChange={(event) => updateField("course", event.target.value)}
+            disabled={!courses.length}
           >
-            {courses.map((course) => (
-              <option key={course.id} value={course.title}>
-                {resolveLocalizedInlineText(course.title, locale)}
-              </option>
-            ))}
+            {courses.length ? (
+              courses.map((course) => (
+                <option key={course.id} value={course.slug}>
+                  {resolveLocalizedInlineText(course.title, locale)}
+                </option>
+              ))
+            ) : (
+              <option value="">{copy.noCourses}</option>
+            )}
           </select>
         </div>
       </div>
@@ -250,7 +260,7 @@ export function AdmissionForm({ locale }: AdmissionFormProps) {
       {message ? <div className={styles.message}>{message}</div> : null}
       {error ? <div className={styles.error}>{error}</div> : null}
 
-      <Button type="submit" className={styles.submit} disabled={isLoading}>
+      <Button type="submit" className={styles.submit} disabled={isLoading || !courses.length}>
         {isLoading ? copy.submitting : copy.submit}
       </Button>
     </form>

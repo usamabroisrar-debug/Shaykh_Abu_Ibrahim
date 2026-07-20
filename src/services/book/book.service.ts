@@ -27,22 +27,17 @@ function normalizeLocaleContent(value: unknown): BookLocaleContent {
   return isRecord(value) ? (value as BookLocaleContent) : {};
 }
 
-function stringifyLocaleField(
+function resolveLocaleBucket(
   value: Partial<Record<"en" | "ur" | "ar", string>> | undefined,
-  fallback: string | null | undefined,
-  headings: Record<"en" | "ur" | "ar", string>
+  fallback: string | null | undefined
 ) {
-  const parts: string[] = [];
+  const bucket = {
+    en: value?.en?.trim() || fallback?.trim() || "",
+    ur: value?.ur?.trim() || "",
+    ar: value?.ar?.trim() || "",
+  };
 
-  for (const locale of ["en", "ur", "ar"] as const) {
-    const content = value?.[locale]?.trim();
-
-    if (content) {
-      parts.push(`${headings[locale]}\n${content}`);
-    }
-  }
-
-  return parts.length ? parts.join("\n\n") : fallback?.trim() || "";
+  return bucket.en || bucket.ur || bucket.ar ? bucket : fallback?.trim() || "";
 }
 
 async function buildUniqueBookSlug(baseValue: string, existingId?: string) {
@@ -83,21 +78,9 @@ function mapDatabaseBook(book: {
   localeContent: unknown;
 }): Book {
   const localeContent = normalizeLocaleContent(book.localeContent);
-  const title = stringifyLocaleField(localeContent.title, book.title, {
-    en: "English",
-    ur: "Urdu",
-    ar: "Arabic",
-  });
-  const summary = stringifyLocaleField(localeContent.summary, book.summary, {
-    en: "English Summary",
-    ur: "Urdu Summary",
-    ar: "Arabic Summary",
-  });
-  const featuredNote = stringifyLocaleField(localeContent.featuredNote, book.featuredNote, {
-    en: "English Featured Note",
-    ur: "Urdu Featured Note",
-    ar: "Arabic Featured Note",
-  });
+  const title = resolveLocaleBucket(localeContent.title, book.title);
+  const summary = resolveLocaleBucket(localeContent.summary, book.summary);
+  const featuredNote = resolveLocaleBucket(localeContent.featuredNote, book.featuredNote);
 
   return {
     id: book.id,

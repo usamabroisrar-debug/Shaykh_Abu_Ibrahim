@@ -1,3 +1,5 @@
+import type { LocalizedTextValue } from "@/lib/content-localization";
+
 export type BlogCategory =
   | "Quran"
   | "Tajweed"
@@ -7,9 +9,9 @@ export type BlogCategory =
 
 export type BlogPost = {
   id: string;
-  title: string;
+  title: LocalizedTextValue;
   slug: string;
-  excerpt: string;
+  excerpt: LocalizedTextValue;
   category: BlogCategory;
   author: string;
   publishedAt: string;

@@ -1,12 +1,11 @@
 "use server";
 
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { getInlineLanguageLabelValues } from "@/lib/content-localization";
 import { prisma } from "@/lib/prisma";
+import { getUploadTitle, saveUploadedFile } from "@/lib/upload-storage";
 import { importStaticContentToDatabase } from "@/services/content/import-static-content.service";
 import {
   updateHomepageHeroSettings,
@@ -38,37 +37,6 @@ function requireAtLeastOne(...values: string[]) {
   return values.some((value) => value.trim().length > 0);
 }
 
-function joinInlineTranslations(primary: string, secondary: string) {
-  const left = primary.trim();
-  const right = secondary.trim();
-
-  if (!left) {
-    return right;
-  }
-
-  if (!right) {
-    return left;
-  }
-
-  return `${left} / ${right}`;
-}
-
-function joinBlockTranslations(
-  englishHeading: string,
-  primary: string,
-  urduHeading: string,
-  secondary: string
-) {
-  const left = primary.trim();
-  const right = secondary.trim();
-
-  if (left && right) {
-    return `${englishHeading}\n${left}\n\n${urduHeading}\n${right}`;
-  }
-
-  return left || right;
-}
-
 function buildLocaleField(english: string, urdu: string, arabic = "") {
   return {
     en: english.trim(),
@@ -77,24 +45,23 @@ function buildLocaleField(english: string, urdu: string, arabic = "") {
   };
 }
 
-function isUploadedFile(value: FormDataEntryValue | null): value is File {
-  return typeof File !== "undefined" && value instanceof File && value.size > 0;
+function pickStorageText(english: string, urdu: string, arabic = "") {
+  return english.trim() || urdu.trim() || arabic.trim();
 }
 
-function cleanFilename(value: string) {
-  const parsed = path.parse(value || "upload");
-  const safeName = normalizeSlug(parsed.name || "book-file");
-  const safeExt = parsed.ext.toLowerCase().replace(/[^a-z0-9.]/g, "");
+function splitExistingLocaleText(value: string) {
+  const parts = getInlineLanguageLabelValues(value);
+  const hasParts = hasLocaleParts(parts);
 
-  return `${safeName || "book-file"}${safeExt || ""}`;
+  return {
+    en: parts.en?.trim() || (!hasParts ? value.trim() : ""),
+    ur: parts.ur?.trim() || "",
+    ar: parts.ar?.trim() || "",
+  };
 }
 
 function titleFromFile(value: FormDataEntryValue | null) {
-  if (!isUploadedFile(value)) {
-    return "";
-  }
-
-  return path.parse(value.name).name.replace(/[-_]+/g, " ").trim();
+  return getUploadTitle(value);
 }
 
 function hasLocaleParts(value: Partial<Record<"en" | "ur" | "ar" | "default", string>>) {
@@ -115,22 +82,6 @@ function splitBookTitle(rawTitle: string, rawUrduTitle: string, fallbackTitle: s
     arabicTitle,
     storageTitle: englishTitle || urduTitle || arabicTitle || source.trim(),
   };
-}
-
-async function saveLocalBookAsset(value: FormDataEntryValue | null, folder: "files" | "covers") {
-  if (!isUploadedFile(value)) {
-    return "";
-  }
-
-  const filename = `${Date.now()}-${cleanFilename(value.name)}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "books", folder);
-  const outputPath = path.join(uploadDir, filename);
-  const bytes = Buffer.from(await value.arrayBuffer());
-
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(outputPath, bytes);
-
-  return `/uploads/books/${folder}/${filename}`;
 }
 
 function resolveCategory(
@@ -188,10 +139,10 @@ export async function createBlogAction(formData: FormData) {
 
   try {
     await createAdminBlog({
-      title: joinInlineTranslations(title, titleUrdu),
+      title: pickStorageText(title, titleUrdu),
       slug: cleanValue(formData.get("slug")),
-      excerpt: joinBlockTranslations("English Summary", excerpt, "Urdu Summary", excerptUrdu),
-      content: joinBlockTranslations("English Content", content, "Urdu Content", contentUrdu),
+      excerpt: pickStorageText(excerpt, excerptUrdu),
+      content: pickStorageText(content, contentUrdu),
       localeContent: {
         title: buildLocaleField(title, titleUrdu),
         excerpt: buildLocaleField(excerpt, excerptUrdu),
@@ -239,12 +190,21 @@ export async function updateBlogAction(formData: FormData) {
   const view = cleanValue(formData.get("view")) || "blogs";
 
   try {
+    const titleParts = splitExistingLocaleText(cleanValue(formData.get("title")));
+    const excerptParts = splitExistingLocaleText(cleanValue(formData.get("excerpt")));
+    const contentParts = splitExistingLocaleText(cleanValue(formData.get("content")));
+
     await updateAdminBlog({
       id: cleanValue(formData.get("id")),
-      title: cleanValue(formData.get("title")),
+      title: pickStorageText(titleParts.en, titleParts.ur, titleParts.ar),
       slug: cleanValue(formData.get("slug")),
-      excerpt: cleanValue(formData.get("excerpt")),
-      content: cleanValue(formData.get("content")),
+      excerpt: pickStorageText(excerptParts.en, excerptParts.ur, excerptParts.ar),
+      content: pickStorageText(contentParts.en, contentParts.ur, contentParts.ar),
+      localeContent: {
+        title: buildLocaleField(titleParts.en, titleParts.ur, titleParts.ar),
+        excerpt: buildLocaleField(excerptParts.en, excerptParts.ur, excerptParts.ar),
+        content: buildLocaleField(contentParts.en, contentParts.ur, contentParts.ar),
+      },
       categoryName: resolveCategory(
         formData.get("categoryName"),
         formData.get("customCategoryName"),
@@ -282,20 +242,10 @@ export async function createCourseAction(formData: FormData) {
 
   try {
     await createAdminCourse({
-      title: joinInlineTranslations(title, titleUrdu),
+      title: pickStorageText(title, titleUrdu),
       slug: cleanValue(formData.get("slug")),
-      description: joinBlockTranslations(
-        "English Description",
-        description,
-        "Urdu Description",
-        descriptionUrdu
-      ),
-      content: joinBlockTranslations(
-        "English Curriculum / Notes",
-        content,
-        "Urdu Curriculum / Notes",
-        contentUrdu
-      ),
+      description: pickStorageText(description, descriptionUrdu),
+      content: pickStorageText(content, contentUrdu),
       localeContent: {
         title: buildLocaleField(title, titleUrdu),
         description: buildLocaleField(description, descriptionUrdu),
@@ -341,12 +291,21 @@ export async function updateCourseAction(formData: FormData) {
   const view = cleanValue(formData.get("view")) || "courses";
 
   try {
+    const titleParts = splitExistingLocaleText(cleanValue(formData.get("title")));
+    const descriptionParts = splitExistingLocaleText(cleanValue(formData.get("description")));
+    const contentParts = splitExistingLocaleText(cleanValue(formData.get("content")));
+
     await updateAdminCourse({
       id: cleanValue(formData.get("id")),
-      title: cleanValue(formData.get("title")),
+      title: pickStorageText(titleParts.en, titleParts.ur, titleParts.ar),
       slug: cleanValue(formData.get("slug")),
-      description: cleanValue(formData.get("description")),
-      content: cleanValue(formData.get("content")),
+      description: pickStorageText(descriptionParts.en, descriptionParts.ur, descriptionParts.ar),
+      content: pickStorageText(contentParts.en, contentParts.ur, contentParts.ar),
+      localeContent: {
+        title: buildLocaleField(titleParts.en, titleParts.ur, titleParts.ar),
+        description: buildLocaleField(descriptionParts.en, descriptionParts.ur, descriptionParts.ar),
+        content: buildLocaleField(contentParts.en, contentParts.ur, contentParts.ar),
+      },
       level: cleanValue(formData.get("level")),
       duration: cleanValue(formData.get("duration")),
       status: cleanValue(formData.get("status")) as "DRAFT" | "PUBLISHED" | "ARCHIVED",
@@ -387,8 +346,8 @@ export async function createBookAction(formData: FormData) {
   }
 
   try {
-    const uploadedFileUrl = await saveLocalBookAsset(bookFile, "files");
-    const uploadedCoverUrl = await saveLocalBookAsset(coverFile, "covers");
+    const uploadedFile = await saveUploadedFile(bookFile, "books/files");
+    const uploadedCover = await saveUploadedFile(coverFile, "books/covers");
 
     await createAdminBook({
       title: storageTitle,
@@ -396,15 +355,10 @@ export async function createBookAction(formData: FormData) {
       category: cleanValue(formData.get("category")) || "Quran",
       format: cleanValue(formData.get("format")) || "PDF Guide",
       pages: Number(formData.get("pages") || 1),
-      summary: joinBlockTranslations("English Summary", summary, "Urdu Summary", summaryUrdu),
-      featuredNote: joinBlockTranslations(
-        "English Featured Note",
-        featuredNote,
-        "Urdu Featured Note",
-        featuredNoteUrdu
-      ),
-      fileUrl: uploadedFileUrl || cleanValue(formData.get("fileUrl")),
-      coverUrl: uploadedCoverUrl || cleanValue(formData.get("coverUrl")),
+      summary: pickStorageText(summary, summaryUrdu),
+      featuredNote: pickStorageText(featuredNote, featuredNoteUrdu),
+      fileUrl: uploadedFile?.url || cleanValue(formData.get("fileUrl")),
+      coverUrl: uploadedCover?.url || cleanValue(formData.get("coverUrl")),
       localeContent: {
         title: buildLocaleField(englishTitle, urduTitle, arabicTitle),
         summary: buildLocaleField(summary, summaryUrdu),
@@ -449,8 +403,8 @@ export async function updateBookAction(formData: FormData) {
   try {
     const bookFile = formData.get("bookFile");
     const coverFile = formData.get("coverFile");
-    const uploadedFileUrl = await saveLocalBookAsset(bookFile, "files");
-    const uploadedCoverUrl = await saveLocalBookAsset(coverFile, "covers");
+    const uploadedFile = await saveUploadedFile(bookFile, "books/files");
+    const uploadedCover = await saveUploadedFile(coverFile, "books/covers");
     const rawTitle = cleanValue(formData.get("title"));
     const { englishTitle, urduTitle, arabicTitle, storageTitle } = splitBookTitle(
       rawTitle,
@@ -470,8 +424,8 @@ export async function updateBookAction(formData: FormData) {
       pages: Number(formData.get("pages") || 1),
       summary,
       featuredNote: cleanValue(formData.get("featuredNote")),
-      fileUrl: uploadedFileUrl || cleanValue(formData.get("fileUrl")),
-      coverUrl: uploadedCoverUrl || cleanValue(formData.get("coverUrl")),
+      fileUrl: uploadedFile?.url || cleanValue(formData.get("fileUrl")),
+      coverUrl: uploadedCover?.url || cleanValue(formData.get("coverUrl")),
       localeContent: {
         title: buildLocaleField(englishTitle, urduTitle, arabicTitle),
         summary: buildLocaleField(summary, cleanValue(formData.get("summaryUrdu"))),
@@ -518,27 +472,25 @@ export async function saveSiteSettingsAction(formData: FormData) {
 
   try {
     await updateSiteSettings({
-      brandName: joinInlineTranslations(
+      brandName: buildLocaleField(
         cleanValue(formData.get("brandName")),
-        cleanValue(formData.get("brandNameUrdu"))
+        cleanValue(formData.get("brandNameUrdu")),
+        cleanValue(formData.get("brandNameArabic"))
       ),
-      subtitle: joinBlockTranslations(
-        "English",
+      subtitle: buildLocaleField(
         cleanValue(formData.get("subtitle")),
-        "Urdu",
-        cleanValue(formData.get("subtitleUrdu"))
+        cleanValue(formData.get("subtitleUrdu")),
+        cleanValue(formData.get("subtitleArabic"))
       ),
-      description: joinBlockTranslations(
-        "English",
+      description: buildLocaleField(
         cleanValue(formData.get("description")),
-        "Urdu",
-        cleanValue(formData.get("descriptionUrdu"))
+        cleanValue(formData.get("descriptionUrdu")),
+        cleanValue(formData.get("descriptionArabic"))
       ),
-      footerText: joinBlockTranslations(
-        "English",
+      footerText: buildLocaleField(
         cleanValue(formData.get("footerText")),
-        "Urdu",
-        cleanValue(formData.get("footerTextUrdu"))
+        cleanValue(formData.get("footerTextUrdu")),
+        cleanValue(formData.get("footerTextArabic"))
       ),
       logoSrc: cleanValue(formData.get("logoSrc")) || "/images/logo-transparent.webp",
       socials: {
@@ -565,130 +517,111 @@ export async function saveHomepageHeroSettingsAction(formData: FormData) {
 
   try {
     await updateHomepageHeroSettings({
-      badge: joinBlockTranslations(
-        "English",
+      badge: buildLocaleField(
         cleanValue(formData.get("badge")),
-        "Urdu",
-        cleanValue(formData.get("badgeUrdu"))
+        cleanValue(formData.get("badgeUrdu")),
+        cleanValue(formData.get("badgeArabic"))
       ),
-      title: joinBlockTranslations(
-        "English",
+      title: buildLocaleField(
         cleanValue(formData.get("title")),
-        "Urdu",
-        cleanValue(formData.get("titleUrdu"))
+        cleanValue(formData.get("titleUrdu")),
+        cleanValue(formData.get("titleArabic"))
       ),
-      description: joinBlockTranslations(
-        "English",
+      description: buildLocaleField(
         cleanValue(formData.get("description")),
-        "Urdu",
-        cleanValue(formData.get("descriptionUrdu"))
+        cleanValue(formData.get("descriptionUrdu")),
+        cleanValue(formData.get("descriptionArabic"))
       ),
-      miniHighlights: joinBlockTranslations(
-        "English",
+      miniHighlights: buildLocaleField(
         cleanValue(formData.get("miniHighlights")),
-        "Urdu",
-        cleanValue(formData.get("miniHighlightsUrdu"))
+        cleanValue(formData.get("miniHighlightsUrdu")),
+        cleanValue(formData.get("miniHighlightsArabic"))
       ),
-      highlights: joinBlockTranslations(
-        "English",
+      highlights: buildLocaleField(
         cleanValue(formData.get("highlights")),
-        "Urdu",
-        cleanValue(formData.get("highlightsUrdu"))
+        cleanValue(formData.get("highlightsUrdu")),
+        cleanValue(formData.get("highlightsArabic"))
       ),
-      primaryAction: joinBlockTranslations(
-        "English",
+      primaryAction: buildLocaleField(
         cleanValue(formData.get("primaryAction")),
-        "Urdu",
-        cleanValue(formData.get("primaryActionUrdu"))
+        cleanValue(formData.get("primaryActionUrdu")),
+        cleanValue(formData.get("primaryActionArabic"))
       ),
-      secondaryAction: joinBlockTranslations(
-        "English",
+      secondaryAction: buildLocaleField(
         cleanValue(formData.get("secondaryAction")),
-        "Urdu",
-        cleanValue(formData.get("secondaryActionUrdu"))
+        cleanValue(formData.get("secondaryActionUrdu")),
+        cleanValue(formData.get("secondaryActionArabic"))
       ),
-      trusted: joinBlockTranslations(
-        "English",
+      trusted: buildLocaleField(
         cleanValue(formData.get("trusted")),
-        "Urdu",
-        cleanValue(formData.get("trustedUrdu"))
+        cleanValue(formData.get("trustedUrdu")),
+        cleanValue(formData.get("trustedArabic"))
       ),
-      curriculum: joinBlockTranslations(
-        "English",
+      curriculum: buildLocaleField(
         cleanValue(formData.get("curriculum")),
-        "Urdu",
-        cleanValue(formData.get("curriculumUrdu"))
+        cleanValue(formData.get("curriculumUrdu")),
+        cleanValue(formData.get("curriculumArabic"))
       ),
-      teachers: joinBlockTranslations(
-        "English",
+      teachers: buildLocaleField(
         cleanValue(formData.get("teachers")),
-        "Urdu",
-        cleanValue(formData.get("teachersUrdu"))
+        cleanValue(formData.get("teachersUrdu")),
+        cleanValue(formData.get("teachersArabic"))
       ),
       stats: [
         {
-          label: joinBlockTranslations(
-            "English",
+          label: buildLocaleField(
             cleanValue(formData.get("statLabel1")),
-            "Urdu",
-            cleanValue(formData.get("statLabel1Urdu"))
+            cleanValue(formData.get("statLabel1Urdu")),
+            cleanValue(formData.get("statLabel1Arabic"))
           ),
           value: cleanValue(formData.get("statValue1")) || "12+",
         },
         {
-          label: joinBlockTranslations(
-            "English",
+          label: buildLocaleField(
             cleanValue(formData.get("statLabel2")),
-            "Urdu",
-            cleanValue(formData.get("statLabel2Urdu"))
+            cleanValue(formData.get("statLabel2Urdu")),
+            cleanValue(formData.get("statLabel2Arabic"))
           ),
           value: cleanValue(formData.get("statValue2")) || "500+",
         },
         {
-          label: joinBlockTranslations(
-            "English",
+          label: buildLocaleField(
             cleanValue(formData.get("statLabel3")),
-            "Urdu",
-            cleanValue(formData.get("statLabel3Urdu"))
+            cleanValue(formData.get("statLabel3Urdu")),
+            cleanValue(formData.get("statLabel3Arabic"))
           ),
           value: cleanValue(formData.get("statValue3")) || "100%",
         },
       ],
-      certificate: joinBlockTranslations(
-        "English",
+      certificate: buildLocaleField(
         cleanValue(formData.get("certificate")),
-        "Urdu",
-        cleanValue(formData.get("certificateUrdu"))
+        cleanValue(formData.get("certificateUrdu")),
+        cleanValue(formData.get("certificateArabic"))
       ),
-      certificateDetail: joinBlockTranslations(
-        "English",
+      certificateDetail: buildLocaleField(
         cleanValue(formData.get("certificateDetail")),
-        "Urdu",
-        cleanValue(formData.get("certificateDetailUrdu"))
+        cleanValue(formData.get("certificateDetailUrdu")),
+        cleanValue(formData.get("certificateDetailArabic"))
       ),
-      liveClasses: joinBlockTranslations(
-        "English",
+      liveClasses: buildLocaleField(
         cleanValue(formData.get("liveClasses")),
-        "Urdu",
-        cleanValue(formData.get("liveClassesUrdu"))
+        cleanValue(formData.get("liveClassesUrdu")),
+        cleanValue(formData.get("liveClassesArabic"))
       ),
-      liveDetail: joinBlockTranslations(
-        "English",
+      liveDetail: buildLocaleField(
         cleanValue(formData.get("liveDetail")),
-        "Urdu",
-        cleanValue(formData.get("liveDetailUrdu"))
+        cleanValue(formData.get("liveDetailUrdu")),
+        cleanValue(formData.get("liveDetailArabic"))
       ),
-      verified: joinBlockTranslations(
-        "English",
+      verified: buildLocaleField(
         cleanValue(formData.get("verified")),
-        "Urdu",
-        cleanValue(formData.get("verifiedUrdu"))
+        cleanValue(formData.get("verifiedUrdu")),
+        cleanValue(formData.get("verifiedArabic"))
       ),
-      imageAlt: joinBlockTranslations(
-        "English",
+      imageAlt: buildLocaleField(
         cleanValue(formData.get("imageAlt")),
-        "Urdu",
-        cleanValue(formData.get("imageAltUrdu"))
+        cleanValue(formData.get("imageAltUrdu")),
+        cleanValue(formData.get("imageAltArabic"))
       ),
       imageSrc: cleanValue(formData.get("imageSrc")) || "/images/hero.webp",
     });
@@ -932,8 +865,9 @@ export async function createPaymentAction(formData: FormData) {
 export async function createMediaRecordAction(formData: FormData) {
   const user = await requireAdminAccess();
   const view = cleanValue(formData.get("view")) || "operations";
-  const url = cleanValue(formData.get("url"));
-  const filename = cleanValue(formData.get("filename"));
+  const uploadedFile = await saveUploadedFile(formData.get("mediaFile"), "media");
+  const url = uploadedFile?.url || cleanValue(formData.get("url"));
+  const filename = uploadedFile?.filename || cleanValue(formData.get("filename"));
 
   if (!url || !filename) {
     redirect(buildAdminRedirect("error=media-create-failed", view));
@@ -944,8 +878,8 @@ export async function createMediaRecordAction(formData: FormData) {
       data: {
         url,
         filename,
-        mimeType: cleanValue(formData.get("mimeType")) || null,
-        size: Number(formData.get("size") || 0) || null,
+        mimeType: uploadedFile?.mimeType || cleanValue(formData.get("mimeType")) || null,
+        size: uploadedFile?.size || Number(formData.get("size") || 0) || null,
         userId: user.id,
       },
     });

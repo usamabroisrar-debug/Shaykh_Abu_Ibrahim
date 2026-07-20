@@ -6,6 +6,7 @@ import { getRecentCourses, getTeacherCourses } from "@/services/course/course.se
 
 const emptyAdminDashboardData = {
   users: 0,
+  userAccounts: [],
   admissions: [],
   courses: [],
   submissions: [],
@@ -32,6 +33,7 @@ export async function getStudentDashboardData(userId: string) {
       attempts: [],
       assignments: [],
       payments: [],
+      attendance: [],
     };
   }
 
@@ -43,6 +45,7 @@ export async function getStudentDashboardData(userId: string) {
     attempts,
     assignments,
     payments,
+    attendance,
   ] = await Promise.all([
     safeQuery(
       () =>
@@ -51,7 +54,14 @@ export async function getStudentDashboardData(userId: string) {
           include: {
             course: {
               include: {
-                lessons: true,
+                lessons: {
+                  orderBy: { order: "asc" },
+                  include: {
+                    progress: {
+                      where: { studentId: userId },
+                    },
+                  },
+                },
               },
             },
           },
@@ -132,6 +142,19 @@ export async function getStudentDashboardData(userId: string) {
         }),
       []
     ),
+    safeQuery(
+      () =>
+        prisma.attendance.findMany({
+          where: { studentId: userId },
+          include: {
+            course: true,
+            lesson: true,
+          },
+          orderBy: { attendanceDate: "desc" },
+          take: 8,
+        }),
+      []
+    ),
   ]);
 
   return {
@@ -142,6 +165,7 @@ export async function getStudentDashboardData(userId: string) {
     attempts,
     assignments,
     payments,
+    attendance,
   };
 }
 
@@ -228,9 +252,37 @@ export async function getAdminDashboardData() {
     return emptyAdminDashboardData;
   }
 
-  const [users, admissions, courses, submissions, payments, certificates, contacts] =
+  const [users, userAccounts, admissions, courses, submissions, payments, certificates, contacts] =
     await Promise.all([
       safeQuery(() => prisma.user.count(), 0),
+      safeQuery(
+        () =>
+          prisma.user.findMany({
+            where: {
+              role: {
+                in: ["STUDENT", "PARENT", "TEACHER"],
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              phone: true,
+              createdAt: true,
+              _count: {
+                select: {
+                  enrollments: true,
+                  teacherCourses: true,
+                  payments: true,
+                  certificates: true,
+                },
+              },
+            },
+            orderBy: [{ role: "asc" }, { createdAt: "desc" }],
+          }),
+        []
+      ),
       getRecentAdmissions(8),
       getRecentCourses(8),
       safeQuery(
@@ -270,6 +322,7 @@ export async function getAdminDashboardData() {
 
   return {
     users,
+    userAccounts,
     admissions,
     courses,
     submissions,

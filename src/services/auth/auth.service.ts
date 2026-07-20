@@ -63,7 +63,8 @@ export async function registerUser(input: {
   guardianPhone?: string;
   timezone?: string;
 }) {
-  const email = input.email.toLowerCase();
+  const email = input.email.trim().toLowerCase();
+  const name = input.name.trim();
   const existingUser = await prisma.user.findUnique({
     where: { email },
   });
@@ -76,19 +77,19 @@ export async function registerUser(input: {
 
   return prisma.user.create({
     data: {
-      name: input.name,
+      name,
       email,
       password,
       role: input.role,
-      phone: input.phone,
+      phone: input.phone?.trim() || null,
       studentProfile:
         input.role === "STUDENT" || input.role === "PARENT"
           ? {
               create: {
-                phone: input.phone,
-                guardianName: input.guardianName,
-                guardianPhone: input.guardianPhone,
-                timezone: input.timezone,
+                phone: input.phone?.trim() || null,
+                guardianName: input.guardianName?.trim() || null,
+                guardianPhone: input.guardianPhone?.trim() || null,
+                timezone: input.timezone?.trim() || "Asia/Karachi",
               },
             }
           : undefined,
@@ -96,7 +97,9 @@ export async function registerUser(input: {
         input.role === "TEACHER"
           ? {
               create: {
+                bio: `${name} is registered as a Shaykh Abu Ibrahim academy teacher.`,
                 expertise: "Islamic Studies",
+                headline: "Academy Teacher",
               },
             }
           : undefined,
@@ -104,6 +107,7 @@ export async function registerUser(input: {
     select: {
       id: true,
       email: true,
+      role: true,
     },
   });
 }

@@ -15,7 +15,14 @@
 .copy {
   max-width: 820px;
   display: grid;
+  align-items: flex-start;
   gap: 16px;
+}
+
+.eyebrow {
+  width: fit-content;
+  max-width: max-content;
+  justify-self: start;
 }
 
 .title {

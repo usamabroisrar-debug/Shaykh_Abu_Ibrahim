@@ -3,7 +3,10 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { StructuredEditor } from "@/components/admin/StructuredEditor";
 import { SignOutButton } from "@/components/auth/SignOutButton";
-import { resolveLocalizedInlineText } from "@/lib/content-localization";
+import {
+  resolveLocalizedInlineText,
+  resolveLocalizedRichText,
+} from "@/lib/content-localization";
 import { auth, getDashboardPath } from "@/lib/auth";
 import { getAdminDashboardData } from "@/lib/dashboard";
 import { getLocaleFromCookies, type SiteLocale } from "@/lib/locale";
@@ -91,6 +94,20 @@ type CertificateItem = {
 
 type DashboardData = {
   users: number;
+  userAccounts: Array<{
+    id: string;
+    name?: string | null;
+    email: string;
+    role: string;
+    phone?: string | null;
+    createdAt?: Date | string | null;
+    _count?: {
+      enrollments: number;
+      teacherCourses: number;
+      payments: number;
+      certificates: number;
+    };
+  }>;
   admissions: AdmissionItem[];
   courses: unknown[];
   submissions: SubmissionItem[];
@@ -101,6 +118,8 @@ type DashboardData = {
 
 type WorkspaceView =
   | "overview"
+  | "students"
+  | "teachers"
   | "operations"
   | "blogs"
   | "courses"
@@ -114,6 +133,8 @@ type Notice = {
 
 const workspaceViews: WorkspaceView[] = [
   "overview",
+  "students",
+  "teachers",
   "operations",
   "blogs",
   "courses",
@@ -134,6 +155,8 @@ function getAdminCopy() {
     role: "Role",
     views: {
       overview: "Dashboard",
+      students: "Students",
+      teachers: "Teachers",
       operations: "Operations",
       blogs: "Blogs",
       courses: "Courses",
@@ -451,6 +474,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
 
   let dashboard: DashboardData = {
     users: 0,
+    userAccounts: [],
     admissions: [],
     courses: [],
     submissions: [],
@@ -472,6 +496,48 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
     getSiteSettings(),
     getHomepageHeroSettings(),
   ]);
+  const adminBrandName = resolveLocalizedInlineText(siteSettings.brandName, locale);
+  const siteSettingsForm = {
+    brandName: resolveLocalizedInlineText(siteSettings.brandName, "en"),
+    brandNameUrdu: resolveLocalizedInlineText(siteSettings.brandName, "ur"),
+    subtitle: resolveLocalizedRichText(siteSettings.subtitle, "en"),
+    subtitleUrdu: resolveLocalizedRichText(siteSettings.subtitle, "ur"),
+    description: resolveLocalizedRichText(siteSettings.description, "en"),
+    descriptionUrdu: resolveLocalizedRichText(siteSettings.description, "ur"),
+    footerText: resolveLocalizedRichText(siteSettings.footerText, "en"),
+    footerTextUrdu: resolveLocalizedRichText(siteSettings.footerText, "ur"),
+  };
+  const heroSettingsForm = {
+    badge: resolveLocalizedRichText(heroSettings.badge, "en"),
+    badgeUrdu: resolveLocalizedRichText(heroSettings.badge, "ur"),
+    title: resolveLocalizedRichText(heroSettings.title, "en"),
+    titleUrdu: resolveLocalizedRichText(heroSettings.title, "ur"),
+    description: resolveLocalizedRichText(heroSettings.description, "en"),
+    descriptionUrdu: resolveLocalizedRichText(heroSettings.description, "ur"),
+    miniHighlights: resolveLocalizedRichText(heroSettings.miniHighlights, "en"),
+    miniHighlightsUrdu: resolveLocalizedRichText(heroSettings.miniHighlights, "ur"),
+    highlights: resolveLocalizedRichText(heroSettings.highlights, "en"),
+    highlightsUrdu: resolveLocalizedRichText(heroSettings.highlights, "ur"),
+    primaryAction: resolveLocalizedInlineText(heroSettings.primaryAction, "en"),
+    primaryActionUrdu: resolveLocalizedInlineText(heroSettings.primaryAction, "ur"),
+    secondaryAction: resolveLocalizedInlineText(heroSettings.secondaryAction, "en"),
+    secondaryActionUrdu: resolveLocalizedInlineText(heroSettings.secondaryAction, "ur"),
+    trusted: resolveLocalizedInlineText(heroSettings.trusted, "en"),
+    curriculum: resolveLocalizedInlineText(heroSettings.curriculum, "en"),
+    teachers: resolveLocalizedInlineText(heroSettings.teachers, "en"),
+    imageAlt: resolveLocalizedInlineText(heroSettings.imageAlt, "en"),
+    certificate: resolveLocalizedInlineText(heroSettings.certificate, "en"),
+    certificateDetail: resolveLocalizedInlineText(heroSettings.certificateDetail, "en"),
+    verified: resolveLocalizedInlineText(heroSettings.verified, "en"),
+    liveClasses: resolveLocalizedInlineText(heroSettings.liveClasses, "en"),
+    liveDetail: resolveLocalizedInlineText(heroSettings.liveDetail, "en"),
+    statLabel1: resolveLocalizedInlineText(heroSettings.stats[0]?.label, "en"),
+    statLabel1Urdu: resolveLocalizedInlineText(heroSettings.stats[0]?.label, "ur"),
+    statLabel2: resolveLocalizedInlineText(heroSettings.stats[1]?.label, "en"),
+    statLabel2Urdu: resolveLocalizedInlineText(heroSettings.stats[1]?.label, "ur"),
+    statLabel3: resolveLocalizedInlineText(heroSettings.stats[2]?.label, "en"),
+    statLabel3Urdu: resolveLocalizedInlineText(heroSettings.stats[2]?.label, "ur"),
+  };
 
   const filteredBlogs = blogs.filter((blog) => {
     const matchesSearch = !searchTerm
@@ -521,6 +587,8 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
 
   const sidebarLinks = [
     { view: "overview", label: copy.views.overview },
+    { view: "students", label: copy.views.students },
+    { view: "teachers", label: copy.views.teachers },
     { view: "operations", label: copy.views.operations },
     { view: "blogs", label: copy.views.blogs },
     { view: "courses", label: copy.views.courses },
@@ -660,6 +728,171 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
             <p className={styles.workspaceNote}>{copy.overview.workflowText}</p>
           </article>
         </div>
+      </div>
+    );
+  }
+
+  function renderUserWorkspace(kind: "students" | "teachers") {
+    const students = dashboard.userAccounts.filter((user) => user.role === "STUDENT");
+    const parents = dashboard.userAccounts.filter((user) => user.role === "PARENT");
+    const teachers = dashboard.userAccounts.filter((user) => user.role === "TEACHER");
+    const baseUsers =
+      kind === "students"
+        ? dashboard.userAccounts.filter((user) => user.role === "STUDENT" || user.role === "PARENT")
+        : teachers;
+    const filteredUsers = baseUsers.filter((user) => {
+      if (!searchTerm) {
+        return true;
+      }
+
+      return [user.name, user.email, user.role, user.phone]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(searchTerm));
+    });
+
+    const isStudentWorkspace = kind === "students";
+    const workspaceTitle = isStudentWorkspace ? "Students" : "Teachers";
+    const workspaceDescription = isStudentWorkspace
+      ? "Manage learner and parent accounts separately from the teacher workspace. Enrollment, payment, and certificate activity is shown from the real database."
+      : "Manage instructor accounts separately from the student workspace. Assigned courses and teaching activity are shown from the real database.";
+    const directoryTitle = isStudentWorkspace ? "Student and parent directory" : "Teacher directory";
+    const emptyText = isStudentWorkspace
+      ? "No student or parent accounts found yet. New registrations will appear here automatically."
+      : "No teacher accounts found yet. Teacher users will appear here once created.";
+    const userGroups = isStudentWorkspace
+      ? [
+          {
+            title: "Students",
+            description: "Learner accounts registered for courses and dashboards.",
+            count: students.length,
+          },
+          {
+            title: "Parents",
+            description: "Guardian accounts connected to student access.",
+            count: parents.length,
+          },
+          {
+            title: "Active enrollments",
+            description: "Combined enrollment records attached to listed learners.",
+            count: baseUsers.reduce((sum, user) => sum + (user._count?.enrollments ?? 0), 0),
+          },
+          {
+            title: "Certificates",
+            description: "Certificates issued to listed student accounts.",
+            count: baseUsers.reduce((sum, user) => sum + (user._count?.certificates ?? 0), 0),
+          },
+        ]
+      : [
+          {
+            title: "Teachers",
+            description: "Instructor accounts assigned to academy courses.",
+            count: teachers.length,
+          },
+          {
+            title: "Assigned courses",
+            description: "Courses currently connected to teacher accounts.",
+            count: teachers.reduce((sum, user) => sum + (user._count?.teacherCourses ?? 0), 0),
+          },
+          {
+            title: "Teacher payments",
+            description: "Payment records attached to teacher user accounts, if any.",
+            count: teachers.reduce((sum, user) => sum + (user._count?.payments ?? 0), 0),
+          },
+          {
+            title: "Teacher records",
+            description: "Live teacher accounts available in the database.",
+            count: teachers.length,
+          },
+        ];
+
+    return (
+      <div className={styles.workspaceStack}>
+        {renderWorkspaceHeader(workspaceTitle, workspaceDescription)}
+
+        <div className={styles.statsGrid}>
+          {userGroups.map((group) => (
+            <div key={group.title} className={styles.statCard}>
+              <span>{group.title}</span>
+              <strong>{group.count}</strong>
+              <p>{group.description}</p>
+            </div>
+          ))}
+          <div className={styles.statCard}>
+            <span>Total user accounts</span>
+            <strong>{dashboard.users}</strong>
+            <p>All registered admins, editors, teachers, students, and parents.</p>
+          </div>
+        </div>
+
+        <div className={styles.commandBar}>
+          <form className={styles.filterForm}>
+            <input type="hidden" name="view" value={kind} />
+            <input
+              type="search"
+              name="q"
+              defaultValue={typeof searchParams.q === "string" ? searchParams.q : ""}
+              placeholder={`Search ${workspaceTitle.toLowerCase()} by name, email, phone, or role...`}
+              className={styles.filterInput}
+            />
+            <button type="submit" className={styles.secondaryAction}>
+              Search {workspaceTitle.toLowerCase()}
+            </button>
+          </form>
+        </div>
+
+        <article className={styles.listCard}>
+          <div className={styles.panelHeader}>
+            <div>
+              <span className={styles.sectionEyebrow}>{workspaceTitle} directory</span>
+              <h3>{directoryTitle}</h3>
+            </div>
+            <span className={styles.counterBadge}>{filteredUsers.length}</span>
+          </div>
+
+          <div className={styles.recordList}>
+            {filteredUsers.length ? (
+              filteredUsers.map((user) => (
+                <div key={user.id} className={styles.recordItem}>
+                  <div className={styles.recordTop}>
+                    <div>
+                      <strong>{user.name || "Unnamed account"}</strong>
+                      <small className={styles.metaLine}>{user.email}</small>
+                    </div>
+                    <span className={styles.statusPill}>{user.role}</span>
+                  </div>
+                  <div className={styles.infoBlock}>
+                    <div className={styles.infoItem}>
+                      <span>Phone</span>
+                      <strong>{user.phone || "Not added"}</strong>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <span>Enrollments</span>
+                      <strong>{user._count?.enrollments ?? 0}</strong>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <span>Assigned courses</span>
+                      <strong>{user._count?.teacherCourses ?? 0}</strong>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <span>Payments</span>
+                      <strong>{user._count?.payments ?? 0}</strong>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <span>Certificates</span>
+                      <strong>{user._count?.certificates ?? 0}</strong>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <span>Joined</span>
+                      <strong>{formatDate(user.createdAt, locale, copy.meta.recent)}</strong>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className={styles.emptyState}>{emptyText}</div>
+            )}
+          </div>
+        </article>
       </div>
     );
   }
@@ -1056,18 +1289,22 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               <div className={styles.infoPanel}>
                 <strong>Storage note</strong>
                 <p>
-                  Add the final cloud URL here. For direct Vercel Blob uploads,
-                  configure BLOB_READ_WRITE_TOKEN in production.
+                  Upload a file directly or register an existing URL. Production
+                  uploads use Vercel Blob when BLOB_READ_WRITE_TOKEN is configured.
                 </p>
               </div>
               <label className={styles.field}>
+                <span>Upload file</span>
+                <input name="mediaFile" type="file" />
+              </label>
+              <label className={styles.field}>
                 <span>File URL</span>
-                <input name="url" type="url" required />
+                <input name="url" type="url" />
               </label>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Filename</span>
-                  <input name="filename" required />
+                  <input name="filename" />
                 </label>
                 <label className={styles.field}>
                   <span>MIME type</span>
@@ -1805,41 +2042,41 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>{copy.common.title}</span>
-                  <input name="brandName" defaultValue={siteSettings.brandName} />
+                  <input name="brandName" defaultValue={siteSettingsForm.brandName} />
                 </label>
                 <label className={styles.field}>
                   <span>{copy.common.titleUrdu}</span>
-                  <input name="brandNameUrdu" dir="rtl" />
+                  <input name="brandNameUrdu" dir="rtl" defaultValue={siteSettingsForm.brandNameUrdu} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Subtitle</span>
-                  <textarea name="subtitle" defaultValue={siteSettings.subtitle} />
+                  <textarea name="subtitle" defaultValue={siteSettingsForm.subtitle} />
                 </label>
                 <label className={styles.field}>
                   <span>Subtitle Urdu</span>
-                  <textarea name="subtitleUrdu" dir="rtl" />
+                  <textarea name="subtitleUrdu" dir="rtl" defaultValue={siteSettingsForm.subtitleUrdu} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Description</span>
-                  <textarea name="description" defaultValue={siteSettings.description} />
+                  <textarea name="description" defaultValue={siteSettingsForm.description} />
                 </label>
                 <label className={styles.field}>
                   <span>Description Urdu</span>
-                  <textarea name="descriptionUrdu" dir="rtl" />
+                  <textarea name="descriptionUrdu" dir="rtl" defaultValue={siteSettingsForm.descriptionUrdu} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Footer text</span>
-                  <textarea name="footerText" defaultValue={siteSettings.footerText} />
+                  <textarea name="footerText" defaultValue={siteSettingsForm.footerText} />
                 </label>
                 <label className={styles.field}>
                   <span>Footer text Urdu</span>
-                  <textarea name="footerTextUrdu" dir="rtl" />
+                  <textarea name="footerTextUrdu" dir="rtl" defaultValue={siteSettingsForm.footerTextUrdu} />
                 </label>
               </div>
               <label className={styles.field}>
@@ -1891,81 +2128,81 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Badge</span>
-                  <input name="badge" defaultValue={heroSettings.badge} />
+                  <input name="badge" defaultValue={heroSettingsForm.badge} />
                 </label>
                 <label className={styles.field}>
                   <span>Badge Urdu</span>
-                  <input name="badgeUrdu" dir="rtl" />
+                  <input name="badgeUrdu" dir="rtl" defaultValue={heroSettingsForm.badgeUrdu} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>{copy.common.title}</span>
-                  <textarea name="title" defaultValue={heroSettings.title} />
+                  <textarea name="title" defaultValue={heroSettingsForm.title} />
                 </label>
                 <label className={styles.field}>
                   <span>{copy.common.titleUrdu}</span>
-                  <textarea name="titleUrdu" dir="rtl" />
+                  <textarea name="titleUrdu" dir="rtl" defaultValue={heroSettingsForm.titleUrdu} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>{copy.common.description}</span>
-                  <textarea name="description" defaultValue={heroSettings.description} />
+                  <textarea name="description" defaultValue={heroSettingsForm.description} />
                 </label>
                 <label className={styles.field}>
                   <span>{copy.common.descriptionUrdu}</span>
-                  <textarea name="descriptionUrdu" dir="rtl" />
+                  <textarea name="descriptionUrdu" dir="rtl" defaultValue={heroSettingsForm.descriptionUrdu} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Mini highlights</span>
-                  <textarea name="miniHighlights" defaultValue={heroSettings.miniHighlights} />
+                  <textarea name="miniHighlights" defaultValue={heroSettingsForm.miniHighlights} />
                 </label>
                 <label className={styles.field}>
                   <span>Mini highlights Urdu</span>
-                  <textarea name="miniHighlightsUrdu" dir="rtl" />
+                  <textarea name="miniHighlightsUrdu" dir="rtl" defaultValue={heroSettingsForm.miniHighlightsUrdu} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Course pills</span>
-                  <textarea name="highlights" defaultValue={heroSettings.highlights} />
+                  <textarea name="highlights" defaultValue={heroSettingsForm.highlights} />
                 </label>
                 <label className={styles.field}>
                   <span>Course pills Urdu</span>
-                  <textarea name="highlightsUrdu" dir="rtl" />
+                  <textarea name="highlightsUrdu" dir="rtl" defaultValue={heroSettingsForm.highlightsUrdu} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Primary CTA</span>
-                  <input name="primaryAction" defaultValue={heroSettings.primaryAction} />
+                  <input name="primaryAction" defaultValue={heroSettingsForm.primaryAction} />
                 </label>
                 <label className={styles.field}>
                   <span>Primary CTA Urdu</span>
-                  <input name="primaryActionUrdu" dir="rtl" />
+                  <input name="primaryActionUrdu" dir="rtl" defaultValue={heroSettingsForm.primaryActionUrdu} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Secondary CTA</span>
-                  <input name="secondaryAction" defaultValue={heroSettings.secondaryAction} />
+                  <input name="secondaryAction" defaultValue={heroSettingsForm.secondaryAction} />
                 </label>
                 <label className={styles.field}>
                   <span>Secondary CTA Urdu</span>
-                  <input name="secondaryActionUrdu" dir="rtl" />
+                  <input name="secondaryActionUrdu" dir="rtl" defaultValue={heroSettingsForm.secondaryActionUrdu} />
                 </label>
               </div>
               <div className={styles.formTriple}>
                 <label className={styles.field}>
                   <span>Stat 1 label</span>
-                  <input name="statLabel1" defaultValue={heroSettings.stats[0]?.label || ""} />
+                  <input name="statLabel1" defaultValue={heroSettingsForm.statLabel1} />
                 </label>
                 <label className={styles.field}>
                   <span>Stat 1 Urdu</span>
-                  <input name="statLabel1Urdu" dir="rtl" />
+                  <input name="statLabel1Urdu" dir="rtl" defaultValue={heroSettingsForm.statLabel1Urdu} />
                 </label>
                 <label className={styles.field}>
                   <span>Stat 1 value</span>
@@ -1975,11 +2212,11 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               <div className={styles.formTriple}>
                 <label className={styles.field}>
                   <span>Stat 2 label</span>
-                  <input name="statLabel2" defaultValue={heroSettings.stats[1]?.label || ""} />
+                  <input name="statLabel2" defaultValue={heroSettingsForm.statLabel2} />
                 </label>
                 <label className={styles.field}>
                   <span>Stat 2 Urdu</span>
-                  <input name="statLabel2Urdu" dir="rtl" />
+                  <input name="statLabel2Urdu" dir="rtl" defaultValue={heroSettingsForm.statLabel2Urdu} />
                 </label>
                 <label className={styles.field}>
                   <span>Stat 2 value</span>
@@ -1989,11 +2226,11 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               <div className={styles.formTriple}>
                 <label className={styles.field}>
                   <span>Stat 3 label</span>
-                  <input name="statLabel3" defaultValue={heroSettings.stats[2]?.label || ""} />
+                  <input name="statLabel3" defaultValue={heroSettingsForm.statLabel3} />
                 </label>
                 <label className={styles.field}>
                   <span>Stat 3 Urdu</span>
-                  <input name="statLabel3Urdu" dir="rtl" />
+                  <input name="statLabel3Urdu" dir="rtl" defaultValue={heroSettingsForm.statLabel3Urdu} />
                 </label>
                 <label className={styles.field}>
                   <span>Stat 3 value</span>
@@ -2003,21 +2240,21 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               <div className={styles.formTriple}>
                 <label className={styles.field}>
                   <span>Trust label</span>
-                  <input name="trusted" defaultValue={heroSettings.trusted} />
+                  <input name="trusted" defaultValue={heroSettingsForm.trusted} />
                 </label>
                 <label className={styles.field}>
                   <span>Curriculum label</span>
-                  <input name="curriculum" defaultValue={heroSettings.curriculum} />
+                  <input name="curriculum" defaultValue={heroSettingsForm.curriculum} />
                 </label>
                 <label className={styles.field}>
                   <span>Teachers label</span>
-                  <input name="teachers" defaultValue={heroSettings.teachers} />
+                  <input name="teachers" defaultValue={heroSettingsForm.teachers} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Image alt</span>
-                  <input name="imageAlt" defaultValue={heroSettings.imageAlt} />
+                  <input name="imageAlt" defaultValue={heroSettingsForm.imageAlt} />
                 </label>
                 <label className={styles.field}>
                   <span>Image path</span>
@@ -2027,25 +2264,25 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
               <div className={styles.formTriple}>
                 <label className={styles.field}>
                   <span>Certificate</span>
-                  <input name="certificate" defaultValue={heroSettings.certificate} />
+                  <input name="certificate" defaultValue={heroSettingsForm.certificate} />
                 </label>
                 <label className={styles.field}>
                   <span>Certificate detail</span>
-                  <input name="certificateDetail" defaultValue={heroSettings.certificateDetail} />
+                  <input name="certificateDetail" defaultValue={heroSettingsForm.certificateDetail} />
                 </label>
                 <label className={styles.field}>
                   <span>Verified badge</span>
-                  <input name="verified" defaultValue={heroSettings.verified} />
+                  <input name="verified" defaultValue={heroSettingsForm.verified} />
                 </label>
               </div>
               <div className={styles.formSplit}>
                 <label className={styles.field}>
                   <span>Live classes</span>
-                  <input name="liveClasses" defaultValue={heroSettings.liveClasses} />
+                  <input name="liveClasses" defaultValue={heroSettingsForm.liveClasses} />
                 </label>
                 <label className={styles.field}>
                   <span>Live detail</span>
-                  <input name="liveDetail" defaultValue={heroSettings.liveDetail} />
+                  <input name="liveDetail" defaultValue={heroSettingsForm.liveDetail} />
                 </label>
               </div>
               <button type="submit" className={styles.primaryAction}>
@@ -2066,14 +2303,14 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
             <div className={styles.brandMark}>
               <Image
                 src={siteSettings.logoSrc}
-                alt={siteSettings.brandName}
+                alt={adminBrandName}
                 width={56}
                 height={56}
                 className={styles.brandLogo}
               />
             </div>
             <div className={styles.brandText}>
-              <strong>{siteSettings.brandName}</strong>
+              <strong>{adminBrandName}</strong>
               <span>{copy.sidebarTitle}</span>
             </div>
           </div>
@@ -2167,6 +2404,10 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
 
           {view === "overview"
             ? renderOverview()
+            : view === "students"
+              ? renderUserWorkspace("students")
+            : view === "teachers"
+              ? renderUserWorkspace("teachers")
             : view === "operations"
               ? renderOperations()
               : view === "blogs"

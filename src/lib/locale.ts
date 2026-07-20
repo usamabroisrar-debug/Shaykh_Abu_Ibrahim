@@ -359,6 +359,14 @@ function formatGregorianDate(locale: SiteLocale, date: Date) {
   return formatter.format(date);
 }
 
+const hijriDisplayOffsetDays = -1;
+
+function applyHijriDisplayOffset(date: Date) {
+  const adjusted = new Date(date);
+  adjusted.setDate(adjusted.getDate() + hijriDisplayOffsetDays);
+  return adjusted;
+}
+
 function formatHijriDate(locale: SiteLocale, date: Date) {
   const formatter = new Intl.DateTimeFormat(
     `${localeContent[locale].localeTag}-u-ca-islamic`,
@@ -369,7 +377,7 @@ function formatHijriDate(locale: SiteLocale, date: Date) {
     }
   );
 
-  return formatter.format(date);
+  return formatter.format(applyHijriDisplayOffset(date));
 }
 
 export function getDualDates(locale: SiteLocale, date = new Date()) {

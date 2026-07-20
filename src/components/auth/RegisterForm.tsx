@@ -12,79 +12,99 @@ type RegisterFormProps = {
   locale: SiteLocale;
 };
 
+type RegisterRole = "STUDENT" | "PARENT" | "TEACHER";
+
+const copyByLocale = {
+  en: {
+    failed: "Registration failed.",
+    success: "Account created. Signing you in now...",
+    passwordMismatch: "Password and confirm password do not match.",
+    autoLoginError:
+      "Account was created, but auto login could not be completed. Please login manually.",
+    networkError: "Registration could not be completed right now. Please try again.",
+    fullName: "Full name",
+    registerAs: "Register as",
+    student: "Student",
+    parent: "Parent",
+    teacher: "Teacher",
+    email: "Email address",
+    phone: "Phone / WhatsApp",
+    password: "Password",
+    confirmPassword: "Confirm password",
+    timezone: "Timezone",
+    guardianName: "Guardian name",
+    guardianPhone: "Guardian phone",
+    creating: "Creating account...",
+    create: "Create Account",
+    already: "Already have an account?",
+    login: "Login",
+    passwordPlaceholder: "Minimum 8 characters",
+  },
+  ur: {
+    failed: "رجسٹریشن مکمل نہیں ہو سکی۔",
+    success: "اکاؤنٹ بن گیا ہے۔ اب آپ کو لاگ اِن کیا جا رہا ہے...",
+    passwordMismatch: "پاس ورڈ اور کنفرم پاس ورڈ ایک جیسے نہیں ہیں۔",
+    autoLoginError:
+      "اکاؤنٹ بن گیا، لیکن آٹو لاگ اِن مکمل نہیں ہو سکا۔ براہ کرم دستی طور پر لاگ اِن کریں۔",
+    networkError: "رجسٹریشن اس وقت مکمل نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
+    fullName: "پورا نام",
+    registerAs: "بطور رجسٹر کریں",
+    student: "طالب علم",
+    parent: "والدین",
+    teacher: "استاد",
+    email: "ای میل ایڈریس",
+    phone: "فون / واٹس ایپ",
+    password: "پاس ورڈ",
+    confirmPassword: "پاس ورڈ دوبارہ لکھیں",
+    timezone: "ٹائم زون",
+    guardianName: "سرپرست کا نام",
+    guardianPhone: "سرپرست کا فون",
+    creating: "اکاؤنٹ بنایا جا رہا ہے...",
+    create: "اکاؤنٹ بنائیں",
+    already: "کیا آپ کے پاس پہلے سے اکاؤنٹ ہے؟",
+    login: "لاگ اِن",
+    passwordPlaceholder: "کم از کم 8 حروف",
+  },
+  ar: {
+    failed: "تعذر إكمال التسجيل.",
+    success: "تم إنشاء الحساب. جار تسجيل دخولك الآن...",
+    passwordMismatch: "كلمة المرور وتأكيدها غير متطابقين.",
+    autoLoginError:
+      "تم إنشاء الحساب، لكن تعذر تسجيل الدخول تلقائيا. يرجى تسجيل الدخول يدويا.",
+    networkError: "تعذر إكمال التسجيل الآن. حاول مرة أخرى.",
+    fullName: "الاسم الكامل",
+    registerAs: "سجل كـ",
+    student: "طالب",
+    parent: "ولي أمر",
+    teacher: "معلم",
+    email: "البريد الإلكتروني",
+    phone: "الهاتف / واتساب",
+    password: "كلمة المرور",
+    confirmPassword: "تأكيد كلمة المرور",
+    timezone: "المنطقة الزمنية",
+    guardianName: "اسم ولي الأمر",
+    guardianPhone: "هاتف ولي الأمر",
+    creating: "جار إنشاء الحساب...",
+    create: "إنشاء الحساب",
+    already: "هل لديك حساب بالفعل؟",
+    login: "تسجيل الدخول",
+    passwordPlaceholder: "8 أحرف على الأقل",
+  },
+} as const;
+
+function getDashboardPath(role: RegisterRole) {
+  return role === "TEACHER" ? "/teacher" : "/student";
+}
+
 export function RegisterForm({ locale }: RegisterFormProps) {
-  const copy = {
-    en: {
-      failed: "Registration failed.",
-      success: "Account created. Signing you in now...",
-      autoLoginError:
-        "Account was created, but auto login could not be completed. Please login manually.",
-      networkError: "Registration could not be completed right now. Please try again.",
-      fullName: "Full name",
-      registerAs: "Register as",
-      student: "Student",
-      parent: "Parent",
-      teacher: "Teacher",
-      email: "Email address",
-      phone: "Phone / WhatsApp",
-      password: "Password",
-      timezone: "Timezone",
-      guardianName: "Guardian name",
-      guardianPhone: "Guardian phone",
-      creating: "Creating account...",
-      create: "Create Account",
-      already: "Already have an account?",
-      login: "Login",
-    },
-    ur: {
-      failed: "رجسٹریشن مکمل نہیں ہو سکی۔",
-      success: "اکاؤنٹ بن گیا ہے۔ اب آپ کو لاگ اِن کیا جا رہا ہے...",
-      autoLoginError: "اکاؤنٹ بن گیا، لیکن آٹو لاگ اِن نہیں ہو سکا۔ براہ کرم دستی طور پر لاگ اِن کریں۔",
-      networkError: "رجسٹریشن اس وقت مکمل نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
-      fullName: "پورا نام",
-      registerAs: "بطور رجسٹر کریں",
-      student: "طالب علم",
-      parent: "والدین",
-      teacher: "استاد",
-      email: "ای میل ایڈریس",
-      phone: "فون / واٹس ایپ",
-      password: "پاس ورڈ",
-      timezone: "ٹائم زون",
-      guardianName: "سرپرست کا نام",
-      guardianPhone: "سرپرست کا فون",
-      creating: "اکاؤنٹ بنایا جا رہا ہے...",
-      create: "اکاؤنٹ بنائیں",
-      already: "کیا آپ کے پاس پہلے سے اکاؤنٹ ہے؟",
-      login: "لاگ اِن",
-    },
-    ar: {
-      failed: "تعذر إكمال التسجيل.",
-      success: "تم إنشاء الحساب. جارٍ تسجيل دخولك الآن...",
-      autoLoginError: "تم إنشاء الحساب، لكن تعذر تسجيل الدخول تلقائيًا. يرجى تسجيل الدخول يدويًا.",
-      networkError: "تعذر إكمال التسجيل الآن. حاول مرة أخرى.",
-      fullName: "الاسم الكامل",
-      registerAs: "سجّل كـ",
-      student: "طالب",
-      parent: "ولي أمر",
-      teacher: "معلم",
-      email: "البريد الإلكتروني",
-      phone: "الهاتف / واتساب",
-      password: "كلمة المرور",
-      timezone: "المنطقة الزمنية",
-      guardianName: "اسم ولي الأمر",
-      guardianPhone: "هاتف ولي الأمر",
-      creating: "جارٍ إنشاء الحساب...",
-      create: "إنشاء الحساب",
-      already: "هل لديك حساب بالفعل؟",
-      login: "تسجيل الدخول",
-    },
-  }[locale];
+  const copy = copyByLocale[locale];
   const router = useRouter();
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
-    role: "STUDENT",
+    confirmPassword: "",
+    role: "STUDENT" as RegisterRole,
     phone: "",
     guardianName: "",
     guardianPhone: "",
@@ -94,7 +114,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  function updateField(name: string, value: string) {
+  function updateField(name: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [name]: value }));
   }
 
@@ -102,15 +122,31 @@ export function RegisterForm({ locale }: RegisterFormProps) {
     event.preventDefault();
     setError("");
     setMessage("");
+
+    if (form.password !== form.confirmPassword) {
+      setError(copy.passwordMismatch);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
+      const payload = {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+        phone: form.phone,
+        guardianName: form.guardianName,
+        guardianPhone: form.guardianPhone,
+        timezone: form.timezone,
+      };
       const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -122,7 +158,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
 
       setMessage(copy.success);
 
-      const dashboardPath = form.role === "TEACHER" ? "/teacher" : "/student";
+      const dashboardPath = getDashboardPath(form.role);
       const signInResult = await signIn("credentials", {
         email: form.email,
         password: form.password,
@@ -154,6 +190,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
           <label htmlFor="register-name">{copy.fullName}</label>
           <input
             id="register-name"
+            autoComplete="name"
             value={form.name}
             onChange={(event) => updateField("name", event.target.value)}
             placeholder="Muhammad Ahmed"
@@ -166,7 +203,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
           <select
             id="register-role"
             value={form.role}
-            onChange={(event) => updateField("role", event.target.value)}
+            onChange={(event) => updateField("role", event.target.value as RegisterRole)}
           >
             <option value="STUDENT">{copy.student}</option>
             <option value="PARENT">{copy.parent}</option>
@@ -181,6 +218,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
           <input
             id="register-email"
             type="email"
+            autoComplete="email"
             value={form.email}
             onChange={(event) => updateField("email", event.target.value)}
             placeholder="student@example.com"
@@ -192,6 +230,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
           <label htmlFor="register-phone">{copy.phone}</label>
           <input
             id="register-phone"
+            autoComplete="tel"
             value={form.phone}
             onChange={(event) => updateField("phone", event.target.value)}
             placeholder="+92..."
@@ -205,22 +244,38 @@ export function RegisterForm({ locale }: RegisterFormProps) {
           <input
             id="register-password"
             type="password"
+            autoComplete="new-password"
             value={form.password}
             onChange={(event) => updateField("password", event.target.value)}
-            placeholder="Minimum 8 characters"
+            placeholder={copy.passwordPlaceholder}
+            minLength={8}
             required
           />
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="register-timezone">{copy.timezone}</label>
+          <label htmlFor="register-confirm-password">{copy.confirmPassword}</label>
           <input
-            id="register-timezone"
-            value={form.timezone}
-            onChange={(event) => updateField("timezone", event.target.value)}
-            placeholder="Asia/Karachi"
+            id="register-confirm-password"
+            type="password"
+            autoComplete="new-password"
+            value={form.confirmPassword}
+            onChange={(event) => updateField("confirmPassword", event.target.value)}
+            placeholder={copy.passwordPlaceholder}
+            minLength={8}
+            required
           />
         </div>
+      </div>
+
+      <div className={styles.field}>
+        <label htmlFor="register-timezone">{copy.timezone}</label>
+        <input
+          id="register-timezone"
+          value={form.timezone}
+          onChange={(event) => updateField("timezone", event.target.value)}
+          placeholder="Asia/Karachi"
+        />
       </div>
 
       {needsGuardian ? (
@@ -229,6 +284,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
             <label htmlFor="guardian-name">{copy.guardianName}</label>
             <input
               id="guardian-name"
+              autoComplete="name"
               value={form.guardianName}
               onChange={(event) => updateField("guardianName", event.target.value)}
               placeholder="Parent / guardian"
@@ -239,6 +295,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
             <label htmlFor="guardian-phone">{copy.guardianPhone}</label>
             <input
               id="guardian-phone"
+              autoComplete="tel"
               value={form.guardianPhone}
               onChange={(event) => updateField("guardianPhone", event.target.value)}
               placeholder="+92..."

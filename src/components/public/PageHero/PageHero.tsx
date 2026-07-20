@@ -26,7 +26,9 @@ export function PageHero({
     <Section className={styles.section}>
       <Container className={styles.container}>
         <div className={styles.copy}>
-          <Badge variant="gold">{eyebrow}</Badge>
+          <Badge variant="gold" className={styles.eyebrow}>
+            {eyebrow}
+          </Badge>
           <h1 className={styles.title}>{title}</h1>
           <p className={styles.description}>{description}</p>
 

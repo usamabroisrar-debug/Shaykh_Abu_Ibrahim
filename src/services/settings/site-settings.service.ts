@@ -1,20 +1,23 @@
 import { siteConfig } from "@/config/site";
-import { prisma } from "@/lib/prisma";
 import {
   resolveLocalizedInlineText,
   resolveLocalizedLines,
   resolveLocalizedRichText,
+  type LocalizedTextValue,
 } from "@/lib/content-localization";
 import type { SiteLocale } from "@/lib/locale";
+import { prisma } from "@/lib/prisma";
 
 const SITE_SETTINGS_KEY = "site_settings";
 const HOMEPAGE_HERO_SETTINGS_KEY = "homepage_hero_settings";
 
+type LocaleText = Partial<Record<SiteLocale | "default", string>>;
+
 export type SiteSettings = {
-  brandName: string;
-  subtitle: string;
-  description: string;
-  footerText: string;
+  brandName: LocalizedTextValue;
+  subtitle: LocalizedTextValue;
+  description: LocalizedTextValue;
+  footerText: LocalizedTextValue;
   logoSrc: string;
   socials: {
     youtube: string;
@@ -27,34 +30,47 @@ export type SiteSettings = {
 };
 
 export type HomepageHeroSettings = {
-  badge: string;
-  title: string;
-  description: string;
-  miniHighlights: string;
-  highlights: string;
-  primaryAction: string;
-  secondaryAction: string;
-  trusted: string;
-  curriculum: string;
-  teachers: string;
-  stats: Array<{ label: string; value: string }>;
-  certificate: string;
-  certificateDetail: string;
-  liveClasses: string;
-  liveDetail: string;
-  verified: string;
-  imageAlt: string;
+  badge: LocalizedTextValue;
+  title: LocalizedTextValue;
+  description: LocalizedTextValue;
+  miniHighlights: LocalizedTextValue;
+  highlights: LocalizedTextValue;
+  primaryAction: LocalizedTextValue;
+  secondaryAction: LocalizedTextValue;
+  trusted: LocalizedTextValue;
+  curriculum: LocalizedTextValue;
+  teachers: LocalizedTextValue;
+  stats: Array<{ label: LocalizedTextValue; value: string }>;
+  certificate: LocalizedTextValue;
+  certificateDetail: LocalizedTextValue;
+  liveClasses: LocalizedTextValue;
+  liveDetail: LocalizedTextValue;
+  verified: LocalizedTextValue;
+  imageAlt: LocalizedTextValue;
   imageSrc: string;
 };
 
+function localized(en: string, ur: string, ar: string): LocaleText {
+  return { en, ur, ar };
+}
+
 const defaultSiteSettings: SiteSettings = {
-  brandName: siteConfig.name,
-  subtitle:
-    "English\nIslamic Learning Platform\n\nUrdu\nاسلامی تعلیمی پلیٹ فارم\n\nArabic\nمنصة تعليمية إسلامية",
-  description:
-    "English\nJoin Shaykh Abu Ibrahim Islamic Academy for Quran, Tajweed, Tafseer, Hadith, Fiqh, and online Islamic classes for children, adults, and families worldwide.\n\nUrdu\nشیخ ابو ابراہیم اسلامی اکیڈمی میں قرآن، تجوید، تفسیر، حدیث، فقہ، اور بچوں، بڑوں، اور خاندانوں کے لیے آن لائن اسلامی کلاسز میں شامل ہوں۔\n\nArabic\nانضم إلى أكاديمية شيخ أبو إبراهيم الإسلامية لتعلم القرآن والتجويد والتفسير والحديث والفقه والدروس الإسلامية عبر الإنترنت للأطفال والكبار والأسر حول العالم.",
-  footerText:
-    "English\nQuran, Hadith, Fiqh, Tafseer, and guided Islamic learning in a refined online experience for students and families.\n\nUrdu\nقرآن، حدیث، فقہ، تفسیر، اور طلبہ و خاندانوں کے لیے بہتر آن لائن اسلامی رہنمائی۔\n\nArabic\nتعلم القرآن والحديث والفقه والتفسير بإرشاد إسلامي في تجربة تعليمية إلكترونية منظمة للطلاب والأسر.",
+  brandName: localized(siteConfig.name, siteConfig.name, siteConfig.name),
+  subtitle: localized(
+    "Islamic Learning Platform",
+    "اسلامی تعلیمی پلیٹ فارم",
+    "منصة تعليمية إسلامية"
+  ),
+  description: localized(
+    "Join Shaykh Abu Ibrahim Islamic Academy for Quran, Tajweed, Tafseer, Hadith, Fiqh, and online Islamic classes for children, adults, and families worldwide.",
+    "شیخ ابو ابراہیم اسلامی اکیڈمی میں قرآن، تجوید، تفسیر، حدیث، فقہ، اور بچوں، بڑوں، اور خاندانوں کے لیے آن لائن اسلامی کلاسز میں شامل ہوں۔",
+    "انضم إلى أكاديمية شيخ أبو إبراهيم الإسلامية لتعلم القرآن والتجويد والتفسير والحديث والفقه والدروس الإسلامية عبر الإنترنت."
+  ),
+  footerText: localized(
+    "Quran, Hadith, Fiqh, Tafseer, and guided Islamic learning in a refined online experience for students and families.",
+    "قرآن، حدیث، فقہ، تفسیر، اور طلبہ و خاندانوں کے لیے منظم آن لائن اسلامی رہنمائی۔",
+    "تعلم القرآن والحديث والفقه والتفسير بإرشاد إسلامي ضمن تجربة تعليمية منظمة."
+  ),
   logoSrc: "/images/logo-transparent.webp",
   socials: {
     youtube: siteConfig.socials.youtube,
@@ -67,71 +83,114 @@ const defaultSiteSettings: SiteSettings = {
 };
 
 const defaultHomepageHeroSettings: HomepageHeroSettings = {
-  badge:
-    "English\nPremium Online Islamic Academy\n\nUrdu\nپریمیم آن لائن اسلامی اکیڈمی\n\nArabic\nأكاديمية إسلامية متميزة عبر الإنترنت",
-  title:
-    "English\nLearn Quran Online With Authentic Islamic Guidance\n\nUrdu\nمستند اسلامی رہنمائی کے ساتھ آن لائن قرآن سیکھیں\n\nArabic\nتعلّم القرآن عبر الإنترنت بإرشاد إسلامي موثوق",
-  description:
-    "English\nBuild a strong foundation in Quran, Hadith and Islamic knowledge through structured online courses designed for children, adults and advanced learners.\n\nUrdu\nبچوں، بڑوں، اور سنجیدہ طلبہ کے لیے ترتیب دیے گئے آن لائن کورسز کے ذریعے قرآن، حدیث، اور اسلامی علوم میں مضبوط بنیاد قائم کریں۔\n\nArabic\nابنِ أساساً قوياً في القرآن والحديث والعلوم الإسلامية من خلال دورات منظمة للأطفال والكبار والدارسين المتقدمين.",
-  miniHighlights:
-    "English\nOne-to-one live classes\nFlexible worldwide timings\nFree trial available\n\nUrdu\nون ٹو ون لائیو کلاسز\nدنیا بھر کے اوقات کے مطابق سہولت\nفری ٹرائل دستیاب\n\nArabic\nدروس مباشرة فردية\nمواعيد مرنة عالمياً\nحصة تجريبية مجانية",
-  highlights:
-    "English\nQaida\nNazra\nHifz\nTajweed\nTarjuma\nTafseer\nHadith\n\nUrdu\nقاعدہ\nناظرہ\nحفظ\nتجوید\nترجمہ\nتفسیر\nحدیث\n\nArabic\nالقاعدة\nالنظرة\nالحفظ\nالتجويد\nالترجمة\nالتفسير\nالحديث",
-  primaryAction:
-    "English\nApply for Admission\n\nUrdu\nداخلے کے لیے اپلائی کریں\n\nArabic\nقدّم للقبول",
-  secondaryAction:
-    "English\nExplore Courses\n\nUrdu\nکورسز دیکھیں\n\nArabic\nاستكشف الدورات",
-  trusted:
-    "English\nTrusted Learning\n\nUrdu\nقابل اعتماد تعلیم\n\nArabic\nتعلم موثوق",
-  curriculum:
-    "English\nAuthentic Curriculum\n\nUrdu\nمستند نصاب\n\nArabic\nمنهج موثوق",
-  teachers:
-    "English\nExpert Teachers\n\nUrdu\nماہر اساتذہ\n\nArabic\nمعلمون خبراء",
+  badge: localized(
+    "Premium Online Islamic Academy",
+    "پریمیم آن لائن اسلامی اکیڈمی",
+    "أكاديمية إسلامية متميزة عبر الإنترنت"
+  ),
+  title: localized(
+    "Learn Quran Online With Authentic Islamic Guidance",
+    "مستند اسلامی رہنمائی کے ساتھ آن لائن قرآن سیکھیں",
+    "تعلّم القرآن عبر الإنترنت بإرشاد إسلامي موثوق"
+  ),
+  description: localized(
+    "Build a strong foundation in Quran, Hadith and Islamic knowledge through structured online courses designed for children, adults and advanced learners.",
+    "بچوں، بڑوں، اور سنجیدہ طلبہ کے لیے ترتیب دیے گئے آن لائن کورسز کے ذریعے قرآن، حدیث، اور اسلامی علوم میں مضبوط بنیاد قائم کریں۔",
+    "ابن أساساً قوياً في القرآن والحديث والعلوم الإسلامية من خلال دورات منظمة للأطفال والكبار والدارسين المتقدمين."
+  ),
+  miniHighlights: localized(
+    "One-to-one live classes\nFlexible worldwide timings\nFree trial available",
+    "ون ٹو ون لائیو کلاسز\nدنیا بھر کے اوقات کے مطابق سہولت\nفری ٹرائل دستیاب",
+    "دروس مباشرة فردية\nمواعيد مرنة عالمياً\nحصة تجريبية مجانية"
+  ),
+  highlights: localized(
+    "Qaida\nNazra\nHifz\nTajweed\nTarjuma\nTafseer\nHadith",
+    "قاعدہ\nناظرہ\nحفظ\nتجوید\nترجمہ\nتفسیر\nحدیث",
+    "القاعدة\nالنظرة\nالحفظ\nالتجويد\nالترجمة\nالتفسير\nالحديث"
+  ),
+  primaryAction: localized("Apply for Admission", "داخلے کے لیے اپلائی کریں", "قدّم للقبول"),
+  secondaryAction: localized("Explore Courses", "کورسز دیکھیں", "استكشف الدورات"),
+  trusted: localized("Trusted Learning", "قابل اعتماد تعلیم", "تعلم موثوق"),
+  curriculum: localized("Authentic Curriculum", "مستند نصاب", "منهج موثوق"),
+  teachers: localized("Expert Teachers", "ماہر اساتذہ", "معلمون خبراء"),
   stats: [
-    {
-      label: "English\nCourses\n\nUrdu\nکورسز\n\nArabic\nالدورات",
-      value: "12+",
-    },
-    {
-      label: "English\nStudents\n\nUrdu\nطلبہ\n\nArabic\nالطلاب",
-      value: "500+",
-    },
-    {
-      label: "English\nAuthentic\n\nUrdu\nمستند\n\nArabic\nموثوق",
-      value: "100%",
-    },
+    { label: localized("Courses", "کورسز", "الدورات"), value: "12+" },
+    { label: localized("Students", "طلبہ", "الطلاب"), value: "500+" },
+    { label: localized("Authentic", "مستند", "موثوق"), value: "100%" },
   ],
-  certificate:
-    "English\nCertificate\n\nUrdu\nسرٹیفکیٹ\n\nArabic\nشهادة",
-  certificateDetail:
-    "English\nAfter Course Completion\n\nUrdu\nکورس مکمل ہونے کے بعد\n\nArabic\nبعد إكمال الدورة",
-  liveClasses:
-    "English\nLive Classes\n\nUrdu\nلائیو کلاسز\n\nArabic\nدروس مباشرة",
-  liveDetail:
-    "English\nQuran • Hadith • Tafseer\n\nUrdu\nقرآن • حدیث • تفسیر\n\nArabic\nالقرآن • الحديث • التفسير",
-  verified:
-    "English\nVerified Islamic Learning\n\nUrdu\nتصدیق شدہ اسلامی تعلیم\n\nArabic\nتعلم إسلامي موثوق",
-  imageAlt:
-    "English\nOnline Quran and Islamic learning\n\nUrdu\nآن لائن قرآن اور اسلامی تعلیم\n\nArabic\nتعلم القرآن والعلوم الإسلامية عبر الإنترنت",
+  certificate: localized("Certificate", "سرٹیفکیٹ", "شهادة"),
+  certificateDetail: localized(
+    "After Course Completion",
+    "کورس مکمل ہونے کے بعد",
+    "بعد إكمال الدورة"
+  ),
+  liveClasses: localized("Live Classes", "لائیو کلاسز", "دروس مباشرة"),
+  liveDetail: localized(
+    "Quran • Hadith • Tafseer",
+    "قرآن • حدیث • تفسیر",
+    "القرآن • الحديث • التفسير"
+  ),
+  verified: localized(
+    "Verified Islamic Learning",
+    "تصدیق شدہ اسلامی تعلیم",
+    "تعلم إسلامي موثوق"
+  ),
+  imageAlt: localized(
+    "Online Quran and Islamic learning",
+    "آن لائن قرآن اور اسلامی تعلیم",
+    "تعلم القرآن والعلوم الإسلامية عبر الإنترنت"
+  ),
   imageSrc: "/images/hero.webp",
 };
 
 async function readSetting<T>(key: string, fallback: T) {
   try {
     const entry = await prisma.setting.findUnique({
-      where: {
-        key,
-      },
+      where: { key },
     });
 
     if (!entry) {
       return fallback;
     }
 
-    return { ...fallback, ...(entry.value as Record<string, unknown>) } as T;
+    return mergeSettingValue(fallback, entry.value) as T;
   } catch {
     return fallback;
   }
+}
+
+function hasCorruptedEncoding(value: string) {
+  return /(?:Ø|Ù|Û|Ú|â€¢|ï¼|Ã)/.test(value);
+}
+
+function mergeSettingValue(fallback: unknown, value: unknown): unknown {
+  if (typeof value === "string") {
+    return hasCorruptedEncoding(value) ? fallback : value;
+  }
+
+  if (Array.isArray(value)) {
+    if (!Array.isArray(fallback)) {
+      return value;
+    }
+
+    return value.map((item, index) => mergeSettingValue(fallback[index], item));
+  }
+
+  if (!value || typeof value !== "object") {
+    return value ?? fallback;
+  }
+
+  if (!fallback || typeof fallback !== "object" || Array.isArray(fallback)) {
+    return value;
+  }
+
+  const merged: Record<string, unknown> = { ...(fallback as Record<string, unknown>) };
+
+  for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
+    merged[key] = mergeSettingValue((fallback as Record<string, unknown>)[key], item);
+  }
+
+  return merged;
 }
 
 function isUnavailableLocaleCopy(value: string) {
@@ -139,27 +198,13 @@ function isUnavailableLocaleCopy(value: string) {
 
   return (
     normalized.includes("content is not available") ||
-    normalized.includes("دستیاب نہیں") ||
-    normalized.includes("غير متاح") ||
-    normalized.includes("Ã˜Â¯Ã˜Â³Ã˜ÂªÃ›Å’Ã˜Â§Ã˜Â¨")
+    normalized.includes("مواد ابھی دستیاب نہیں") ||
+    normalized.includes("غير متاح")
   );
 }
 
-function resolveBrandName(value: string, locale: SiteLocale) {
-  const normalized = value.trim();
-
-  if (!normalized) {
-    return siteConfig.name;
-  }
-
-  const hasLocaleMarkers =
-    /\s+\/\s+/.test(normalized) || /(^|\n)\s*(english|urdu|arabic)\s*(\n|$)/i.test(normalized);
-
-  if (!hasLocaleMarkers) {
-    return normalized;
-  }
-
-  const localizedBrandName = resolveLocalizedInlineText(normalized, locale).trim();
+function resolveBrandName(value: LocalizedTextValue, locale: SiteLocale) {
+  const localizedBrandName = resolveLocalizedInlineText(value, locale).trim();
 
   if (!localizedBrandName || isUnavailableLocaleCopy(localizedBrandName)) {
     return siteConfig.name;
@@ -218,9 +263,7 @@ export async function getLocalizedHomepageHeroSettings(locale: SiteLocale) {
 
 export async function updateSiteSettings(input: SiteSettings) {
   return prisma.setting.upsert({
-    where: {
-      key: SITE_SETTINGS_KEY,
-    },
+    where: { key: SITE_SETTINGS_KEY },
     create: {
       key: SITE_SETTINGS_KEY,
       value: input,
@@ -233,9 +276,7 @@ export async function updateSiteSettings(input: SiteSettings) {
 
 export async function updateHomepageHeroSettings(input: HomepageHeroSettings) {
   return prisma.setting.upsert({
-    where: {
-      key: HOMEPAGE_HERO_SETTINGS_KEY,
-    },
+    where: { key: HOMEPAGE_HERO_SETTINGS_KEY },
     create: {
       key: HOMEPAGE_HERO_SETTINGS_KEY,
       value: input,

@@ -16,7 +16,7 @@ export async function BooksPage() {
       title: "Guided reading resources and study companions for academy students",
       description:
         "Browse the academy's developing digital library of practical references, workbooks, and supporting materials.",
-      cta: "Preview",
+      preview: "Preview",
       download: "Download",
       pages: "pages",
     },
@@ -25,7 +25,7 @@ export async function BooksPage() {
       title: "اکیڈمی طلبہ کے لیے رہنمائی پر مبنی مطالعہ وسائل",
       description:
         "عملی حوالہ جات، ورک بکس، اور معاون تعلیمی مواد پر مشتمل اکیڈمی کی ڈیجیٹل لائبریری دیکھیں۔",
-      cta: "پری ویو",
+      preview: "پری ویو",
       download: "ڈاؤن لوڈ",
       pages: "صفحات",
     },
@@ -34,7 +34,7 @@ export async function BooksPage() {
       title: "موارد قراءة موجهة لطلاب الأكاديمية",
       description:
         "تصفح مكتبة الأكاديمية الرقمية من المراجع العملية ودفاتر العمل والمواد المساندة.",
-      cta: "معاينة",
+      preview: "معاينة",
       download: "تنزيل",
       pages: "صفحة",
     },
@@ -42,16 +42,20 @@ export async function BooksPage() {
 
   return (
     <>
-      <PageHero
-        eyebrow={copy.eyebrow}
-        title={copy.title}
-        description={copy.description}
-      />
+      <PageHero eyebrow={copy.eyebrow} title={copy.title} description={copy.description} />
 
       <Section variant="white">
         <Container className={styles.grid}>
           {books.map((book) => (
             <Card key={book.id} className={styles.card}>
+              {book.coverUrl ? (
+                <span
+                  className={styles.cover}
+                  style={{ backgroundImage: `url("${book.coverUrl}")` }}
+                  aria-hidden="true"
+                />
+              ) : null}
+
               <div className={styles.content}>
                 <span className={styles.category}>
                   {resolveLocalizedInlineText(book.category, locale) || book.category}
@@ -72,11 +76,11 @@ export async function BooksPage() {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {copy.cta}
+                      {copy.preview}
                     </a>
                   ) : (
                     <Link href={`/books/${book.slug}`} className={styles.link}>
-                      {copy.cta}
+                      {copy.preview}
                     </Link>
                   )}
                   {book.fileUrl ? (
@@ -86,14 +90,6 @@ export async function BooksPage() {
                   ) : null}
                 </div>
               </div>
-
-              {book.coverUrl ? (
-                <span
-                  className={styles.cover}
-                  style={{ backgroundImage: `url(${book.coverUrl})` }}
-                  aria-hidden="true"
-                />
-              ) : null}
             </Card>
           ))}
         </Container>

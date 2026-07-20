@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { saveUploadedFile } from "@/lib/upload-storage";
 
 function cleanValue(value: FormDataEntryValue | null) {
   return String(value || "").trim();
@@ -60,7 +61,11 @@ export async function submitAssignmentAction(formData: FormData) {
   const user = await requireStudentAccess();
   const assignmentId = cleanValue(formData.get("assignmentId"));
   const content = cleanValue(formData.get("content"));
-  const attachmentUrl = cleanValue(formData.get("attachmentUrl"));
+  const uploadedAttachment = await saveUploadedFile(
+    formData.get("attachmentFile"),
+    "assignments/submissions"
+  );
+  const attachmentUrl = uploadedAttachment?.url || cleanValue(formData.get("attachmentUrl"));
 
   if (!assignmentId || (!content && !attachmentUrl)) {
     redirect("/student?error=assignment-submit-failed");

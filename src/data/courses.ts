@@ -1,3 +1,5 @@
+import type { LocalizedTextValue } from "@/lib/content-localization";
+
 export type CourseCategory =
   | "Qaida"
   | "Nazra"
@@ -29,13 +31,13 @@ export type CourseSeo = {
 
 export type Course = {
   id: string;
-  title: string;
+  title: LocalizedTextValue;
   slug: string;
 
-  shortDescription: string;
-  description: string;
-  rawDescription?: string;
-  rawContent?: string;
+  shortDescription: LocalizedTextValue;
+  description: LocalizedTextValue;
+  rawDescription?: LocalizedTextValue;
+  rawContent?: LocalizedTextValue;
 
   image: string;
   banner: string;

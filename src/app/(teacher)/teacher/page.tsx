@@ -1,10 +1,29 @@
+import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import {
+  Award,
+  BookOpen,
+  CalendarCheck,
+  CheckCircle2,
+  ChevronRight,
+  ClipboardList,
+  FileText,
+  Home,
+  LayoutDashboard,
+  MessageSquare,
+  Users,
+} from "lucide-react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
-import { Container, Section } from "@/components/shared";
 import { auth, getDashboardPath } from "@/lib/auth";
 import { getTeacherDashboardData } from "@/lib/dashboard";
-import { reviewSubmissionAction, saveAttendanceAction } from "./actions";
-import styles from "@/components/lms/LmsExperience.module.css";
+import {
+  createTeacherAssignmentAction,
+  createTeacherLessonAction,
+  reviewSubmissionAction,
+  saveAttendanceAction,
+} from "./actions";
+import styles from "./TeacherDashboard.module.css";
 
 type CourseItem = {
   id: string;
@@ -17,21 +36,15 @@ type AssignmentItem = {
   id: string;
   title: string;
   dueDate?: Date | string | null;
-  course: {
-    title: string;
-  };
+  course: { title: string };
 };
 
 type SubmissionItem = {
   id: string;
   status?: string | null;
   updatedAt?: Date | string | null;
-  assignment?: {
-    title?: string | null;
-  } | null;
-  student?: {
-    name?: string | null;
-  } | null;
+  assignment?: { title?: string | null } | null;
+  student?: { name?: string | null } | null;
 };
 
 type CertificateItem = {
@@ -58,6 +71,96 @@ type TeacherDashboardData = {
   }>;
 };
 
+const emptyDashboard: TeacherDashboardData = {
+  courses: [],
+  assignments: [],
+  submissions: [],
+  certificates: [],
+  attendance: [],
+};
+
+const sidebarItems = [
+  { href: "#overview", label: "Dashboard", icon: LayoutDashboard },
+  { href: "#courses", label: "Courses", icon: BookOpen },
+  { href: "#assignments", label: "Assignments", icon: FileText },
+  { href: "#submissions", label: "Submissions", icon: ClipboardList },
+  { href: "#attendance", label: "Attendance", icon: CalendarCheck },
+  { href: "#certificates", label: "Certificates", icon: Award },
+];
+
+function formatDate(value: Date | string | null | undefined) {
+  if (!value) return "Not set";
+
+  return new Date(value).toLocaleDateString("en-PK", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function Sidebar({ userName, userEmail }: { userName: string; userEmail: string }) {
+  return (
+    <aside className={styles.sidebar}>
+      <div className={styles.brand}>
+        <Image src="/images/logo2.webp" alt="Shaykh Abu Ibrahim" width={74} height={74} priority />
+        <div>
+          <strong>Shaykh Abu Ibrahim</strong>
+          <span>Teacher Portal</span>
+        </div>
+      </div>
+
+      <nav className={styles.sideNav} aria-label="Teacher dashboard sections">
+        {sidebarItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <a key={item.href} href={item.href}>
+              <Icon size={20} aria-hidden="true" />
+              <span>{item.label}</span>
+            </a>
+          );
+        })}
+      </nav>
+
+      <div className={styles.sidebarFooter}>
+        <div className={styles.userAvatar}>{userName.slice(0, 1).toUpperCase()}</div>
+        <div className={styles.userMeta}>
+          <strong>{userName}</strong>
+          <span>{userEmail}</span>
+        </div>
+        <SignOutButton />
+      </div>
+    </aside>
+  );
+}
+
+function MobileMenu() {
+  return (
+    <details className={styles.mobileMenu}>
+      <summary>Teacher menu</summary>
+      <nav aria-label="Teacher mobile dashboard sections">
+        {sidebarItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <a key={item.href} href={item.href}>
+              <Icon size={18} aria-hidden="true" />
+              {item.label}
+            </a>
+          );
+        })}
+      </nav>
+    </details>
+  );
+}
+
+function EmptyState({ title, description }: { title: string; description: string }) {
+  return (
+    <div className={styles.emptyState}>
+      <strong>{title}</strong>
+      <p>{description}</p>
+    </div>
+  );
+}
+
 export default async function TeacherDashboardPage() {
   const session = await auth();
 
@@ -69,251 +172,302 @@ export default async function TeacherDashboardPage() {
     redirect(getDashboardPath(session.user.role));
   }
 
-  let dashboard: TeacherDashboardData = {
-    courses: [],
-    assignments: [],
-    submissions: [],
-    certificates: [],
-    attendance: [],
-  };
+  let dashboard = emptyDashboard;
 
   try {
     dashboard = await getTeacherDashboardData(session.user.id);
   } catch {
-    // Keep zero-state UI available even before Prisma data is seeded.
+    dashboard = emptyDashboard;
   }
 
+  const userName = session.user.name || "Teacher";
+  const userEmail = session.user.email || "teacher";
+  const enrollmentCount = dashboard.courses.reduce(
+    (total, course) => total + course.enrollments.length,
+    0
+  );
+  const pendingSubmissions = dashboard.submissions.filter(
+    (submission) => submission.status !== "REVIEWED"
+  );
+
   return (
-    <Section>
-      <Container className={styles.dashboard}>
-        <div className={styles.dashboardTop}>
+    <main className={styles.appShell}>
+      <Sidebar userName={userName} userEmail={userEmail} />
+
+      <div className={styles.workspace}>
+        <MobileMenu />
+
+        <header className={styles.topBar}>
+          <div className={styles.breadcrumb}>
+            <Link href="/">
+              <Home size={18} aria-hidden="true" />
+              Home
+            </Link>
+            <ChevronRight size={16} aria-hidden="true" />
+            <span>Teacher Dashboard</span>
+          </div>
+          <Link href="/contact" className={styles.feedbackLink}>
+            <MessageSquare size={18} aria-hidden="true" />
+            Feedback
+          </Link>
+        </header>
+
+        <section id="overview" className={styles.heroPanel}>
           <div>
-            <h1>Teacher Dashboard</h1>
+            <span className={styles.eyebrow}>Faculty workspace</span>
+            <h1>Assalamualaikum, {userName}</h1>
             <p>
-              Faculty area for course oversight, submissions, and recent teaching
-              activity.
+              Manage assigned courses, review submissions, track attendance, and
+              keep certificate-ready learning records organized.
             </p>
           </div>
-          <SignOutButton />
-        </div>
-
-        <div className={styles.dashboardStats}>
-          <div className={styles.statCard}>
-            <span>Managed courses</span>
-            <strong>{dashboard.courses.length}</strong>
+          <div className={styles.heroCard}>
+            <span>Assigned learners</span>
+            <strong>{enrollmentCount}</strong>
           </div>
-          <div className={styles.statCard}>
+        </section>
+
+        <section className={styles.statsGrid} aria-label="Teacher overview">
+          <article className={styles.statCard}>
+            <BookOpen aria-hidden="true" />
+            <span>Courses</span>
+            <strong>{dashboard.courses.length}</strong>
+          </article>
+          <article className={styles.statCard}>
+            <Users aria-hidden="true" />
+            <span>Learners</span>
+            <strong>{enrollmentCount}</strong>
+          </article>
+          <article className={styles.statCard}>
+            <FileText aria-hidden="true" />
             <span>Assignments</span>
             <strong>{dashboard.assignments.length}</strong>
-          </div>
-          <div className={styles.statCard}>
-            <span>Reviewed submissions</span>
-            <strong>{dashboard.submissions.length}</strong>
-          </div>
-          <div className={styles.statCard}>
-            <span>Issued certificates</span>
+          </article>
+          <article className={styles.statCard}>
+            <ClipboardList aria-hidden="true" />
+            <span>Pending reviews</span>
+            <strong>{pendingSubmissions.length}</strong>
+          </article>
+          <article className={styles.statCard}>
+            <CalendarCheck aria-hidden="true" />
+            <span>Attendance</span>
+            <strong>{dashboard.attendance.length}</strong>
+          </article>
+          <article className={styles.statCard}>
+            <Award aria-hidden="true" />
+            <span>Certificates</span>
             <strong>{dashboard.certificates.length}</strong>
-          </div>
-        </div>
+          </article>
+        </section>
 
-        <div className={styles.dashboardPanels}>
-          <div className={styles.panel}>
-            <h2>Course overview</h2>
-            <p className={styles.panelIntro}>
-              Assigned courses, lesson load, and current learner activity at a
-              glance.
-            </p>
-            <div className={styles.list}>
-              {dashboard.courses.length ? (
-                dashboard.courses.map((course: CourseItem) => (
-                  <div key={course.id} className={styles.listItem}>
-                    <strong>{course.title}</strong>
-                    <div className={styles.listItemMeta}>
-                      {course.lessons.length} lessons •{" "}
-                      {course.enrollments.length} enrollments
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className={styles.empty}>
-                  No teacher-linked courses yet. Assign teacher IDs in Prisma data
-                  to activate this area fully.
-                </div>
-              )}
+        <section id="courses" className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <span className={styles.panelKicker}>Courses</span>
+              <h2>Assigned courses</h2>
             </div>
+            <span className={styles.counter}>{dashboard.courses.length}</span>
           </div>
+          {dashboard.courses.length ? (
+            <div className={styles.courseGrid}>
+              {dashboard.courses.map((course) => (
+                <article key={course.id} className={styles.courseCard}>
+                  <strong>{course.title}</strong>
+                  <span>{course.lessons.length} lessons</span>
+                  <span>{course.enrollments.length} enrollments</span>
+                  <details className={styles.courseTools}>
+                    <summary>Add lesson</summary>
+                    <form action={createTeacherLessonAction} className={styles.stackForm}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input name="title" placeholder="Lesson title" required />
+                      <input name="duration" type="number" min="1" placeholder="Minutes" />
+                      <textarea name="content" rows={3} placeholder="Lesson notes optional" />
+                      <button type="submit">Create lesson</button>
+                    </form>
+                  </details>
+                  <details className={styles.courseTools}>
+                    <summary>Add assignment</summary>
+                    <form action={createTeacherAssignmentAction} className={styles.stackForm}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input name="title" placeholder="Assignment title" required />
+                      <input name="dueDate" type="date" />
+                      <textarea name="description" rows={3} placeholder="Assignment details" />
+                      <button type="submit">Create assignment</button>
+                    </form>
+                  </details>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="No courses assigned yet"
+              description="Admin can assign courses to your teacher account from the admin panel."
+            />
+          )}
+        </section>
 
-          <div className={styles.panel}>
-            <h2>Assignment activity</h2>
-            <p className={styles.panelIntro}>
-              Live assignment desk for active courses and upcoming deadlines.
-            </p>
-            <div className={styles.list}>
-              {dashboard.assignments.length ? (
-                dashboard.assignments.map((item: AssignmentItem) => (
-                  <div key={item.id} className={styles.listItem}>
+        <div className={styles.contentGrid}>
+          <section id="assignments" className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <div>
+                <span className={styles.panelKicker}>Assignments</span>
+                <h2>Upcoming work</h2>
+              </div>
+              <span className={styles.counter}>{dashboard.assignments.length}</span>
+            </div>
+            {dashboard.assignments.length ? (
+              <div className={styles.compactList}>
+                {dashboard.assignments.map((item) => (
+                  <article key={item.id} className={styles.compactItem}>
                     <strong>{item.title}</strong>
-                    <div className={styles.listItemMeta}>
-                      {item.course.title}
-                      {item.dueDate
-                        ? ` • Due ${
-                            item.dueDate instanceof Date
-                              ? item.dueDate.toDateString()
-                              : new Date(item.dueDate).toDateString()
-                          }`
-                        : ""}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className={styles.empty}>
-                  Abhi koi assignments create nahi hue. Jaise hi teacher-linked
-                  course assignments add honge, unki activity yahan nazar aayegi.
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.panel}>
-            <h2>Reviewed submissions</h2>
-            <p className={styles.panelIntro}>
-              Recent student work that has already been reviewed by this teacher.
-            </p>
-            <div className={styles.list}>
-              {dashboard.submissions.length ? (
-                dashboard.submissions.map((item: SubmissionItem) => (
-                  <div key={item.id} className={styles.listItem}>
-                    <strong>{item.assignment?.title || "Assignment"}</strong>
-                    {item.status !== "REVIEWED" ? (
-                      <form action={reviewSubmissionAction} className={styles.stackForm}>
-                        <input type="hidden" name="submissionId" value={item.id} />
-                        <textarea name="feedback" rows={3} placeholder="Feedback for student" />
-                        <input name="grade" type="number" min="0" max="100" placeholder="Grade" />
-                        <button type="submit">Review submission</button>
-                      </form>
-                    ) : null}
-                    <div className={styles.listItemMeta}>
-                      {item.student?.name || "Student"} • {item.status || "REVIEWED"}
-                    </div>
-                    <div className={styles.listItemMeta}>
-                      {item.updatedAt
-                        ? `Updated ${
-                            item.updatedAt instanceof Date
-                              ? item.updatedAt.toDateString()
-                              : new Date(item.updatedAt).toDateString()
-                          }`
-                        : "Recently reviewed"}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className={styles.empty}>
-                  Reviewed submissions abhi available nahi hain. Jaise hi teacher
-                  assignment reviews save karega, unki history yahan nazar aayegi.
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.panel}>
-            <h2>Issued certificates</h2>
-            <p className={styles.panelIntro}>
-              Certificates already issued from this teacher account.
-            </p>
-            <div className={styles.list}>
-              {dashboard.certificates.length ? (
-                dashboard.certificates.map((item: CertificateItem) => (
-                  <div key={item.id} className={styles.listItem}>
-                    <strong>{item.studentName || "Student"}</strong>
-                    <div className={styles.listItemMeta}>
-                      {item.courseName || "Course"}
-                    </div>
-                    <div className={styles.listItemMeta}>
-                      {item.certificateNo || "Certificate"} •{" "}
-                      {item.issuedAt
-                        ? item.issuedAt instanceof Date
-                          ? item.issuedAt.toDateString()
-                          : new Date(item.issuedAt).toDateString()
-                        : "Issued recently"}
-                    </div>
-                    {item.verificationId ? (
-                      <div className={styles.listItemMeta}>
-                        <a
-                          href={`/certificates/${item.verificationId}`}
-                          className={styles.inlineLink}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Open certificate verification
-                        </a>
-                      </div>
-                    ) : null}
-                  </div>
-                ))
-              ) : (
-                <div className={styles.empty}>
-                  Issued certificates yahan show honge jab admin ya teacher-side
-                  issuance workflow se records create honge.
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.panel}>
-            <h2>Attendance</h2>
-            <p className={styles.panelIntro}>
-              Mark attendance for students enrolled in your assigned courses.
-            </p>
-            <form action={saveAttendanceAction} className={styles.stackForm}>
-              <input name="studentEmail" type="email" placeholder="student@example.com" required />
-              <select name="courseId" defaultValue="" required>
-                <option value="" disabled>
-                  Select course
-                </option>
-                {dashboard.courses.map((course) => (
-                  <option key={course.id} value={course.id}>
-                    {course.title}
-                  </option>
+                    <span>{item.course.title}</span>
+                    <span>Due {formatDate(item.dueDate)}</span>
+                  </article>
                 ))}
-              </select>
-              <select name="lessonId" defaultValue="">
-                <option value="">No lesson selected</option>
-                {dashboard.courses.flatMap((course) =>
-                  course.lessons.map((lesson) => (
-                    <option key={lesson.id} value={lesson.id}>
-                      {course.title} | {lesson.title}
-                    </option>
-                  ))
-                )}
-              </select>
-              <select name="status" defaultValue="PRESENT">
-                <option value="PRESENT">PRESENT</option>
-                <option value="ABSENT">ABSENT</option>
-                <option value="EXCUSED">EXCUSED</option>
-              </select>
-              <textarea name="note" rows={3} placeholder="Optional note" />
-              <button type="submit">Save attendance</button>
-            </form>
-            <div className={styles.list}>
-              {dashboard.attendance.length ? (
-                dashboard.attendance.map((item) => (
-                  <div key={item.id} className={styles.listItem}>
-                    <strong>{item.student?.name || item.student?.email || "Student"}</strong>
-                    <div className={styles.listItemMeta}>
-                      {item.course?.title || "Course"} | {item.lesson?.title || "General class"}
-                    </div>
-                    <div className={styles.listItemMeta}>{item.status}</div>
-                  </div>
-                ))
-              ) : (
-                <div className={styles.empty}>
-                  Attendance records yahan save hone ke baad show honge.
-                </div>
-              )}
+              </div>
+            ) : (
+              <EmptyState
+                title="No assignments yet"
+                description="Assignments created for your courses will appear here."
+              />
+            )}
+          </section>
+
+          <section id="certificates" className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <div>
+                <span className={styles.panelKicker}>Certificates</span>
+                <h2>Issued records</h2>
+              </div>
+              <span className={styles.counter}>{dashboard.certificates.length}</span>
             </div>
-          </div>
+            {dashboard.certificates.length ? (
+              <div className={styles.compactList}>
+                {dashboard.certificates.map((item) => (
+                  <article key={item.id} className={styles.compactItem}>
+                    <strong>{item.studentName || "Student"}</strong>
+                    <span>{item.courseName || "Course"}</span>
+                    <span>{item.certificateNo || "Certificate"}</span>
+                    {item.verificationId ? (
+                      <Link href={`/certificates/${item.verificationId}`}>
+                        Open certificate
+                      </Link>
+                    ) : null}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="No certificates issued"
+                description="Certificates issued through admin or teacher workflows will appear here."
+              />
+            )}
+          </section>
         </div>
-      </Container>
-    </Section>
+
+        <section id="submissions" className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <span className={styles.panelKicker}>Submissions</span>
+              <h2>Student work review</h2>
+            </div>
+            <span className={styles.counter}>{dashboard.submissions.length}</span>
+          </div>
+          {dashboard.submissions.length ? (
+            <div className={styles.table}>
+              <div className={styles.tableHeader}>
+                <span>Assignment</span>
+                <span>Student</span>
+                <span>Status</span>
+                <span>Review</span>
+              </div>
+              {dashboard.submissions.map((item) => (
+                <article key={item.id} className={styles.tableRow}>
+                  <strong>{item.assignment?.title || "Assignment"}</strong>
+                  <span>{item.student?.name || "Student"}</span>
+                  <span className={styles.status}>{item.status || "SUBMITTED"}</span>
+                  {item.status !== "REVIEWED" ? (
+                    <form action={reviewSubmissionAction} className={styles.stackForm}>
+                      <input type="hidden" name="submissionId" value={item.id} />
+                      <textarea name="feedback" rows={3} placeholder="Feedback for student" />
+                      <input name="grade" type="number" min="0" max="100" placeholder="Grade" />
+                      <button type="submit">Review</button>
+                    </form>
+                  ) : (
+                    <span className={styles.reviewed}>
+                      <CheckCircle2 size={18} aria-hidden="true" />
+                      Reviewed
+                    </span>
+                  )}
+                </article>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="No submissions yet"
+              description="Student submissions from your assigned courses will appear here."
+            />
+          )}
+        </section>
+
+        <section id="attendance" className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <span className={styles.panelKicker}>Attendance</span>
+              <h2>Mark class attendance</h2>
+            </div>
+            <span className={styles.counter}>{dashboard.attendance.length}</span>
+          </div>
+          <form action={saveAttendanceAction} className={styles.attendanceForm}>
+            <input name="studentEmail" type="email" placeholder="student@example.com" required />
+            <select name="courseId" defaultValue="" required>
+              <option value="" disabled>
+                Select course
+              </option>
+              {dashboard.courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {course.title}
+                </option>
+              ))}
+            </select>
+            <select name="lessonId" defaultValue="">
+              <option value="">No lesson selected</option>
+              {dashboard.courses.flatMap((course) =>
+                course.lessons.map((lesson) => (
+                  <option key={lesson.id} value={lesson.id}>
+                    {course.title} | {lesson.title}
+                  </option>
+                ))
+              )}
+            </select>
+            <select name="status" defaultValue="PRESENT">
+              <option value="PRESENT">Present</option>
+              <option value="ABSENT">Absent</option>
+              <option value="EXCUSED">Excused</option>
+            </select>
+            <textarea name="note" rows={3} placeholder="Optional note" />
+            <button type="submit">Save attendance</button>
+          </form>
+
+          {dashboard.attendance.length ? (
+            <div className={styles.compactList}>
+              {dashboard.attendance.map((item) => (
+                <article key={item.id} className={styles.compactItem}>
+                  <strong>{item.student?.name || item.student?.email || "Student"}</strong>
+                  <span>{item.course?.title || "Course"}</span>
+                  <span>{item.lesson?.title || "General class"}</span>
+                  <span className={styles.status}>{item.status}</span>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="No attendance records"
+              description="Saved attendance records for your courses will appear here."
+            />
+          )}
+        </section>
+      </div>
+    </main>
   );
 }

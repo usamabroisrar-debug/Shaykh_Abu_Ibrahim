@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { normalizeSlug } from "@/utils/slug";
 
 function cleanValue(value: FormDataEntryValue | null) {
   return String(value || "").trim();
@@ -124,4 +125,95 @@ export async function saveAttendanceAction(formData: FormData) {
 
   revalidatePath("/teacher");
   redirect("/teacher?success=attendance-saved");
+}
+
+export async function createTeacherLessonAction(formData: FormData) {
+  const user = await requireTeacherAccess();
+  const courseId = cleanValue(formData.get("courseId"));
+  const title = cleanValue(formData.get("title"));
+  const content = cleanValue(formData.get("content"));
+  const duration = Number(formData.get("duration") || 0);
+
+  if (!courseId || !title) {
+    redirect("/teacher?error=lesson-create-failed");
+  }
+
+  try {
+    const course = await prisma.course.findFirst({
+      where: {
+        id: courseId,
+        teacherId: user.id,
+      },
+      include: {
+        lessons: {
+          select: { order: true },
+          orderBy: { order: "desc" },
+          take: 1,
+        },
+      },
+    });
+
+    if (!course) {
+      throw new Error("Course not assigned to teacher.");
+    }
+
+    await prisma.lesson.create({
+      data: {
+        courseId,
+        title,
+        slug: normalizeSlug(cleanValue(formData.get("slug")) || title),
+        content: content || null,
+        order: (course.lessons[0]?.order || 0) + 1,
+        duration: Number.isFinite(duration) && duration > 0 ? duration : null,
+      },
+    });
+  } catch {
+    redirect("/teacher?error=lesson-create-failed");
+  }
+
+  revalidatePath("/teacher");
+  revalidatePath("/student");
+  redirect("/teacher?success=lesson-created");
+}
+
+export async function createTeacherAssignmentAction(formData: FormData) {
+  const user = await requireTeacherAccess();
+  const courseId = cleanValue(formData.get("courseId"));
+  const title = cleanValue(formData.get("title"));
+  const description = cleanValue(formData.get("description"));
+  const dueDateValue = cleanValue(formData.get("dueDate"));
+
+  if (!courseId || !title) {
+    redirect("/teacher?error=assignment-create-failed");
+  }
+
+  try {
+    const course = await prisma.course.findFirst({
+      where: {
+        id: courseId,
+        teacherId: user.id,
+      },
+      select: { id: true },
+    });
+
+    if (!course) {
+      throw new Error("Course not assigned to teacher.");
+    }
+
+    await prisma.assignment.create({
+      data: {
+        courseId,
+        teacherId: user.id,
+        title,
+        description: description || null,
+        dueDate: dueDateValue ? new Date(dueDateValue) : null,
+      },
+    });
+  } catch {
+    redirect("/teacher?error=assignment-create-failed");
+  }
+
+  revalidatePath("/teacher");
+  revalidatePath("/student");
+  redirect("/teacher?success=assignment-created");
 }
