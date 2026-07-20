@@ -16,9 +16,15 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { LiveClassJoinButton } from "@/components/lms/LiveClassJoinButton";
+import { PaymentCheckoutButton } from "@/components/lms/PaymentCheckoutButton";
 import { auth, getDashboardPath } from "@/lib/auth";
 import { getStudentDashboardData } from "@/lib/dashboard";
-import { markLessonCompleteAction, submitAssignmentAction } from "./actions";
+import {
+  markLessonCompleteAction,
+  markNotificationReadAction,
+  submitAssignmentAction,
+} from "./actions";
 import styles from "./StudentDashboard.module.css";
 
 type LessonItem = {
@@ -99,7 +105,7 @@ type PaymentItem = {
   status: string;
   referenceId: string;
   paidAt?: Date | string | null;
-  course?: { title: string } | null;
+  course?: { id: string; title: string } | null;
 };
 
 type StudentDashboardData = {
@@ -111,6 +117,16 @@ type StudentDashboardData = {
   assignments: AssignmentItem[];
   payments: PaymentItem[];
   attendance: AttendanceItem[];
+  liveSessions: Array<{
+    id: string;
+    title: string;
+    startsAt?: Date | string | null;
+    durationMinutes?: number | null;
+    status?: string | null;
+    course?: { title?: string | null } | null;
+    lesson?: { title?: string | null } | null;
+    teacher?: { name?: string | null; email?: string | null } | null;
+  }>;
 };
 
 const emptyDashboard: StudentDashboardData = {
@@ -122,11 +138,13 @@ const emptyDashboard: StudentDashboardData = {
   assignments: [],
   payments: [],
   attendance: [],
+  liveSessions: [],
 };
 
 const sidebarItems = [
   { href: "#overview", label: "Dashboard", icon: LayoutDashboard },
   { href: "#progress", label: "Progress", icon: BookOpen },
+  { href: "#live-classes", label: "Live Classes", icon: CalendarCheck },
   { href: "#attendance", label: "Attendance", icon: CalendarCheck },
   { href: "#payments", label: "Payments", icon: CreditCard },
   { href: "#assignments", label: "Assignments", icon: FileText },
@@ -434,6 +452,9 @@ export default async function StudentDashboardPage() {
                           Lessons are not available for this course yet.
                         </p>
                       )}
+                      <div className={styles.itemActions}>
+                        <PaymentCheckoutButton courseId={latestEnrollment.course.id} />
+                      </div>
                     </>
                   );
                 })()}
@@ -515,6 +536,42 @@ export default async function StudentDashboardPage() {
             <EmptyState
               title="No progress to show"
               description="Progress will start once you are enrolled and lessons are added to your course."
+            />
+          )}
+        </section>
+
+        <section id="live-classes" className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <span className={styles.panelKicker}>Live classes</span>
+              <h2>Upcoming classroom sessions</h2>
+            </div>
+            <span className={styles.counter}>{dashboard.liveSessions.length}</span>
+          </div>
+
+          {dashboard.liveSessions.length ? (
+            <div className={styles.compactList}>
+              {dashboard.liveSessions.map((item) => (
+                <article key={item.id} className={styles.compactItem}>
+                  <strong>{item.title}</strong>
+                  <span>{item.course?.title || "Academy course"}</span>
+                  <span>
+                    {formatDate(item.startsAt)} | {item.durationMinutes || 60} minutes
+                  </span>
+                  <span>
+                    Teacher: {item.teacher?.name || item.teacher?.email || "Assigned teacher"}
+                  </span>
+                  <div className={styles.itemActions}>
+                    <span className={styles.status}>{item.status || "Scheduled"}</span>
+                    <LiveClassJoinButton sessionId={item.id} />
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="No live classes scheduled"
+              description="Your teacher's scheduled online class sessions will appear here with a secure join button."
             />
           )}
         </section>
@@ -608,6 +665,11 @@ export default async function StudentDashboardPage() {
                     <span>Ref: {item.referenceId}</span>
                     <span>{item.paidAt ? `Paid ${formatDate(item.paidAt)}` : "Not paid yet"}</span>
                     <span className={styles.status}>{item.status}</span>
+                    {item.status !== "PAID" && item.course ? (
+                      <div className={styles.itemActions}>
+                        <PaymentCheckoutButton courseId={item.course.id} />
+                      </div>
+                    ) : null}
                   </article>
                 ))}
               </div>
@@ -704,6 +766,14 @@ export default async function StudentDashboardPage() {
                     <strong>{item.title}</strong>
                     <p>{item.message}</p>
                     {item.createdAt ? <span>{formatDate(item.createdAt)}</span> : null}
+                    {!item.readAt ? (
+                      <form action={markNotificationReadAction} className={styles.inlineForm}>
+                        <input type="hidden" name="notificationId" value={item.id} />
+                        <button type="submit">Mark as read</button>
+                      </form>
+                    ) : (
+                      <span className={styles.status}>Read</span>
+                    )}
                   </article>
                 ))}
               </div>

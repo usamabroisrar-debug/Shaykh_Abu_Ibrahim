@@ -8,9 +8,17 @@ import { normalizeSlug } from "@/utils/slug";
 
 type LocaleMap = Partial<Record<"en" | "ur" | "ar", string>>;
 
-function buildLocaleContent<T extends Record<string, string>>(fields: T) {
+function localizedBucket(value: LocalizedTextValue): LocaleMap {
+  return {
+    en: resolveLocalizedInlineText(value, "en") || resolveLocalizedRichText(value, "en"),
+    ur: resolveLocalizedInlineText(value, "ur") || resolveLocalizedRichText(value, "ur"),
+    ar: resolveLocalizedInlineText(value, "ar") || resolveLocalizedRichText(value, "ar"),
+  };
+}
+
+function buildLocaleContent<T extends Record<string, LocalizedTextValue>>(fields: T) {
   return Object.fromEntries(
-    Object.entries(fields).map(([key, value]) => [key, { en: value }])
+    Object.entries(fields).map(([key, value]) => [key, localizedBucket(value)])
   );
 }
 

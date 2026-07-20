@@ -23,6 +23,7 @@ import {
   createAssignmentAction,
   createCourseAction,
   createEnrollmentAction,
+  createLiveClassAction,
   createLessonAction,
   createMediaRecordAction,
   createPaymentAction,
@@ -114,6 +115,17 @@ type DashboardData = {
   payments: PaymentItem[];
   certificates: CertificateItem[];
   contacts: ContactItem[];
+  liveSessions: Array<{
+    id: string;
+    title: string;
+    startsAt?: Date | string | null;
+    durationMinutes?: number | null;
+    status?: string | null;
+    roomName?: string | null;
+    course?: { title?: string | null } | null;
+    lesson?: { title?: string | null } | null;
+    teacher?: { name?: string | null; email?: string | null } | null;
+  }>;
 };
 
 type WorkspaceView =
@@ -196,7 +208,7 @@ function getAdminCopy() {
       courseFailed: "Course could not be saved. Check required fields or slug.",
       bookFailed: "Book could not be saved.",
       seedOk: "Initial academy content was imported into the database successfully.",
-      seedFail: "Academy content could not be imported into the database.",
+      seedFail: "Academy content import failed. Check database connection and unique slugs.",
     },
     overview: {
       title: "Quick overview",
@@ -380,6 +392,8 @@ function getStatusMessage(
       return { tone: "success", text: "Enrollment saved successfully." };
     case "payment-created":
       return { tone: "success", text: "Payment record saved successfully." };
+    case "live-class-created":
+      return { tone: "success", text: "Live class session scheduled successfully." };
     case "media-created":
       return { tone: "success", text: "Media record saved successfully." };
     case "admission-status-updated":
@@ -397,6 +411,8 @@ function getStatusMessage(
       return { tone: "error", text: "Enrollment could not be saved. Check student email and course." };
     case "payment-create-failed":
       return { tone: "error", text: "Payment could not be saved. Check email, amount, and reference." };
+    case "live-class-create-failed":
+      return { tone: "error", text: "Live class could not be scheduled. Check course, teacher, and start time." };
     case "media-create-failed":
       return { tone: "error", text: "Media record could not be saved. Add a valid URL and filename." };
     case "admission-status-failed":
@@ -447,6 +463,23 @@ function getStatusOptions(copy: ReturnType<typeof getAdminCopy>) {
   ] as const;
 }
 
+function getLocaleFieldValue(
+  localeContent: unknown,
+  field: string,
+  locale: SiteLocale,
+  legacyValue?: string | null
+) {
+  const content = localeContent as Record<string, unknown> | null | undefined;
+  const value = content && typeof content === "object" ? content[field] : undefined;
+  const localized = resolveLocalizedRichText(value as never, locale);
+
+  if (localized) {
+    return localized;
+  }
+
+  return locale === "en" ? legacyValue || "" : "";
+}
+
 export default async function AdminDashboardPage(props: PageProps<"/admin">) {
   const [cookieStore, searchParams, session] = await Promise.all([
     cookies(),
@@ -481,6 +514,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
     payments: [],
     certificates: [],
     contacts: [],
+    liveSessions: [],
   };
 
   try {
@@ -899,6 +933,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
 
   function renderOperations() {
     const certificateCourses = courses.filter((course) => course.status !== "ARCHIVED");
+    const teacherUsers = dashboard.userAccounts.filter((user) => user.role === "TEACHER");
 
     return (
       <div className={styles.workspaceStack}>
@@ -1178,6 +1213,96 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
           <article className={styles.surfaceCard}>
             <div className={styles.panelHeader}>
               <div>
+                <span className={styles.sectionEyebrow}>Live classroom</span>
+                <h3>Schedule LiveKit class</h3>
+              </div>
+            </div>
+            <form action={createLiveClassAction} className={styles.adminForm}>
+              <input type="hidden" name="view" value="operations" />
+              <label className={styles.field}>
+                <span>Class title</span>
+                <input name="title" placeholder="Qaida live revision" required />
+              </label>
+              <div className={styles.formSplit}>
+                <label className={styles.field}>
+                  <span>Course</span>
+                  <select name="courseId" defaultValue="" required>
+                    <option value="" disabled>
+                      Select course
+                    </option>
+                    {certificateCourses.map((course) => (
+                      <option key={course.id} value={course.id}>
+                        {course.title}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className={styles.field}>
+                  <span>Teacher</span>
+                  <select name="teacherId" defaultValue="" required>
+                    <option value="" disabled>
+                      Select teacher
+                    </option>
+                    {teacherUsers.map((teacher) => (
+                      <option key={teacher.id} value={teacher.id}>
+                        {teacher.name || teacher.email}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className={styles.formTriple}>
+                <label className={styles.field}>
+                  <span>Start time</span>
+                  <input name="startsAt" type="datetime-local" required />
+                </label>
+                <label className={styles.field}>
+                  <span>Duration minutes</span>
+                  <input name="durationMinutes" type="number" min="15" defaultValue="60" />
+                </label>
+                <label className={styles.field}>
+                  <span>Status</span>
+                  <select name="status" defaultValue="SCHEDULED">
+                    <option value="SCHEDULED">SCHEDULED</option>
+                    <option value="LIVE">LIVE</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                  </select>
+                </label>
+              </div>
+              <label className={styles.field}>
+                <span>Join note optional</span>
+                <textarea name="joinNote" rows={3} placeholder="Bring notebook and headphones." />
+              </label>
+              <button type="submit" className={styles.primaryAction}>
+                Schedule live class
+              </button>
+            </form>
+            <div className={styles.feedList}>
+              {dashboard.liveSessions.length ? (
+                dashboard.liveSessions.map((item) => (
+                  <div key={item.id} className={styles.feedItem}>
+                    <div>
+                      <strong>{item.title}</strong>
+                      <p>{item.course?.title || copy.meta.general}</p>
+                    </div>
+                    <div className={styles.feedMeta}>
+                      <span className={styles.statusPill}>{item.status || "SCHEDULED"}</span>
+                      <small>{formatDate(item.startsAt, locale, copy.meta.recent)}</small>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className={styles.emptyState}>
+                  Live classes will appear here after scheduling.
+                </div>
+              )}
+            </div>
+          </article>
+
+          <article className={styles.surfaceCard}>
+            <div className={styles.panelHeader}>
+              <div>
                 <span className={styles.sectionEyebrow}>Enrollment desk</span>
                 <h3>Add or update enrollment</h3>
               </div>
@@ -1391,6 +1516,10 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                   <input name="titleUrdu" dir="rtl" placeholder="Urdu title" />
                 </label>
               </div>
+              <label className={styles.field}>
+                <span>Arabic title</span>
+                <input name="titleArabic" dir="rtl" placeholder="Arabic title" />
+              </label>
               <div className={styles.formTriple}>
                 <label className={styles.field}>
                   <span>{copy.common.slug}</span>
@@ -1438,6 +1567,10 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                   <textarea name="excerptUrdu" dir="rtl" />
                 </label>
               </div>
+              <label className={styles.field}>
+                <span>Arabic excerpt</span>
+                <textarea name="excerptArabic" dir="rtl" />
+              </label>
               <StructuredEditor
                 name="content"
                 label={copy.common.content}
@@ -1448,6 +1581,12 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                 label={copy.common.contentUrdu}
                 dir="rtl"
                 placeholder="Urdu full content"
+              />
+              <StructuredEditor
+                name="contentArabic"
+                label="Arabic content"
+                dir="rtl"
+                placeholder="Arabic full content"
               />
               <button type="submit" className={styles.primaryAction}>
                 {copy.modules.blogs.create}
@@ -1482,7 +1621,34 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                         <div className={styles.formSplit}>
                           <label className={styles.field}>
                             <span>{copy.common.title}</span>
-                            <input name="title" defaultValue={blog.title} required />
+                            <input
+                              name="titleEn"
+                              defaultValue={getLocaleFieldValue(
+                                blog.localeContent,
+                                "title",
+                                "en",
+                                blog.title
+                              )}
+                              required
+                            />
+                          </label>
+                          <label className={styles.field}>
+                            <span>{copy.common.titleUrdu}</span>
+                            <input
+                              name="titleUr"
+                              dir="rtl"
+                              defaultValue={getLocaleFieldValue(blog.localeContent, "title", "ur")}
+                            />
+                          </label>
+                        </div>
+                        <div className={styles.formSplit}>
+                          <label className={styles.field}>
+                            <span>Arabic title</span>
+                            <input
+                              name="titleAr"
+                              dir="rtl"
+                              defaultValue={getLocaleFieldValue(blog.localeContent, "title", "ar")}
+                            />
                           </label>
                           <label className={styles.field}>
                             <span>{copy.common.slug}</span>
@@ -1534,15 +1700,59 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                             ))}
                           </select>
                         </label>
+                        <div className={styles.formSplit}>
+                          <label className={styles.field}>
+                            <span>{copy.common.excerpt}</span>
+                            <textarea
+                              name="excerptEn"
+                              defaultValue={getLocaleFieldValue(
+                                blog.localeContent,
+                                "excerpt",
+                                "en",
+                                blog.excerpt
+                              )}
+                              required
+                            />
+                          </label>
+                          <label className={styles.field}>
+                            <span>{copy.common.excerptUrdu}</span>
+                            <textarea
+                              name="excerptUr"
+                              dir="rtl"
+                              defaultValue={getLocaleFieldValue(blog.localeContent, "excerpt", "ur")}
+                            />
+                          </label>
+                        </div>
                         <label className={styles.field}>
-                          <span>{copy.common.excerpt}</span>
-                          <textarea name="excerpt" defaultValue={blog.excerpt || ""} required />
+                          <span>Arabic excerpt</span>
+                          <textarea
+                            name="excerptAr"
+                            dir="rtl"
+                            defaultValue={getLocaleFieldValue(blog.localeContent, "excerpt", "ar")}
+                          />
                         </label>
                         <StructuredEditor
-                          name="content"
+                          name="contentEn"
                           label={copy.common.content}
-                          defaultValue={blog.content || ""}
+                          defaultValue={getLocaleFieldValue(
+                            blog.localeContent,
+                            "content",
+                            "en",
+                            blog.content
+                          )}
                           required
+                        />
+                        <StructuredEditor
+                          name="contentUr"
+                          label={copy.common.contentUrdu}
+                          dir="rtl"
+                          defaultValue={getLocaleFieldValue(blog.localeContent, "content", "ur")}
+                        />
+                        <StructuredEditor
+                          name="contentAr"
+                          label="Arabic content"
+                          dir="rtl"
+                          defaultValue={getLocaleFieldValue(blog.localeContent, "content", "ar")}
                         />
                         <button type="submit" className={styles.secondaryAction}>
                           {copy.common.save}

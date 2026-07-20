@@ -102,3 +102,29 @@ export async function submitAssignmentAction(formData: FormData) {
   revalidatePath("/teacher");
   redirect("/student?success=assignment-submitted");
 }
+
+export async function markNotificationReadAction(formData: FormData) {
+  const user = await requireStudentAccess();
+  const notificationId = cleanValue(formData.get("notificationId"));
+
+  if (!notificationId) {
+    redirect("/student?error=notification-update-failed");
+  }
+
+  try {
+    await prisma.notification.updateMany({
+      where: {
+        id: notificationId,
+        userId: user.id,
+      },
+      data: {
+        readAt: new Date(),
+      },
+    });
+  } catch {
+    redirect("/student?error=notification-update-failed");
+  }
+
+  revalidatePath("/student");
+  redirect("/student?success=notification-read");
+}

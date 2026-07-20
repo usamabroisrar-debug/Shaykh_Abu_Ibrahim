@@ -77,6 +77,13 @@ enum ReviewStatus {
   REJECTED
 }
 
+enum LiveClassStatus {
+  SCHEDULED
+  LIVE
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String?
@@ -107,6 +114,7 @@ model User {
   contactSubmissions  ContactSubmission[]
   mediaFiles          MediaFile[]
   passwordResetTokens PasswordResetToken[]
+  teachingLiveSessions LiveClassSession[]    @relation("TeacherLiveSessions")
 }
 
 model TeacherProfile {
@@ -159,6 +167,7 @@ model Course {
   attendance  Attendance[]
   reviews     Review[]
   payments    Payment[]
+  liveSessions LiveClassSession[]
 }
 
 model Lesson {
@@ -175,6 +184,7 @@ model Lesson {
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   progress  LessonProgress[]
   attendance Attendance[]
+  liveSessions LiveClassSession[]
 
   @@unique([courseId, slug])
 }
@@ -430,6 +440,9 @@ model Payment {
   currency    String        @default("USD")
   provider    String?
   referenceId String        @unique
+  providerSessionId String? @unique
+  checkoutUrl String?
+  metadata    Json?
   status      PaymentStatus @default(PENDING)
   paidAt      DateTime?
   createdAt   DateTime      @default(now())
@@ -437,6 +450,39 @@ model Payment {
 
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   course      Course?       @relation(fields: [courseId], references: [id], onDelete: SetNull)
+}
+
+model PaymentWebhookEvent {
+  id          String   @id @default(cuid())
+  provider    String
+  eventId     String   @unique
+  eventType   String
+  payload     Json
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model LiveClassSession {
+  id              String          @id @default(cuid())
+  title           String
+  roomName        String          @unique
+  courseId        String
+  lessonId        String?
+  teacherId       String
+  startsAt        DateTime
+  durationMinutes Int             @default(60)
+  status          LiveClassStatus @default(SCHEDULED)
+  joinNote        String?
+  recordingUrl    String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  course          Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lesson          Lesson?         @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  teacher         User            @relation("TeacherLiveSessions", fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, startsAt])
+  @@index([teacherId, startsAt])
 }
 
 model Notification {

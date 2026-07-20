@@ -521,6 +521,38 @@
   line-height: 1.6;
 }
 
+.itemActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.itemActions button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 14px;
+  background: var(--student-green);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.itemActions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.itemActions small {
+  flex-basis: 100%;
+  color: var(--student-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
 .compactItem a,
 .emptyState a {
   color: var(--student-green);

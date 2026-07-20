@@ -20,6 +20,7 @@ import { getTeacherDashboardData } from "@/lib/dashboard";
 import {
   createTeacherAssignmentAction,
   createTeacherLessonAction,
+  createTeacherLiveClassAction,
   reviewSubmissionAction,
   saveAttendanceAction,
 } from "./actions";
@@ -61,6 +62,15 @@ type TeacherDashboardData = {
   assignments: AssignmentItem[];
   submissions: SubmissionItem[];
   certificates: CertificateItem[];
+  liveSessions: Array<{
+    id: string;
+    title: string;
+    startsAt?: Date | string | null;
+    durationMinutes?: number | null;
+    status?: string | null;
+    course?: { title?: string | null } | null;
+    lesson?: { title?: string | null } | null;
+  }>;
   attendance: Array<{
     id: string;
     status: string;
@@ -76,12 +86,14 @@ const emptyDashboard: TeacherDashboardData = {
   assignments: [],
   submissions: [],
   certificates: [],
+  liveSessions: [],
   attendance: [],
 };
 
 const sidebarItems = [
   { href: "#overview", label: "Dashboard", icon: LayoutDashboard },
   { href: "#courses", label: "Courses", icon: BookOpen },
+  { href: "#live-classes", label: "Live Classes", icon: CalendarCheck },
   { href: "#assignments", label: "Assignments", icon: FileText },
   { href: "#submissions", label: "Submissions", icon: ClipboardList },
   { href: "#attendance", label: "Attendance", icon: CalendarCheck },
@@ -250,8 +262,8 @@ export default async function TeacherDashboardPage() {
           </article>
           <article className={styles.statCard}>
             <CalendarCheck aria-hidden="true" />
-            <span>Attendance</span>
-            <strong>{dashboard.attendance.length}</strong>
+            <span>Live classes</span>
+            <strong>{dashboard.liveSessions.length}</strong>
           </article>
           <article className={styles.statCard}>
             <Award aria-hidden="true" />
@@ -286,6 +298,17 @@ export default async function TeacherDashboardPage() {
                     </form>
                   </details>
                   <details className={styles.courseTools}>
+                    <summary>Schedule live class</summary>
+                    <form action={createTeacherLiveClassAction} className={styles.stackForm}>
+                      <input type="hidden" name="courseId" value={course.id} />
+                      <input name="title" placeholder="Live class title" required />
+                      <input name="startsAt" type="datetime-local" required />
+                      <input name="durationMinutes" type="number" min="15" defaultValue="60" />
+                      <textarea name="joinNote" rows={3} placeholder="Class note optional" />
+                      <button type="submit">Schedule live class</button>
+                    </form>
+                  </details>
+                  <details className={styles.courseTools}>
                     <summary>Add assignment</summary>
                     <form action={createTeacherAssignmentAction} className={styles.stackForm}>
                       <input type="hidden" name="courseId" value={course.id} />
@@ -307,6 +330,33 @@ export default async function TeacherDashboardPage() {
         </section>
 
         <div className={styles.contentGrid}>
+          <section id="live-classes" className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <div>
+                <span className={styles.panelKicker}>Live classroom</span>
+                <h2>Upcoming sessions</h2>
+              </div>
+              <span className={styles.counter}>{dashboard.liveSessions.length}</span>
+            </div>
+            {dashboard.liveSessions.length ? (
+              <div className={styles.compactList}>
+                {dashboard.liveSessions.map((item) => (
+                  <article key={item.id} className={styles.compactItem}>
+                    <strong>{item.title}</strong>
+                    <span>{item.course?.title || "Course"}</span>
+                    <span>{formatDate(item.startsAt)}</span>
+                    <span className={styles.status}>{item.status || "SCHEDULED"}</span>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="No live classes scheduled"
+                description="Schedule LiveKit classes from an assigned course card."
+              />
+            )}
+          </section>
+
           <section id="assignments" className={styles.panel}>
             <div className={styles.panelHeader}>
               <div>

@@ -11,6 +11,7 @@ import {
   updateHomepageHeroSettings,
   updateSiteSettings,
 } from "@/services/settings/site-settings.service";
+import { createLiveClassSession } from "@/services/live-class/live-class.service";
 import {
   createAdminBlog,
   deleteAdminBlog,
@@ -49,6 +50,22 @@ function pickStorageText(english: string, urdu: string, arabic = "") {
   return english.trim() || urdu.trim() || arabic.trim();
 }
 
+function readLocaleInputs(formData: FormData, baseName: string) {
+  const english = cleanValue(formData.get(`${baseName}En`)) || cleanValue(formData.get(baseName));
+  const urdu = cleanValue(formData.get(`${baseName}Ur`)) || cleanValue(formData.get(`${baseName}Urdu`));
+  const arabic = cleanValue(formData.get(`${baseName}Ar`)) || cleanValue(formData.get(`${baseName}Arabic`));
+
+  if (english || urdu || arabic) {
+    return {
+      en: english,
+      ur: urdu,
+      ar: arabic,
+    };
+  }
+
+  return splitExistingLocaleText(cleanValue(formData.get(baseName)));
+}
+
 function splitExistingLocaleText(value: string) {
   const parts = getInlineLanguageLabelValues(value);
   const hasParts = hasLocaleParts(parts);
@@ -66,22 +83,6 @@ function titleFromFile(value: FormDataEntryValue | null) {
 
 function hasLocaleParts(value: Partial<Record<"en" | "ur" | "ar" | "default", string>>) {
   return Boolean(value.en || value.ur || value.ar || value.default);
-}
-
-function splitBookTitle(rawTitle: string, rawUrduTitle: string, fallbackTitle: string) {
-  const source = rawTitle || fallbackTitle;
-  const parts = getInlineLanguageLabelValues(source);
-  const hasParts = hasLocaleParts(parts);
-  const englishTitle = parts.en?.trim() || (!hasParts ? source.trim() : "");
-  const urduTitle = rawUrduTitle.trim() || parts.ur?.trim() || "";
-  const arabicTitle = parts.ar?.trim() || "";
-
-  return {
-    englishTitle,
-    urduTitle,
-    arabicTitle,
-    storageTitle: englishTitle || urduTitle || arabicTitle || source.trim(),
-  };
 }
 
 function resolveCategory(
@@ -124,29 +125,32 @@ export async function createBlogAction(formData: FormData) {
   const view = cleanValue(formData.get("view")) || "blogs";
   const title = cleanValue(formData.get("title"));
   const titleUrdu = cleanValue(formData.get("titleUrdu"));
+  const titleArabic = cleanValue(formData.get("titleArabic"));
   const excerpt = cleanValue(formData.get("excerpt"));
   const excerptUrdu = cleanValue(formData.get("excerptUrdu"));
+  const excerptArabic = cleanValue(formData.get("excerptArabic"));
   const content = cleanValue(formData.get("content"));
   const contentUrdu = cleanValue(formData.get("contentUrdu"));
+  const contentArabic = cleanValue(formData.get("contentArabic"));
 
   if (
-    !requireAtLeastOne(title, titleUrdu) ||
-    !requireAtLeastOne(excerpt, excerptUrdu) ||
-    !requireAtLeastOne(content, contentUrdu)
+    !requireAtLeastOne(title, titleUrdu, titleArabic) ||
+    !requireAtLeastOne(excerpt, excerptUrdu, excerptArabic) ||
+    !requireAtLeastOne(content, contentUrdu, contentArabic)
   ) {
     redirect(buildAdminRedirect("error=blog-create-failed", view));
   }
 
   try {
     await createAdminBlog({
-      title: pickStorageText(title, titleUrdu),
+      title: pickStorageText(title, titleUrdu, titleArabic),
       slug: cleanValue(formData.get("slug")),
-      excerpt: pickStorageText(excerpt, excerptUrdu),
-      content: pickStorageText(content, contentUrdu),
+      excerpt: pickStorageText(excerpt, excerptUrdu, excerptArabic),
+      content: pickStorageText(content, contentUrdu, contentArabic),
       localeContent: {
-        title: buildLocaleField(title, titleUrdu),
-        excerpt: buildLocaleField(excerpt, excerptUrdu),
-        content: buildLocaleField(content, contentUrdu),
+        title: buildLocaleField(title, titleUrdu, titleArabic),
+        excerpt: buildLocaleField(excerpt, excerptUrdu, excerptArabic),
+        content: buildLocaleField(content, contentUrdu, contentArabic),
       },
       categoryName: resolveCategory(
         formData.get("categoryName"),
@@ -190,9 +194,9 @@ export async function updateBlogAction(formData: FormData) {
   const view = cleanValue(formData.get("view")) || "blogs";
 
   try {
-    const titleParts = splitExistingLocaleText(cleanValue(formData.get("title")));
-    const excerptParts = splitExistingLocaleText(cleanValue(formData.get("excerpt")));
-    const contentParts = splitExistingLocaleText(cleanValue(formData.get("content")));
+    const titleParts = readLocaleInputs(formData, "title");
+    const excerptParts = readLocaleInputs(formData, "excerpt");
+    const contentParts = readLocaleInputs(formData, "content");
 
     await updateAdminBlog({
       id: cleanValue(formData.get("id")),
@@ -227,29 +231,32 @@ export async function createCourseAction(formData: FormData) {
   const view = cleanValue(formData.get("view")) || "courses";
   const title = cleanValue(formData.get("title"));
   const titleUrdu = cleanValue(formData.get("titleUrdu"));
+  const titleArabic = cleanValue(formData.get("titleArabic"));
   const description = cleanValue(formData.get("description"));
   const descriptionUrdu = cleanValue(formData.get("descriptionUrdu"));
+  const descriptionArabic = cleanValue(formData.get("descriptionArabic"));
   const content = cleanValue(formData.get("content"));
   const contentUrdu = cleanValue(formData.get("contentUrdu"));
+  const contentArabic = cleanValue(formData.get("contentArabic"));
 
   if (
-    !requireAtLeastOne(title, titleUrdu) ||
-    !requireAtLeastOne(description, descriptionUrdu) ||
-    !requireAtLeastOne(content, contentUrdu)
+    !requireAtLeastOne(title, titleUrdu, titleArabic) ||
+    !requireAtLeastOne(description, descriptionUrdu, descriptionArabic) ||
+    !requireAtLeastOne(content, contentUrdu, contentArabic)
   ) {
     redirect(buildAdminRedirect("error=course-create-failed", view));
   }
 
   try {
     await createAdminCourse({
-      title: pickStorageText(title, titleUrdu),
+      title: pickStorageText(title, titleUrdu, titleArabic),
       slug: cleanValue(formData.get("slug")),
-      description: pickStorageText(description, descriptionUrdu),
-      content: pickStorageText(content, contentUrdu),
+      description: pickStorageText(description, descriptionUrdu, descriptionArabic),
+      content: pickStorageText(content, contentUrdu, contentArabic),
       localeContent: {
-        title: buildLocaleField(title, titleUrdu),
-        description: buildLocaleField(description, descriptionUrdu),
-        content: buildLocaleField(content, contentUrdu),
+        title: buildLocaleField(title, titleUrdu, titleArabic),
+        description: buildLocaleField(description, descriptionUrdu, descriptionArabic),
+        content: buildLocaleField(content, contentUrdu, contentArabic),
       },
       level: cleanValue(formData.get("level")),
       duration: cleanValue(formData.get("duration")),
@@ -291,9 +298,9 @@ export async function updateCourseAction(formData: FormData) {
   const view = cleanValue(formData.get("view")) || "courses";
 
   try {
-    const titleParts = splitExistingLocaleText(cleanValue(formData.get("title")));
-    const descriptionParts = splitExistingLocaleText(cleanValue(formData.get("description")));
-    const contentParts = splitExistingLocaleText(cleanValue(formData.get("content")));
+    const titleParts = readLocaleInputs(formData, "title");
+    const descriptionParts = readLocaleInputs(formData, "description");
+    const contentParts = readLocaleInputs(formData, "content");
 
     await updateAdminCourse({
       id: cleanValue(formData.get("id")),
@@ -327,21 +334,19 @@ export async function createBookAction(formData: FormData) {
   const view = cleanValue(formData.get("view")) || "books";
   const bookFile = formData.get("bookFile");
   const coverFile = formData.get("coverFile");
-  const rawTitle = cleanValue(formData.get("title"));
   const detectedTitle = titleFromFile(bookFile);
-  const { englishTitle, urduTitle, arabicTitle, storageTitle } = splitBookTitle(
-    rawTitle,
-    cleanValue(formData.get("titleUrdu")),
-    detectedTitle
-  );
+  const titleParts = readLocaleInputs(formData, "title");
+  const storageTitle = pickStorageText(titleParts.en, titleParts.ur, titleParts.ar) || detectedTitle;
   const summary =
     cleanValue(formData.get("summary")) ||
     (storageTitle ? `Study resource for ${storageTitle}.` : "");
   const summaryUrdu = cleanValue(formData.get("summaryUrdu"));
+  const summaryArabic = cleanValue(formData.get("summaryArabic"));
   const featuredNote = cleanValue(formData.get("featuredNote"));
   const featuredNoteUrdu = cleanValue(formData.get("featuredNoteUrdu"));
+  const featuredNoteArabic = cleanValue(formData.get("featuredNoteArabic"));
 
-  if (!requireAtLeastOne(englishTitle, urduTitle, arabicTitle)) {
+  if (!requireAtLeastOne(titleParts.en, titleParts.ur, titleParts.ar, storageTitle)) {
     redirect(buildAdminRedirect("error=book-create-failed", view));
   }
 
@@ -355,14 +360,14 @@ export async function createBookAction(formData: FormData) {
       category: cleanValue(formData.get("category")) || "Quran",
       format: cleanValue(formData.get("format")) || "PDF Guide",
       pages: Number(formData.get("pages") || 1),
-      summary: pickStorageText(summary, summaryUrdu),
-      featuredNote: pickStorageText(featuredNote, featuredNoteUrdu),
+      summary: pickStorageText(summary, summaryUrdu, summaryArabic),
+      featuredNote: pickStorageText(featuredNote, featuredNoteUrdu, featuredNoteArabic),
       fileUrl: uploadedFile?.url || cleanValue(formData.get("fileUrl")),
       coverUrl: uploadedCover?.url || cleanValue(formData.get("coverUrl")),
       localeContent: {
-        title: buildLocaleField(englishTitle, urduTitle, arabicTitle),
-        summary: buildLocaleField(summary, summaryUrdu),
-        featuredNote: buildLocaleField(featuredNote, featuredNoteUrdu),
+        title: buildLocaleField(titleParts.en || storageTitle, titleParts.ur, titleParts.ar),
+        summary: buildLocaleField(summary, summaryUrdu, summaryArabic),
+        featuredNote: buildLocaleField(featuredNote, featuredNoteUrdu, featuredNoteArabic),
       },
       status: cleanValue(formData.get("status")) as
         | "DRAFT"
@@ -405,14 +410,13 @@ export async function updateBookAction(formData: FormData) {
     const coverFile = formData.get("coverFile");
     const uploadedFile = await saveUploadedFile(bookFile, "books/files");
     const uploadedCover = await saveUploadedFile(coverFile, "books/covers");
-    const rawTitle = cleanValue(formData.get("title"));
-    const { englishTitle, urduTitle, arabicTitle, storageTitle } = splitBookTitle(
-      rawTitle,
-      cleanValue(formData.get("titleUrdu")),
-      titleFromFile(bookFile)
-    );
+    const titleParts = readLocaleInputs(formData, "title");
+    const storageTitle =
+      pickStorageText(titleParts.en, titleParts.ur, titleParts.ar) || titleFromFile(bookFile);
+    const summaryParts = readLocaleInputs(formData, "summary");
+    const featuredNoteParts = readLocaleInputs(formData, "featuredNote");
     const summary =
-      cleanValue(formData.get("summary")) ||
+      pickStorageText(summaryParts.en, summaryParts.ur, summaryParts.ar) ||
       (storageTitle ? `Study resource for ${storageTitle}.` : "Study resource for academy students.");
 
     await updateAdminBook({
@@ -427,11 +431,12 @@ export async function updateBookAction(formData: FormData) {
       fileUrl: uploadedFile?.url || cleanValue(formData.get("fileUrl")),
       coverUrl: uploadedCover?.url || cleanValue(formData.get("coverUrl")),
       localeContent: {
-        title: buildLocaleField(englishTitle, urduTitle, arabicTitle),
-        summary: buildLocaleField(summary, cleanValue(formData.get("summaryUrdu"))),
+        title: buildLocaleField(titleParts.en, titleParts.ur, titleParts.ar),
+        summary: buildLocaleField(summaryParts.en || summary, summaryParts.ur, summaryParts.ar),
         featuredNote: buildLocaleField(
-          cleanValue(formData.get("featuredNote")),
-          cleanValue(formData.get("featuredNoteUrdu"))
+          featuredNoteParts.en,
+          featuredNoteParts.ur,
+          featuredNoteParts.ar
         ),
       },
       status: cleanValue(formData.get("status")) as "DRAFT" | "PUBLISHED" | "ARCHIVED",
@@ -860,6 +865,45 @@ export async function createPaymentAction(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/student");
   redirect(buildAdminRedirect("success=payment-created", view));
+}
+
+export async function createLiveClassAction(formData: FormData) {
+  await requireAdminAccess();
+  const view = "operations";
+  const title = cleanValue(formData.get("title"));
+  const courseId = cleanValue(formData.get("courseId"));
+  const lessonId = cleanValue(formData.get("lessonId"));
+  const teacherId = cleanValue(formData.get("teacherId"));
+  const startsAtValue = cleanValue(formData.get("startsAt"));
+  const durationMinutes = Number(formData.get("durationMinutes") || 60);
+
+  if (!title || !courseId || !teacherId || !startsAtValue) {
+    redirect(buildAdminRedirect("error=live-class-create-failed", view));
+  }
+
+  try {
+    await createLiveClassSession({
+      title,
+      courseId,
+      lessonId,
+      teacherId,
+      startsAt: new Date(startsAtValue),
+      durationMinutes: Number.isFinite(durationMinutes) ? durationMinutes : 60,
+      joinNote: cleanValue(formData.get("joinNote")),
+      status: cleanValue(formData.get("status")) as
+        | "SCHEDULED"
+        | "LIVE"
+        | "COMPLETED"
+        | "CANCELLED",
+    });
+  } catch {
+    redirect(buildAdminRedirect("error=live-class-create-failed", view));
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/student");
+  revalidatePath("/teacher");
+  redirect(buildAdminRedirect("success=live-class-created", view));
 }
 
 export async function createMediaRecordAction(formData: FormData) {

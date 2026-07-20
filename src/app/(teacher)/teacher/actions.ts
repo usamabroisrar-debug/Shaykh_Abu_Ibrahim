@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { createLiveClassSession } from "@/services/live-class/live-class.service";
 import { normalizeSlug } from "@/utils/slug";
 
 function cleanValue(value: FormDataEntryValue | null) {
@@ -216,4 +217,45 @@ export async function createTeacherAssignmentAction(formData: FormData) {
   revalidatePath("/teacher");
   revalidatePath("/student");
   redirect("/teacher?success=assignment-created");
+}
+
+export async function createTeacherLiveClassAction(formData: FormData) {
+  const user = await requireTeacherAccess();
+  const courseId = cleanValue(formData.get("courseId"));
+  const title = cleanValue(formData.get("title"));
+  const startsAtValue = cleanValue(formData.get("startsAt"));
+  const durationMinutes = Number(formData.get("durationMinutes") || 60);
+
+  if (!courseId || !title || !startsAtValue) {
+    redirect("/teacher?error=live-class-create-failed");
+  }
+
+  try {
+    const course = await prisma.course.findFirst({
+      where: {
+        id: courseId,
+        teacherId: user.id,
+      },
+      select: { id: true },
+    });
+
+    if (!course) {
+      throw new Error("Course not assigned to teacher.");
+    }
+
+    await createLiveClassSession({
+      title,
+      courseId,
+      teacherId: user.id,
+      startsAt: new Date(startsAtValue),
+      durationMinutes: Number.isFinite(durationMinutes) ? durationMinutes : 60,
+      joinNote: cleanValue(formData.get("joinNote")),
+    });
+  } catch {
+    redirect("/teacher?error=live-class-create-failed");
+  }
+
+  revalidatePath("/teacher");
+  revalidatePath("/student");
+  redirect("/teacher?success=live-class-created");
 }

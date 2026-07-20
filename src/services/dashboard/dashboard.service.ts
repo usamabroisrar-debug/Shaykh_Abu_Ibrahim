@@ -3,6 +3,11 @@ import { isDatabaseConfigured } from "@/lib/server";
 import { getRecentAdmissions } from "@/services/admission/admission.service";
 import { getRecentContactSubmissions } from "@/services/contact/contact.service";
 import { getRecentCourses, getTeacherCourses } from "@/services/course/course.service";
+import {
+  getAdminLiveClassSessions,
+  getStudentLiveClassSessions,
+  getTeacherLiveClassSessions,
+} from "@/services/live-class/live-class.service";
 
 const emptyAdminDashboardData = {
   users: 0,
@@ -13,6 +18,7 @@ const emptyAdminDashboardData = {
   payments: [],
   certificates: [],
   contacts: [],
+  liveSessions: [],
 };
 
 async function safeQuery<T>(resolver: () => Promise<T>, fallback: T) {
@@ -34,6 +40,7 @@ export async function getStudentDashboardData(userId: string) {
       assignments: [],
       payments: [],
       attendance: [],
+      liveSessions: [],
     };
   }
 
@@ -46,6 +53,7 @@ export async function getStudentDashboardData(userId: string) {
     assignments,
     payments,
     attendance,
+    liveSessions,
   ] = await Promise.all([
     safeQuery(
       () =>
@@ -155,6 +163,7 @@ export async function getStudentDashboardData(userId: string) {
         }),
       []
     ),
+    safeQuery(() => getStudentLiveClassSessions(userId), []),
   ]);
 
   return {
@@ -166,6 +175,7 @@ export async function getStudentDashboardData(userId: string) {
     assignments,
     payments,
     attendance,
+    liveSessions,
   };
 }
 
@@ -177,10 +187,11 @@ export async function getTeacherDashboardData(userId: string) {
       submissions: [],
       certificates: [],
       attendance: [],
+      liveSessions: [],
     };
   }
 
-  const [courses, assignments, submissions, certificates, attendance] = await Promise.all([
+  const [courses, assignments, submissions, certificates, attendance, liveSessions] = await Promise.all([
     getTeacherCourses(userId),
     safeQuery(
       () =>
@@ -236,6 +247,7 @@ export async function getTeacherDashboardData(userId: string) {
         }),
       []
     ),
+    safeQuery(() => getTeacherLiveClassSessions(userId), []),
   ]);
 
   return {
@@ -244,6 +256,7 @@ export async function getTeacherDashboardData(userId: string) {
     submissions,
     certificates,
     attendance,
+    liveSessions,
   };
 }
 
@@ -252,7 +265,7 @@ export async function getAdminDashboardData() {
     return emptyAdminDashboardData;
   }
 
-  const [users, userAccounts, admissions, courses, submissions, payments, certificates, contacts] =
+  const [users, userAccounts, admissions, courses, submissions, payments, certificates, contacts, liveSessions] =
     await Promise.all([
       safeQuery(() => prisma.user.count(), 0),
       safeQuery(
@@ -318,6 +331,7 @@ export async function getAdminDashboardData() {
         []
       ),
       getRecentContactSubmissions(8),
+      safeQuery(() => getAdminLiveClassSessions(), []),
     ]);
 
   return {
@@ -329,5 +343,6 @@ export async function getAdminDashboardData() {
     payments,
     certificates,
     contacts,
+    liveSessions,
   };
 }
