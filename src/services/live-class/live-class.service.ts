@@ -108,6 +108,28 @@ export async function getTeacherLiveClassSessions(userId: string, limit = 12) {
   });
 }
 
+export async function updateLiveClassSession(input: {
+  sessionId: string;
+  status?: LiveClassStatus;
+  recordingUrl?: string | null;
+  endedAt?: Date | null;
+}) {
+  if (!input.sessionId) {
+    throw new Error("Live class session is required.");
+  }
+
+  return prisma.liveClassSession.update({
+    where: {
+      id: input.sessionId,
+    },
+    data: {
+      status: input.status,
+      recordingUrl: input.recordingUrl,
+      endedAt: input.endedAt,
+    },
+  });
+}
+
 export async function authorizeLiveClassJoin(input: {
   sessionId: string;
   userId: string;
@@ -133,6 +155,14 @@ export async function authorizeLiveClassJoin(input: {
           },
         },
       },
+      lesson: true,
+      teacher: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
     },
   });
 
@@ -150,4 +180,46 @@ export async function authorizeLiveClassJoin(input: {
   }
 
   return session;
+}
+
+export async function markLiveClassAttendance(input: {
+  liveClassSessionId: string;
+  studentId: string;
+}) {
+  const session = await prisma.liveClassSession.findUnique({
+    where: {
+      id: input.liveClassSessionId,
+    },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      lessonId: true,
+    },
+  });
+
+  if (!session) {
+    throw new Error("Live class session was not found.");
+  }
+
+  return prisma.attendance.upsert({
+    where: {
+      studentId_liveClassSessionId: {
+        studentId: input.studentId,
+        liveClassSessionId: session.id,
+      },
+    },
+    update: {
+      status: "PRESENT",
+      note: `Auto-marked from live class: ${session.title}`,
+    },
+    create: {
+      studentId: input.studentId,
+      courseId: session.courseId,
+      lessonId: session.lessonId,
+      liveClassSessionId: session.id,
+      status: "PRESENT",
+      note: `Auto-marked from live class: ${session.title}`,
+    },
+  });
 }

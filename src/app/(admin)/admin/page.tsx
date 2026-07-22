@@ -38,6 +38,7 @@ import {
   updateBookAction,
   updateBlogAction,
   updateCourseAction,
+  updateLiveClassAction,
 } from "./actions";
 import styles from "./page.module.css";
 
@@ -394,6 +395,8 @@ function getStatusMessage(
       return { tone: "success", text: "Payment record saved successfully." };
     case "live-class-created":
       return { tone: "success", text: "Live class session scheduled successfully." };
+    case "live-class-updated":
+      return { tone: "success", text: "Live class session updated successfully." };
     case "media-created":
       return { tone: "success", text: "Media record saved successfully." };
     case "admission-status-updated":
@@ -413,6 +416,8 @@ function getStatusMessage(
       return { tone: "error", text: "Payment could not be saved. Check email, amount, and reference." };
     case "live-class-create-failed":
       return { tone: "error", text: "Live class could not be scheduled. Check course, teacher, and start time." };
+    case "live-class-update-failed":
+      return { tone: "error", text: "Live class could not be updated." };
     case "media-create-failed":
       return { tone: "error", text: "Media record could not be saved. Add a valid URL and filename." };
     case "admission-status-failed":
@@ -1290,6 +1295,32 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
                       <span className={styles.statusPill}>{item.status || "SCHEDULED"}</span>
                       <small>{formatDate(item.startsAt, locale, copy.meta.recent)}</small>
                     </div>
+                    <form action={updateLiveClassAction} className={styles.adminForm}>
+                      <input type="hidden" name="sessionId" value={item.id} />
+                      <div className={styles.formSplit}>
+                        <label className={styles.field}>
+                          <span>Status</span>
+                          <select name="status" defaultValue={item.status || "SCHEDULED"}>
+                            <option value="SCHEDULED">SCHEDULED</option>
+                            <option value="LIVE">LIVE</option>
+                            <option value="COMPLETED">COMPLETED</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                          </select>
+                        </label>
+                        <label className={styles.field}>
+                          <span>Recording URL</span>
+                          <input
+                            name="recordingUrl"
+                            type="url"
+                            defaultValue={item.recordingUrl || ""}
+                            placeholder="https://..."
+                          />
+                        </label>
+                      </div>
+                      <button type="submit" className={styles.secondaryAction}>
+                        Update session
+                      </button>
+                    </form>
                   </div>
                 ))
               ) : (

@@ -9,6 +9,9 @@ export function createLiveKitAccessToken(input: {
   name: string;
   roomName: string;
   ttlSeconds?: number;
+  canPublish?: boolean;
+  canPublishData?: boolean;
+  canSubscribe?: boolean;
 }) {
   const apiKey = process.env.LIVEKIT_API_KEY;
   const apiSecret = process.env.LIVEKIT_API_SECRET;
@@ -31,8 +34,9 @@ export function createLiveKitAccessToken(input: {
     video: {
       roomJoin: true,
       room: input.roomName,
-      canPublish: true,
-      canSubscribe: true,
+      canPublish: input.canPublish ?? true,
+      canPublishData: input.canPublishData ?? true,
+      canSubscribe: input.canSubscribe ?? true,
     },
   };
   const encodedHeader = base64Url(JSON.stringify(header));

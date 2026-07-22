@@ -11,7 +11,10 @@ import {
   updateHomepageHeroSettings,
   updateSiteSettings,
 } from "@/services/settings/site-settings.service";
-import { createLiveClassSession } from "@/services/live-class/live-class.service";
+import {
+  createLiveClassSession,
+  updateLiveClassSession,
+} from "@/services/live-class/live-class.service";
 import {
   createAdminBlog,
   deleteAdminBlog,
@@ -904,6 +907,39 @@ export async function createLiveClassAction(formData: FormData) {
   revalidatePath("/student");
   revalidatePath("/teacher");
   redirect(buildAdminRedirect("success=live-class-created", view));
+}
+
+export async function updateLiveClassAction(formData: FormData) {
+  await requireAdminAccess();
+  const view = "operations";
+  const sessionId = cleanValue(formData.get("sessionId"));
+  const status = cleanValue(formData.get("status")) as
+    | "SCHEDULED"
+    | "LIVE"
+    | "COMPLETED"
+    | "CANCELLED"
+    | "";
+  const recordingUrl = cleanValue(formData.get("recordingUrl"));
+
+  if (!sessionId || (!status && !recordingUrl)) {
+    redirect(buildAdminRedirect("error=live-class-update-failed", view));
+  }
+
+  try {
+    await updateLiveClassSession({
+      sessionId,
+      status: status || undefined,
+      recordingUrl: recordingUrl || undefined,
+      endedAt: status === "COMPLETED" ? new Date() : undefined,
+    });
+  } catch {
+    redirect(buildAdminRedirect("error=live-class-update-failed", view));
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/student");
+  revalidatePath("/teacher");
+  redirect(buildAdminRedirect("success=live-class-updated", view));
 }
 
 export async function createMediaRecordAction(formData: FormData) {
