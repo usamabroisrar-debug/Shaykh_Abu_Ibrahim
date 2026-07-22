@@ -123,6 +123,7 @@ type DashboardData = {
     durationMinutes?: number | null;
     status?: string | null;
     roomName?: string | null;
+    recordingUrl?: string | null;
     course?: { title?: string | null } | null;
     lesson?: { title?: string | null } | null;
     teacher?: { name?: string | null; email?: string | null } | null;
