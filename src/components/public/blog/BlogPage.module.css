@@ -66,6 +66,7 @@
 
 .link {
   display: inline-flex;
+  align-self: center;
   margin-top: auto;
   min-height: 34px;
   align-items: center;
