@@ -78,6 +78,13 @@
   color: var(--primary);
   font-size: 0.78rem;
   font-weight: 800;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.link:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
 }
 
 @media (max-width: 1180px) {
