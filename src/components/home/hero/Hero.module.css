@@ -23,7 +23,6 @@
 
 .goldGlow,
 .greenGlow,
-.orbOne,
 .orbTwo {
   position: absolute;
   border-radius: var(--radius-full);
@@ -49,16 +48,6 @@
   background: rgba(16, 185, 129, 0.28);
   filter: blur(105px);
   animation: pulseGlow 8s ease-in-out infinite;
-}
-
-.orbOne {
-  width: 16px;
-  height: 16px;
-  top: 26%;
-  left: 48%;
-  background: var(--gold-light);
-  box-shadow: 0 0 30px rgba(250, 204, 21, 0.7);
-  animation: floatY 5s ease-in-out infinite;
 }
 
 .orbTwo {
@@ -349,7 +338,7 @@
   left: 12px;
   bottom: 82px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 13px;
   width: 300px;
   padding: 15px 18px;
@@ -360,6 +349,7 @@
 
 .floatCardBottom svg {
   flex-shrink: 0;
+  margin-top: 3px;
   color: var(--gold-light);
 }
 
@@ -380,6 +370,7 @@
 }
 
 .visualBadge svg {
+  flex-shrink: 0;
   color: var(--gold-light);
 }
 
@@ -516,8 +507,17 @@
     white-space: normal;
   }
 
+  .floatCardTop {
+    text-align: center;
+  }
+
+  .floatCardBottom {
+    justify-content: center;
+  }
+
   .floatCardBottom > div {
     min-width: 0;
+    text-align: left;
   }
 
   .visualBadge {

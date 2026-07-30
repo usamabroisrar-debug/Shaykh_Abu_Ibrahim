@@ -22,7 +22,6 @@ export async function Hero() {
       <div className={styles.patternLayer} />
       <div className={styles.goldGlow} />
       <div className={styles.greenGlow} />
-      <div className={styles.orbOne} />
       <div className={styles.orbTwo} />
 
       <div className={styles.container}>
