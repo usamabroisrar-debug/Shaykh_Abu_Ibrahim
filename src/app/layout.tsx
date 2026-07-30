@@ -89,6 +89,13 @@ export default async function RootLayout({
     sameAs: Object.values(siteConfig.socials),
   };
 
+  const localeFontPreload =
+    locale === "ur"
+      ? { href: "/fonts/JameelNooriNastaleeq.ttf", type: "font/ttf" }
+      : locale === "ar"
+        ? { href: "/fonts/AmiriQuran-Regular.ttf", type: "font/ttf" }
+        : null;
+
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -110,6 +117,17 @@ export default async function RootLayout({
       data-theme={theme}
       suppressHydrationWarning
     >
+      {localeFontPreload ? (
+        <head>
+          <link
+            rel="preload"
+            href={localeFontPreload.href}
+            as="font"
+            type={localeFontPreload.type}
+            crossOrigin="anonymous"
+          />
+        </head>
+      ) : null}
       <body
         className={`${styles.body} ${locale}`}
         data-locale={locale}

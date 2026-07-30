@@ -1,3 +1,4 @@
+import { unstable_cache, updateTag } from "next/cache";
 import { siteConfig } from "@/config/site";
 import {
   resolveLocalizedInlineText,
@@ -143,7 +144,7 @@ const defaultHomepageHeroSettings: HomepageHeroSettings = {
   imageSrc: "/images/hero.webp",
 };
 
-async function readSetting<T>(key: string, fallback: T) {
+async function readSettingUncached<T>(key: string, fallback: T) {
   try {
     const entry = await prisma.setting.findUnique({
       where: { key },
@@ -157,6 +158,16 @@ async function readSetting<T>(key: string, fallback: T) {
   } catch {
     return fallback;
   }
+}
+
+function readSetting<T>(key: string, fallback: T) {
+  const cached = unstable_cache(
+    () => readSettingUncached(key, fallback),
+    ["setting", key],
+    { tags: [`setting:${key}`], revalidate: 300 }
+  );
+
+  return cached();
 }
 
 function hasCorruptedEncoding(value: string) {
@@ -262,7 +273,7 @@ export async function getLocalizedHomepageHeroSettings(locale: SiteLocale) {
 }
 
 export async function updateSiteSettings(input: SiteSettings) {
-  return prisma.setting.upsert({
+  const result = await prisma.setting.upsert({
     where: { key: SITE_SETTINGS_KEY },
     create: {
       key: SITE_SETTINGS_KEY,
@@ -272,10 +283,14 @@ export async function updateSiteSettings(input: SiteSettings) {
       value: input,
     },
   });
+
+  updateTag(`setting:${SITE_SETTINGS_KEY}`);
+
+  return result;
 }
 
 export async function updateHomepageHeroSettings(input: HomepageHeroSettings) {
-  return prisma.setting.upsert({
+  const result = await prisma.setting.upsert({
     where: { key: HOMEPAGE_HERO_SETTINGS_KEY },
     create: {
       key: HOMEPAGE_HERO_SETTINGS_KEY,
@@ -285,4 +300,8 @@ export async function updateHomepageHeroSettings(input: HomepageHeroSettings) {
       value: input,
     },
   });
+
+  updateTag(`setting:${HOMEPAGE_HERO_SETTINGS_KEY}`);
+
+  return result;
 }
