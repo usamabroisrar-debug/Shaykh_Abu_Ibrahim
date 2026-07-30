@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { themeCookieName, type SiteTheme } from "@/lib/theme";
 import styles from "./ThemeToggle.module.css";
@@ -11,13 +11,13 @@ type ThemeToggleProps = {
 };
 
 export function ThemeToggle({ activeTheme, className }: ThemeToggleProps) {
-  const router = useRouter();
+  const [theme, setTheme] = useState(activeTheme);
 
   function toggleTheme() {
-    const nextTheme: SiteTheme = activeTheme === "dark" ? "light" : "dark";
+    const nextTheme: SiteTheme = theme === "dark" ? "light" : "dark";
     document.cookie = `${themeCookieName}=${nextTheme}; path=/; max-age=31536000; samesite=lax`;
     document.documentElement.setAttribute("data-theme", nextTheme);
-    router.refresh();
+    setTheme(nextTheme);
   }
 
   return (
@@ -25,10 +25,10 @@ export function ThemeToggle({ activeTheme, className }: ThemeToggleProps) {
       type="button"
       className={className ? `${styles.toggle} ${className}` : styles.toggle}
       onClick={toggleTheme}
-      aria-label={activeTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      title={activeTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
     >
-      {activeTheme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+      {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
     </button>
   );
 }
