@@ -6,7 +6,6 @@ import { auth } from "@/lib/auth";
 import { getInlineLanguageLabelValues } from "@/lib/content-localization";
 import { prisma } from "@/lib/prisma";
 import { getUploadTitle, saveUploadedFile } from "@/lib/upload-storage";
-import { importStaticContentToDatabase } from "@/services/content/import-static-content.service";
 import {
   updateHomepageHeroSettings,
   updateSiteSettings,
@@ -453,25 +452,6 @@ export async function updateBookAction(formData: FormData) {
   revalidatePath("/books");
   revalidatePath("/admin");
   redirect(buildAdminRedirect("success=book-created", view));
-}
-
-export async function importAcademyContentAction() {
-  const user = await requireAdminAccess();
-  const view = "overview";
-
-  try {
-    await importStaticContentToDatabase(user.id);
-  } catch (error) {
-    console.error("Academy content import failed", error);
-    redirect(buildAdminRedirect("error=seed-failed", view));
-  }
-
-  revalidatePath("/");
-  revalidatePath("/blog");
-  revalidatePath("/courses");
-  revalidatePath("/books");
-  revalidatePath("/admin");
-  redirect(buildAdminRedirect("success=seed-complete", view));
 }
 
 export async function saveSiteSettingsAction(formData: FormData) {

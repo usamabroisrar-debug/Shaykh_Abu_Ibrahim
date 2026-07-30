@@ -8,10 +8,10 @@
 .search {
   height: 44px;
   width: 100%;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  border: 1px solid var(--border-dark);
   border-radius: 16px;
-  background: #ffffff;
-  color: #64748b;
+  background: var(--surface);
+  color: var(--text-light);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -30,7 +30,7 @@
   min-width: 0;
   border: 0;
   background: transparent;
-  color: #0f172a;
+  color: var(--text);
   outline: none;
   font-family: var(--body-font);
   font-size: 0.84rem;
@@ -53,7 +53,7 @@
 }
 
 .search input::placeholder {
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .search kbd,
@@ -65,8 +65,8 @@
 .search kbd {
   padding: 3px 7px;
   border-radius: 8px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--surface-soft);
+  color: var(--text-light);
   font-size: 0.7rem;
   font-weight: 800;
 }
@@ -76,8 +76,8 @@
   height: 28px;
   border: 0;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--surface-soft);
+  color: var(--text-light);
   display: grid;
   place-items: center;
 }
@@ -87,10 +87,10 @@
   top: calc(100% + 10px);
   left: 0;
   width: min(410px, calc(100vw - 32px));
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 
@@ -106,23 +106,23 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  border-bottom: 1px solid var(--border);
 }
 
 .resultItem:hover {
-  background: #f8fafc;
+  background: var(--surface-soft);
 }
 
 .resultItem strong,
 .emptyState strong {
   display: block;
   margin-top: 4px;
-  color: #0f172a;
+  color: var(--text);
   font-size: 0.92rem;
 }
 
 .resultType {
-  color: #047857;
+  color: var(--primary-light);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -131,7 +131,7 @@
 
 .resultMeta,
 .emptyState span {
-  color: #64748b;
+  color: var(--text-light);
   font-size: 0.76rem;
   line-height: 1.45;
   text-align: right;
@@ -147,10 +147,10 @@
 .emptyLink {
   display: block;
   padding: 14px 16px;
-  color: #047857;
+  color: var(--primary-light);
   font-size: 0.82rem;
   font-weight: 800;
-  background: #f8fafc;
+  background: var(--surface-soft);
 }
 
 .emptyLink {

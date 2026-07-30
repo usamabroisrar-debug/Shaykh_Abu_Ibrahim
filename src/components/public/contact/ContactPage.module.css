@@ -35,7 +35,7 @@
   place-items: center;
   border-radius: 16px;
   background: var(--gradient-primary);
-  color: #fef3c7;
+  color: var(--gold-light);
 }
 
 .methodCard h3 {
@@ -62,7 +62,7 @@
   padding: 18px 22px;
   border: 1px solid var(--border);
   border-radius: 22px;
-  background: #ffffff;
+  background: var(--surface);
 }
 
 @media (max-width: 900px) {

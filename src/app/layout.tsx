@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { siteConfig } from "@/config/site";
 import { getLocaleContent, getLocaleFromCookies } from "@/lib/locale";
+import { getThemeFromCookies } from "@/lib/theme";
 import { AppProviders } from "@/providers/AppProviders";
 import styles from "./layout.module.css";
 import "./globals.css";
@@ -72,8 +73,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = getLocaleFromCookies(await cookies());
+  const cookieStore = await cookies();
+  const locale = getLocaleFromCookies(cookieStore);
   const localeContent = getLocaleContent(locale);
+  const theme = getThemeFromCookies(cookieStore);
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
@@ -101,7 +104,12 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang={localeContent.lang} dir={localeContent.dir} suppressHydrationWarning>
+    <html
+      lang={localeContent.lang}
+      dir={localeContent.dir}
+      data-theme={theme}
+      suppressHydrationWarning
+    >
       <body
         className={`${styles.body} ${locale}`}
         data-locale={locale}

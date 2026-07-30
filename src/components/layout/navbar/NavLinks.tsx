@@ -19,7 +19,6 @@ export function NavLinks({ locale }: NavLinksProps) {
     "/teachers": content.nav.teachers,
     "/books": content.nav.books,
     "/blog": content.nav.blog,
-    "/quiz": content.nav.quiz,
     "/contact": content.nav.contact,
   } as const;
 

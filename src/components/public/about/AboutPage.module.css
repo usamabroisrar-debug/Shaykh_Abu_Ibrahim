@@ -9,7 +9,7 @@
   padding: 34px;
   background:
     radial-gradient(circle at top right, rgba(212, 175, 55, 0.16), transparent 28%),
-    linear-gradient(135deg, rgba(6, 95, 70, 0.08), rgba(255, 255, 255, 0.95));
+    linear-gradient(135deg, rgba(6, 95, 70, 0.08), var(--surface));
 }
 
 .statement p {
@@ -36,7 +36,7 @@
   place-items: center;
   border-radius: 18px;
   background: var(--gradient-primary);
-  color: #fef3c7;
+  color: var(--gold-light);
 }
 
 .valueCard h3 {

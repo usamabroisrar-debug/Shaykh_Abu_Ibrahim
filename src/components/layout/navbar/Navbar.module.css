@@ -4,10 +4,10 @@
   z-index: var(--z-navbar);
   width: 100%;
   font-family: var(--body-font);
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--border-dark);
+  background: var(--surface);
   backdrop-filter: blur(18px);
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-xs);
 }
 
 .container {
@@ -34,7 +34,7 @@
 }
 
 .logoWrap:hover {
-  background: rgba(236, 253, 245, 0.75);
+  background: var(--surface-soft);
   transform: translateY(-1px);
 }
 
@@ -43,7 +43,7 @@
   width: 58px;
   height: 58px;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(6, 95, 70, 0.12), rgba(212, 175, 55, 0.12));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 12%, transparent), color-mix(in srgb, var(--gold) 12%, transparent));
   padding: 6px;
 }
 
@@ -52,14 +52,14 @@
   font-family: var(--heading-font);
   font-size: 1.18rem;
   font-weight: 700;
-  color: #064e3b;
+  color: var(--primary-dark);
   line-height: 1.1;
 }
 
 .logoText {
   margin: 4px 0 0;
   font-family: var(--body-font);
-  color: #64748b;
+  color: var(--text-light);
   font-size: 0.78rem;
   font-weight: 500;
 }
@@ -104,10 +104,10 @@
 .menuButton {
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  border: 1px solid var(--border-dark);
   border-radius: 14px;
-  background: #ffffff;
-  color: #064e3b;
+  background: var(--surface);
+  color: var(--primary-dark);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -115,7 +115,7 @@
 }
 
 .menuButton:hover {
-  background: #ecfdf5;
+  background: var(--surface-soft);
   border-color: rgba(6, 95, 70, 0.22);
   transform: translateY(-2px);
 }
@@ -124,9 +124,9 @@
   height: 42px;
   padding: 0 15px;
   border-radius: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #ffffff;
-  color: #064e3b;
+  border: 1px solid var(--border-dark);
+  background: var(--surface);
+  color: var(--primary-dark);
   font-family: var(--body-font);
   display: inline-flex;
   align-items: center;
@@ -138,7 +138,7 @@
 }
 
 .loginButton:hover {
-  background: #ecfdf5;
+  background: var(--surface-soft);
   transform: translateY(-2px);
 }
 
@@ -146,8 +146,8 @@
   height: 44px;
   padding: 0 20px;
   border-radius: 15px;
-  background: linear-gradient(135deg, #facc15, #d4af37);
-  color: #111827;
+  background: var(--gradient-gold);
+  color: var(--secondary);
   font-family: var(--body-font);
   display: inline-flex;
   align-items: center;
@@ -155,13 +155,13 @@
   font-size: 0.9rem;
   font-weight: 650;
   text-decoration: none;
-  box-shadow: 0 14px 28px rgba(212, 175, 55, 0.28);
+  box-shadow: var(--shadow-gold);
   transition: 0.25s ease;
 }
 
 .admissionButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(212, 175, 55, 0.4);
+  box-shadow: var(--shadow-gold);
 }
 
 .menuButton {

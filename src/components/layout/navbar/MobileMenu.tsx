@@ -17,10 +17,8 @@ export function MobileMenu({ locale, isOpen, onClose }: MobileMenuProps) {
   const links = [
     { label: content.nav.home, href: "/" },
     { label: content.nav.about, href: "/about" },
-    { label: content.nav.teachers, href: "/teachers" },
     { label: content.nav.books, href: "/books" },
     { label: content.nav.blog, href: "/blog" },
-    { label: content.nav.quiz, href: "/quiz" },
     { label: content.nav.contact, href: "/contact" },
     { label: content.nav.courses, href: "/courses" },
     { label: content.nav.admission, href: "/admission" },

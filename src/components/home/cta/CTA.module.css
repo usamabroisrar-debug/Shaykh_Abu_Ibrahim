@@ -2,7 +2,7 @@
   background:
     radial-gradient(circle at left top, rgba(212, 175, 55, 0.12), transparent 20%),
     radial-gradient(circle at right bottom, rgba(6, 95, 70, 0.12), transparent 20%),
-    linear-gradient(180deg, #f8fafc 0%, #eef6f3 100%);
+    linear-gradient(180deg, var(--background) 0%, var(--surface-soft) 100%);
 }
 
 .card {
@@ -19,7 +19,7 @@
 }
 
 .copy h2 {
-  color: #ffffff;
+  color: var(--white);
   font-size: clamp(2.1rem, 4vw, 3.4rem);
 }
 
@@ -37,7 +37,7 @@
   padding: 0 14px;
   border-radius: 999px;
   background: rgba(212, 175, 55, 0.16);
-  color: #fde68a;
+  color: var(--gold-light);
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.08em;

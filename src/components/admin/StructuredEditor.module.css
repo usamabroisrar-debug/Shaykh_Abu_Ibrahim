@@ -5,7 +5,7 @@
 
 .label {
   font-weight: 700;
-  color: #1b2a41;
+  color: var(--text);
 }
 
 .toolbar {
@@ -20,7 +20,7 @@
   border: 1px solid rgba(11, 106, 84, 0.16);
   border-radius: 999px;
   background: rgba(6, 95, 70, 0.06);
-  color: #0b6a54;
+  color: var(--primary);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -32,8 +32,8 @@
   padding: 14px 16px;
   border-radius: 16px;
   border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #ffffff;
-  color: #1b2a41;
+  background: var(--surface);
+  color: var(--text);
   resize: vertical;
 }
 
@@ -44,7 +44,7 @@
 }
 
 .hint {
-  color: #6b7c93;
+  color: var(--text-light);
   font-size: 0.82rem;
   line-height: 1.4;
 }

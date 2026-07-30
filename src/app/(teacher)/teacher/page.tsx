@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   Award,
@@ -15,7 +16,9 @@ import {
   Users,
 } from "lucide-react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { auth, getDashboardPath } from "@/lib/auth";
+import { getThemeFromCookies, type SiteTheme } from "@/lib/theme";
 import { getTeacherDashboardData } from "@/lib/dashboard";
 import {
   createTeacherAssignmentAction,
@@ -110,7 +113,15 @@ function formatDate(value: Date | string | null | undefined) {
   });
 }
 
-function Sidebar({ userName, userEmail }: { userName: string; userEmail: string }) {
+function Sidebar({
+  userName,
+  userEmail,
+  theme,
+}: {
+  userName: string;
+  userEmail: string;
+  theme: SiteTheme;
+}) {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
@@ -139,6 +150,7 @@ function Sidebar({ userName, userEmail }: { userName: string; userEmail: string 
           <strong>{userName}</strong>
           <span>{userEmail}</span>
         </div>
+        <ThemeToggle activeTheme={theme} />
         <SignOutButton />
       </div>
     </aside>
@@ -174,7 +186,8 @@ function EmptyState({ title, description }: { title: string; description: string
 }
 
 export default async function TeacherDashboardPage() {
-  const session = await auth();
+  const [session, cookieStore] = await Promise.all([auth(), cookies()]);
+  const theme = getThemeFromCookies(cookieStore);
 
   if (!session?.user?.id) {
     redirect("/login?next=/teacher");
@@ -204,7 +217,7 @@ export default async function TeacherDashboardPage() {
 
   return (
     <main className={styles.appShell}>
-      <Sidebar userName={userName} userEmail={userEmail} />
+      <Sidebar userName={userName} userEmail={userEmail} theme={theme} />
 
       <div className={styles.workspace}>
         <MobileMenu />

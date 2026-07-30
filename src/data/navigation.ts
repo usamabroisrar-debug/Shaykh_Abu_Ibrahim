@@ -1,10 +1,8 @@
 export const primaryNavigation = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Teachers", href: "/teachers" },
   { label: "Books", href: "/books" },
   { label: "Blog", href: "/blog" },
-  { label: "Quiz", href: "/quiz" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -44,13 +42,11 @@ export const courseNavigation = [
 export const footerNavigation = {
   explore: [
     { label: "Courses", href: "/courses" },
-    { label: "Teachers", href: "/teachers" },
     { label: "Books", href: "/books" },
     { label: "Admission", href: "/admission" },
   ],
   resources: [
     { label: "Blog", href: "/blog" },
-    { label: "Quiz", href: "/quiz" },
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Terms", href: "/terms" },
   ],

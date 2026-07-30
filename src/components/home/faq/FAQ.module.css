@@ -1,5 +1,5 @@
 .section {
-  background: #ffffff;
+  background: var(--surface);
 }
 
 .layout {
@@ -42,12 +42,12 @@
   padding: 20px 22px;
   border: 1px solid var(--border);
   border-radius: 24px;
-  background: #f8fafc;
+  background: var(--surface-soft);
   transition: var(--transition);
 }
 
 .item[open] {
-  background: #ffffff;
+  background: var(--surface);
   border-color: rgba(6, 95, 70, 0.18);
   box-shadow: var(--shadow-sm);
 }

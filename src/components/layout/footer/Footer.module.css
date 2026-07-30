@@ -4,6 +4,7 @@
     radial-gradient(circle at top left, rgba(212, 175, 55, 0.12), transparent 18%),
     linear-gradient(135deg, #020617 0%, #0f172a 40%, #064e3b 100%);
   color: #ffffff;
+  /* Footer is intentionally always a dark surface in both themes */
 }
 
 .container {
@@ -79,7 +80,7 @@
 }
 
 .links a:hover {
-  color: #fde68a;
+  color: var(--gold-light);
 }
 
 .socialText {
@@ -103,7 +104,7 @@
 }
 
 .socialLink:hover {
-  color: #fde68a;
+  color: var(--gold-light);
   transform: translateX(3px);
 }
 

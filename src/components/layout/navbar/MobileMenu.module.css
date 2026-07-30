@@ -14,6 +14,7 @@
   inset: 0;
   border: 0;
   background: rgba(2, 6, 23, 0.55);
+  /* backdrop overlay - intentionally same in both themes */
   opacity: 0;
   transition: 0.25s ease;
 }
@@ -28,11 +29,11 @@
   inset-inline-end: 0;
   width: min(390px, 90vw);
   height: 100%;
-  background: #ffffff;
+  background: var(--surface);
   padding: 22px;
   transform: translateX(105%);
   transition: 0.3s ease;
-  box-shadow: -20px 0 60px rgba(15, 23, 42, 0.22);
+  box-shadow: var(--shadow-lg);
 }
 
 .open .drawer {
@@ -61,24 +62,24 @@
 
 .brand strong {
   display: block;
-  color: #064e3b;
+  color: var(--primary-dark);
   font-size: 1rem;
 }
 
 .brand span {
   display: block;
   margin-top: 3px;
-  color: #64748b;
+  color: var(--text-light);
   font-size: 0.75rem;
 }
 
 .close {
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  border: 1px solid var(--border-dark);
   border-radius: 14px;
-  background: #f8fafc;
-  color: #064e3b;
+  background: var(--surface-soft);
+  color: var(--primary-dark);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -93,15 +94,15 @@
 .links a {
   padding: 15px 16px;
   border-radius: 16px;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--surface-soft);
+  color: var(--text);
   font-weight: 800;
   text-decoration: none;
 }
 
 .links a:hover {
-  background: #ecfdf5;
-  color: #047857;
+  background: var(--surface-soft);
+  color: var(--primary-light);
 }
 
 :global(body[data-locale="ur"]) .brand strong,

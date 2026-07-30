@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { createAdmission } from "@/services/admission/admission.service";
+import { createStripeCheckoutForCourse } from "@/services/payment/payment-gateway.service";
 
 const admissionSchema = z.object({
   name: z.string().min(2),
@@ -35,14 +36,29 @@ export default async function handler(
       });
     }
 
-    const admission = await createAdmission({
+    const { admission, course } = await createAdmission({
       ...parsed.data,
       userId: session?.user?.id,
     });
 
+    let checkoutUrl: string | undefined;
+
+    if (session?.user?.id && course?.id && course.price) {
+      try {
+        const checkout = await createStripeCheckoutForCourse({
+          userId: session.user.id,
+          courseId: course.id,
+        });
+        checkoutUrl = checkout.checkoutUrl;
+      } catch {
+        // Payment is optional at this step; admission still succeeds without it.
+      }
+    }
+
     return response.status(200).json({
       message: "Admission request submitted successfully.",
       admissionId: admission.id,
+      checkoutUrl,
     });
   } catch (error) {
     return response.status(500).json({

@@ -11,12 +11,12 @@
   padding: 14px;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(247, 241, 213, 0.7), rgba(255, 255, 255, 0.96) 40%),
+    linear-gradient(180deg, rgba(247, 241, 213, 0.7), var(--surface) 40%),
     radial-gradient(circle at 14% 0%, rgba(212, 175, 55, 0.14), transparent 32%);
 }
 
 .category {
-  color: #8a6b10;
+  color: var(--gold-dark);
   font-size: 0.64rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -74,7 +74,7 @@
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid rgba(0, 95, 72, 0.18);
-  background: #ffffff;
+  background: var(--surface);
   color: var(--primary);
   font-size: 0.78rem;
   font-weight: 800;
@@ -84,7 +84,7 @@
 .link:hover {
   background: var(--primary);
   border-color: var(--primary);
-  color: #ffffff;
+  color: var(--white);
 }
 
 @media (max-width: 1180px) {

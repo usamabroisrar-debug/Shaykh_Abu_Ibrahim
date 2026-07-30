@@ -13,7 +13,7 @@
   position: relative;
   border: 0;
   background: transparent;
-  color: #334155;
+  color: var(--text);
   font-family: var(--body-font);
   font-size: 0.88rem;
   font-weight: 600;
@@ -46,13 +46,13 @@
   width: 0;
   height: 3px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #047857, #d4af37);
+  background: linear-gradient(90deg, var(--primary-light), var(--gold));
   transition: width 0.25s ease;
 }
 
 .link:hover,
 .dropdownButton:hover {
-  color: #047857;
+  color: var(--primary-light);
 }
 
 .link:hover::after,

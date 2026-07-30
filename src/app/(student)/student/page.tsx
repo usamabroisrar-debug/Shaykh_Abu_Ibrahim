@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   Award,
@@ -18,7 +19,9 @@ import {
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { LiveClassJoinButton } from "@/components/lms/LiveClassJoinButton";
 import { PaymentCheckoutButton } from "@/components/lms/PaymentCheckoutButton";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { auth, getDashboardPath } from "@/lib/auth";
+import { getThemeFromCookies, type SiteTheme } from "@/lib/theme";
 import { getStudentDashboardData } from "@/lib/dashboard";
 import {
   markLessonCompleteAction,
@@ -213,9 +216,11 @@ function getQuizPercentage(item: QuizAttemptItem) {
 function Sidebar({
   userName,
   userEmail,
+  theme,
 }: {
   userName: string;
   userEmail: string;
+  theme: SiteTheme;
 }) {
   return (
     <aside className={styles.sidebar}>
@@ -252,6 +257,7 @@ function Sidebar({
           <strong>{userName}</strong>
           <span>{userEmail}</span>
         </div>
+        <ThemeToggle activeTheme={theme} />
         <SignOutButton />
       </div>
     </aside>
@@ -297,7 +303,8 @@ function EmptyState({
 }
 
 export default async function StudentDashboardPage() {
-  const session = await auth();
+  const [session, cookieStore] = await Promise.all([auth(), cookies()]);
+  const theme = getThemeFromCookies(cookieStore);
 
   if (!session?.user?.id) {
     redirect("/login?next=/student");
@@ -327,7 +334,7 @@ export default async function StudentDashboardPage() {
 
   return (
     <main className={styles.appShell}>
-      <Sidebar userName={userName} userEmail={userEmail} />
+      <Sidebar userName={userName} userEmail={userEmail} theme={theme} />
 
       <div className={styles.workspace}>
         <MobileMenu />
@@ -713,7 +720,6 @@ export default async function StudentDashboardPage() {
               <EmptyState
                 title="No quiz attempts"
                 description="Your quiz attempts and results will appear here after you take a quiz."
-                action={{ href: "/quiz", label: "Open quiz page" }}
               />
             )}
           </section>

@@ -4,6 +4,7 @@ import { FloatingWhatsApp } from "@/components/layout/floatingWhatsApp/FloatingW
 import { LocaleBar } from "@/components/layout/localeBar/LocaleBar";
 import { Navbar } from "@/components/layout/navbar/Navbar";
 import { getLocaleFromCookies } from "@/lib/locale";
+import { getThemeFromCookies } from "@/lib/theme";
 import { getLocalizedSiteSettings } from "@/services/settings/site-settings.service";
 
 export default async function PublicLayout({
@@ -11,7 +12,9 @@ export default async function PublicLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = getLocaleFromCookies(await cookies());
+  const cookieStore = await cookies();
+  const locale = getLocaleFromCookies(cookieStore);
+  const theme = getThemeFromCookies(cookieStore);
   const settings = await getLocalizedSiteSettings(locale);
 
   return (
@@ -19,6 +22,7 @@ export default async function PublicLayout({
       <LocaleBar locale={locale} />
       <Navbar
         locale={locale}
+        theme={theme}
         brandName={settings.brandName}
         subtitle={settings.subtitle}
         logoSrc={settings.logoSrc}

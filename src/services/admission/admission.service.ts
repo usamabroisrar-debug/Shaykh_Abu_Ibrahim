@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/server";
+import { getCourseBySlugFromDb } from "@/services/course/course.service";
 
 export async function createAdmission(input: {
   name: string;
@@ -13,8 +14,13 @@ export async function createAdmission(input: {
   message?: string;
   userId?: string;
 }) {
+  const matchedCourse = await getCourseBySlugFromDb(input.course);
+
   const admission = await prisma.admission.create({
-    data: input,
+    data: {
+      ...input,
+      courseId: matchedCourse?.id,
+    },
   });
 
   if (input.userId) {
@@ -29,7 +35,7 @@ export async function createAdmission(input: {
     });
   }
 
-  return admission;
+  return { admission, course: matchedCourse };
 }
 
 export async function getRecentAdmissions(limit = 8) {

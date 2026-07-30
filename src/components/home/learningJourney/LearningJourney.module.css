@@ -9,7 +9,7 @@
 
 .section :global([class*="SectionTitle"][class*="title"]),
 .section :global([class*="SectionTitle"][class*="description"]) {
-  color: #ffffff;
+  color: var(--white);
 }
 
 .section :global([class*="SectionTitle"][class*="description"]) {
@@ -17,7 +17,7 @@
 }
 
 .section :global([class*="SectionTitle"][class*="eyebrow"]) {
-  color: #fde68a;
+  color: var(--gold-light);
 }
 
 .grid {
@@ -60,7 +60,7 @@
   place-items: center;
   border-radius: 18px;
   background: rgba(6, 95, 70, 0.88);
-  color: #facc15;
+  color: var(--gold-light);
 }
 
 .card h3 {

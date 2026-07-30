@@ -3,7 +3,7 @@
   background:
     radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 20%),
     radial-gradient(circle at bottom right, rgba(6, 95, 70, 0.08), transparent 24%),
-    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    linear-gradient(180deg, var(--surface) 0%, var(--background) 100%);
   scroll-margin-top: calc(var(--header-height) + 56px);
 }
 
@@ -51,24 +51,24 @@
   display: grid;
   gap: 20px;
   padding: 30px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border);
   border-radius: 34px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    linear-gradient(180deg, var(--surface), var(--surface-soft));
+  box-shadow: var(--shadow-md);
   transition: var(--transition);
 }
 
 .card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 28px 65px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--shadow-lg);
 }
 
 .popular {
   border-color: rgba(212, 175, 55, 0.45);
   background:
     radial-gradient(circle at top right, rgba(212, 175, 55, 0.18), transparent 30%),
-    linear-gradient(180deg, #fffdf6 0%, #ffffff 100%);
+    linear-gradient(180deg, var(--surface-soft) 0%, var(--surface) 100%);
   box-shadow: 0 28px 78px rgba(212, 175, 55, 0.24);
   transform: translateY(-12px);
 }
@@ -82,8 +82,8 @@
   align-items: center;
   padding: 0 12px;
   border-radius: 999px;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--secondary);
+  color: var(--white);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -96,7 +96,7 @@
   justify-content: space-between;
   gap: 12px;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid var(--border);
 }
 
 .topRow {
@@ -160,7 +160,7 @@
   padding: 0 12px;
   border-radius: 999px;
   background: rgba(212, 175, 55, 0.18);
-  color: #8a6b10;
+  color: var(--gold-dark);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;

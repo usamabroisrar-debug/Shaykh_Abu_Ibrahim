@@ -10,6 +10,8 @@ import {
 import { auth, getDashboardPath } from "@/lib/auth";
 import { getAdminDashboardData } from "@/lib/dashboard";
 import { getLocaleFromCookies, type SiteLocale } from "@/lib/locale";
+import { getThemeFromCookies } from "@/lib/theme";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { getAdminBlogs } from "@/services/blog/blog.service";
 import { getAdminBooks } from "@/services/book/book.service";
 import { getAdminCourses } from "@/services/course/course.service";
@@ -33,7 +35,6 @@ import {
   issueCertificateAction,
   saveHomepageHeroSettingsAction,
   saveSiteSettingsAction,
-  importAcademyContentAction,
   updateAdmissionStatusAction,
   updateBookAction,
   updateBlogAction,
@@ -502,6 +503,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
   }
 
   const locale = getLocaleFromCookies(cookieStore);
+  const theme = getThemeFromCookies(cookieStore);
   const copy = getAdminCopy();
   const view = normalizeWorkspaceView(
     typeof searchParams.view === "string" ? searchParams.view : undefined
@@ -683,12 +685,6 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
           </select>
           <button type="submit" className={styles.secondaryAction}>
             {copy.filters.apply}
-          </button>
-        </form>
-
-        <form action={importAcademyContentAction}>
-          <button type="submit" className={styles.secondaryAction}>
-            {copy.filters.importContent}
           </button>
         </form>
       </div>
@@ -2576,6 +2572,7 @@ export default async function AdminDashboardPage(props: PageProps<"/admin">) {
           </div>
 
           <div className={styles.sidebarFoot}>
+            <ThemeToggle activeTheme={theme} />
             <SignOutButton />
           </div>
         </aside>

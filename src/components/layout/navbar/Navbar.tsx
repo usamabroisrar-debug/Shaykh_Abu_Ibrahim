@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Menu, UserRound } from "lucide-react";
 import { useState } from "react";
 import { getLocaleContent, type SiteLocale } from "@/lib/locale";
+import type { SiteTheme } from "@/lib/theme";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import styles from "./Navbar.module.css";
 import { NavLinks } from "./NavLinks";
 import { SearchBox } from "./SearchBox";
@@ -12,6 +14,7 @@ import { MobileMenu } from "./MobileMenu";
 
 type NavbarProps = {
   locale: SiteLocale;
+  theme: SiteTheme;
   brandName?: string;
   subtitle?: string;
   logoSrc?: string;
@@ -19,6 +22,7 @@ type NavbarProps = {
 
 export function Navbar({
   locale,
+  theme,
   brandName = "Shaykh Abu Ibrahim",
   subtitle,
   logoSrc = "/images/logo-transparent.webp",
@@ -50,6 +54,8 @@ export function Navbar({
 
           <div className={styles.actions}>
             <SearchBox locale={locale} />
+
+            <ThemeToggle activeTheme={theme} className={styles.themeToggle} />
 
             <Link href="/login" className={styles.loginButton}>
               <UserRound size={17} />

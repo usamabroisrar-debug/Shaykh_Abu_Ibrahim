@@ -15,7 +15,7 @@
 
 .gold {
   background: rgba(212, 175, 55, 0.18);
-  color: #8a6b10;
+  color: var(--gold-dark);
 }
 
 .dark {

@@ -124,6 +124,11 @@ export function AdmissionForm({ locale, courses }: AdmissionFormProps) {
         return;
       }
 
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+        return;
+      }
+
       setMessage(copy.submitSuccess);
       setForm({
         name: "",
