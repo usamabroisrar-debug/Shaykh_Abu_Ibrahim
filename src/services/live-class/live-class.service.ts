@@ -61,9 +61,19 @@ export async function getAdminLiveClassSessions(limit = 12) {
 export async function getStudentLiveClassSessions(userId: string, limit = 8) {
   return prisma.liveClassSession.findMany({
     where: {
-      status: {
-        in: ["SCHEDULED", "LIVE"],
-      },
+      OR: [
+        {
+          status: {
+            in: ["SCHEDULED", "LIVE"],
+          },
+        },
+        {
+          status: "COMPLETED",
+          recordingUrl: {
+            not: null,
+          },
+        },
+      ],
       course: {
         enrollments: {
           some: {
@@ -166,11 +176,16 @@ export async function authorizeLiveClassJoin(input: {
     },
   });
 
-  if (!session || session.status === "CANCELLED" || session.status === "COMPLETED") {
+  const isAdmin = ["SUPER_ADMIN", "ADMIN", "EDITOR"].includes(input.role);
+
+  if (
+    !session ||
+    session.status === "CANCELLED" ||
+    (session.status === "COMPLETED" && !isAdmin)
+  ) {
     return null;
   }
 
-  const isAdmin = ["SUPER_ADMIN", "ADMIN", "EDITOR"].includes(input.role);
   const isAssignedTeacher = input.role === "TEACHER" && session.teacherId === input.userId;
   const isEnrolledStudent =
     ["STUDENT", "PARENT"].includes(input.role) && session.course.enrollments.length > 0;

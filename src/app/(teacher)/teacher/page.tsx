@@ -26,6 +26,7 @@ import {
   createTeacherLiveClassAction,
   reviewSubmissionAction,
   saveAttendanceAction,
+  updateTeacherLiveClassAction,
 } from "./actions";
 import styles from "./TeacherDashboard.module.css";
 
@@ -359,6 +360,21 @@ export default async function TeacherDashboardPage() {
                     <span>{item.course?.title || "Course"}</span>
                     <span>{formatDate(item.startsAt)}</span>
                     <span className={styles.status}>{item.status || "SCHEDULED"}</span>
+                    <form action={updateTeacherLiveClassAction} className={styles.stackForm}>
+                      <input type="hidden" name="sessionId" value={item.id} />
+                      <select name="status" defaultValue={item.status || "SCHEDULED"}>
+                        <option value="SCHEDULED">Scheduled</option>
+                        <option value="LIVE">Start / Live</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                      </select>
+                      <input
+                        name="recordingUrl"
+                        type="url"
+                        placeholder="Recording URL optional"
+                      />
+                      <button type="submit">Update live class</button>
+                    </form>
                   </article>
                 ))}
               </div>

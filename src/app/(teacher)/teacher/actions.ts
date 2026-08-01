@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createLiveClassSession } from "@/services/live-class/live-class.service";
+import {
+  createLiveClassSession,
+  updateLiveClassSession,
+} from "@/services/live-class/live-class.service";
 import { normalizeSlug } from "@/utils/slug";
 
 function cleanValue(value: FormDataEntryValue | null) {
@@ -258,4 +261,49 @@ export async function createTeacherLiveClassAction(formData: FormData) {
   revalidatePath("/teacher");
   revalidatePath("/student");
   redirect("/teacher?success=live-class-created");
+}
+
+export async function updateTeacherLiveClassAction(formData: FormData) {
+  const user = await requireTeacherAccess();
+  const sessionId = cleanValue(formData.get("sessionId"));
+  const status = cleanValue(formData.get("status")) as
+    | "SCHEDULED"
+    | "LIVE"
+    | "COMPLETED"
+    | "CANCELLED"
+    | "";
+  const recordingUrl = cleanValue(formData.get("recordingUrl"));
+
+  if (!sessionId || (!status && !recordingUrl)) {
+    redirect("/teacher?error=live-class-update-failed");
+  }
+
+  try {
+    const liveClass = await prisma.liveClassSession.findFirst({
+      where: {
+        id: sessionId,
+        teacherId: user.id,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!liveClass) {
+      throw new Error("Live class not assigned to teacher.");
+    }
+
+    await updateLiveClassSession({
+      sessionId,
+      status: status || undefined,
+      recordingUrl: recordingUrl || undefined,
+      endedAt: status === "COMPLETED" ? new Date() : undefined,
+    });
+  } catch {
+    redirect("/teacher?error=live-class-update-failed");
+  }
+
+  revalidatePath("/teacher");
+  revalidatePath("/student");
+  redirect("/teacher?success=live-class-updated");
 }

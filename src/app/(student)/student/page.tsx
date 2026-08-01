@@ -126,6 +126,7 @@ type StudentDashboardData = {
     startsAt?: Date | string | null;
     durationMinutes?: number | null;
     status?: string | null;
+    recordingUrl?: string | null;
     course?: { title?: string | null } | null;
     lesson?: { title?: string | null } | null;
     teacher?: { name?: string | null; email?: string | null } | null;
@@ -570,7 +571,13 @@ export default async function StudentDashboardPage() {
                   </span>
                   <div className={styles.itemActions}>
                     <span className={styles.status}>{item.status || "Scheduled"}</span>
-                    <LiveClassJoinButton sessionId={item.id} />
+                    {item.status === "COMPLETED" && item.recordingUrl ? (
+                      <Link href={item.recordingUrl} target="_blank" rel="noreferrer">
+                        Watch recording
+                      </Link>
+                    ) : (
+                      <LiveClassJoinButton sessionId={item.id} />
+                    )}
                   </div>
                 </article>
               ))}

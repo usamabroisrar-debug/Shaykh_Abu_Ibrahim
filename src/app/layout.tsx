@@ -6,6 +6,7 @@ import { getThemeFromCookies } from "@/lib/theme";
 import { AppProviders } from "@/providers/AppProviders";
 import styles from "./layout.module.css";
 import "./globals.css";
+import "@livekit/components-styles";
 
 export const metadata: Metadata = {
   title: {

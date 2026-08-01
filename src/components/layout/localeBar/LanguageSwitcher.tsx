@@ -1,5 +1,6 @@
 "use client";
 
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { localeCookieName, supportedLocales, type SiteLocale } from "@/lib/locale";
@@ -21,33 +22,56 @@ export function LanguageSwitcher({
   labels,
 }: LanguageSwitcherProps) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   function updateLocale(locale: SiteLocale) {
+    if (locale === activeLocale || isPending) {
+      return;
+    }
+
     document.cookie = `${localeCookieName}=${locale}; path=/; max-age=31536000; samesite=lax`;
-    router.refresh();
+
+    startTransition(() => {
+      router.refresh();
+    });
   }
 
   return (
-    <div className={styles.languageDropdown}>
-      <label className={styles.languageLabel} htmlFor="site-language">
-        {languageLabel[activeLocale]}
-      </label>
-      <div className={styles.selectWrap}>
-        <select
-          id="site-language"
-          className={styles.languageSelect}
-          aria-label="Language switcher"
-          value={activeLocale}
-          onChange={(event) => updateLocale(event.target.value as SiteLocale)}
-        >
-          {supportedLocales.map((locale) => (
-            <option key={locale} value={locale}>
-              {labels[locale]}
-            </option>
-          ))}
-        </select>
-        <ChevronDown size={16} className={styles.selectIcon} />
+    <>
+      {isPending ? (
+        <div className={styles.pageLoader} role="status" aria-label="Loading">
+          <span className={styles.pageLoaderBar} />
+        </div>
+      ) : null}
+      <div
+        className={styles.languageDropdown}
+        data-pending={isPending ? "true" : undefined}
+      >
+        <label className={styles.languageLabel} htmlFor="site-language">
+          {languageLabel[activeLocale]}
+        </label>
+        <div className={styles.selectWrap}>
+          <select
+            id="site-language"
+            className={styles.languageSelect}
+            aria-label="Language switcher"
+            value={activeLocale}
+            disabled={isPending}
+            onChange={(event) => updateLocale(event.target.value as SiteLocale)}
+          >
+            {supportedLocales.map((locale) => (
+              <option key={locale} value={locale}>
+                {labels[locale]}
+              </option>
+            ))}
+          </select>
+          {isPending ? (
+            <span className={styles.selectSpinner} aria-hidden="true" />
+          ) : (
+            <ChevronDown size={16} className={styles.selectIcon} />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
