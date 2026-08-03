@@ -17,12 +17,9 @@ export function LocaleBar({ locale }: LocaleBarProps) {
   return (
     <div className={styles.bar}>
       <div className={styles.container}>
-        <div className={styles.dateBlock}>
-          <strong>{content.datesTitle}</strong>
-          <span>
-            {dates.hijri} | {dates.gregorian}
-          </span>
-        </div>
+        <span className={styles.dateText}>
+          {dates.hijri} | {dates.gregorian}
+        </span>
 
         <span className={styles.bismillah}>{content.bismillah}</span>
 

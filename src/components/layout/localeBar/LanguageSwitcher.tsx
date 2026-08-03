@@ -43,13 +43,7 @@ export function LanguageSwitcher({
           <span className={styles.pageLoaderBar} />
         </div>
       ) : null}
-      <div
-        className={styles.languageDropdown}
-        data-pending={isPending ? "true" : undefined}
-      >
-        <label className={styles.languageLabel} htmlFor="site-language">
-          {languageLabel[activeLocale]}
-        </label>
+      <div className={styles.languageDropdown} data-pending={isPending ? "true" : undefined}>
         <div className={styles.selectWrap}>
           <select
             id="site-language"
@@ -65,11 +59,7 @@ export function LanguageSwitcher({
               </option>
             ))}
           </select>
-          {isPending ? (
-            <span className={styles.selectSpinner} aria-hidden="true" />
-          ) : (
-            <ChevronDown size={16} className={styles.selectIcon} />
-          )}
+          <ChevronDown size={16} className={styles.selectIcon} />
         </div>
       </div>
     </>

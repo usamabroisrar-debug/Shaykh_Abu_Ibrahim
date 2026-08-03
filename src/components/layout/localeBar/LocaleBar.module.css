@@ -9,12 +9,12 @@
 .container {
   width: min(var(--max-width), calc(100% - var(--container-padding)));
   margin: 0 auto;
-  min-height: 54px;
+  min-height: 44px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 18px;
-  padding: 8px 0;
+  gap: 14px;
+  padding: 6px 0;
 }
 
 .bismillah {
@@ -37,22 +37,10 @@
   line-height: 1.45;
 }
 
-.dateBlock {
-  display: grid;
-  gap: 2px;
-  justify-self: start;
-}
-
-.dateBlock strong {
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(250, 204, 21, 0.92);
-}
-
-.dateBlock span {
+.dateText {
   color: rgba(255, 255, 255, 0.82);
   font-size: 0.84rem;
+  justify-self: start;
 }
 
 :global(body[data-locale="ur"]) .dateBlock span {
@@ -97,36 +85,43 @@
 }
 
 .languageDropdown {
-  display: grid;
-  gap: 6px;
   justify-self: end;
-}
-
-.languageLabel {
-  font-size: 0.72rem;
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(250, 204, 21, 0.92);
 }
 
 .selectWrap {
   position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
 .languageSelect {
-  min-width: 148px;
-  min-height: 38px;
-  padding: 0 38px 0 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
+  width: auto;
+  min-width: 0;
+  min-height: 24px;
+  padding: 0 24px 0 0;
+  border: none;
+  background: transparent;
   color: #f8fafc;
   font-family: var(--body-font);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 500;
   transition: var(--transition-fast);
   appearance: none;
+}
+
+.languageSelect:focus {
+  outline: none;
+}
+
+.languageSelect option {
+  color: #0f172a;
+}
+
+.selectIcon {
+  position: absolute;
+  right: 4px;
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.76);
 }
 
 :global(body[data-locale="ur"]) .languageSelect {
@@ -153,38 +148,9 @@
   color: #0f172a;
 }
 
-.selectIcon {
-  position: absolute;
-  inset-inline-end: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: rgba(255, 255, 255, 0.76);
-}
-
 .languageSelect:disabled {
   opacity: 0.7;
   cursor: wait;
-}
-
-.selectSpinner {
-  position: absolute;
-  inset-inline-end: 14px;
-  top: 50%;
-  width: 14px;
-  height: 14px;
-  margin-top: -7px;
-  border-radius: 999px;
-  border: 2px solid rgba(250, 204, 21, 0.28);
-  border-top-color: var(--gold-light);
-  animation: selectSpin 0.7s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes selectSpin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @media (max-width: 900px) {
