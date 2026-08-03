@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/shared";
 import type { SiteLocale } from "@/lib/locale";
 import styles from "./AuthForms.module.css";
@@ -17,10 +16,8 @@ type RegisterRole = "STUDENT" | "PARENT" | "TEACHER";
 const copyByLocale = {
   en: {
     failed: "Registration failed.",
-    success: "Account created. Signing you in now...",
+    success: "Account created successfully. Please log in with your email and password.",
     passwordMismatch: "Password and confirm password do not match.",
-    autoLoginError:
-      "Account was created, but auto login could not be completed. Please login manually.",
     networkError: "Registration could not be completed right now. Please try again.",
     fullName: "Full name",
     registerAs: "Register as",
@@ -42,10 +39,8 @@ const copyByLocale = {
   },
   ur: {
     failed: "رجسٹریشن مکمل نہیں ہو سکی۔",
-    success: "اکاؤنٹ بن گیا ہے۔ اب آپ کو لاگ اِن کیا جا رہا ہے...",
+    success: "اکاؤنٹ بن گیا ہے۔ براہ کرم اپنے ای میل اور پاس ورڈ سے لاگ اِن کریں۔",
     passwordMismatch: "پاس ورڈ اور کنفرم پاس ورڈ ایک جیسے نہیں ہیں۔",
-    autoLoginError:
-      "اکاؤنٹ بن گیا، لیکن آٹو لاگ اِن مکمل نہیں ہو سکا۔ براہ کرم دستی طور پر لاگ اِن کریں۔",
     networkError: "رجسٹریشن اس وقت مکمل نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
     fullName: "پورا نام",
     registerAs: "بطور رجسٹر کریں",
@@ -67,10 +62,8 @@ const copyByLocale = {
   },
   ar: {
     failed: "تعذر إكمال التسجيل.",
-    success: "تم إنشاء الحساب. جار تسجيل دخولك الآن...",
+    success: "تم إنشاء الحساب بنجاح. يرجى تسجيل الدخول باستخدام البريد الإلكتروني وكلمة المرور.",
     passwordMismatch: "كلمة المرور وتأكيدها غير متطابقين.",
-    autoLoginError:
-      "تم إنشاء الحساب، لكن تعذر تسجيل الدخول تلقائيا. يرجى تسجيل الدخول يدويا.",
     networkError: "تعذر إكمال التسجيل الآن. حاول مرة أخرى.",
     fullName: "الاسم الكامل",
     registerAs: "سجل كـ",
@@ -157,22 +150,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
       }
 
       setMessage(copy.success);
-
-      const dashboardPath = getDashboardPath(form.role);
-      const signInResult = await signIn("credentials", {
-        email: form.email,
-        password: form.password,
-        redirect: false,
-        callbackUrl: dashboardPath,
-      });
-
-      if (!signInResult || signInResult.error) {
-        setError(copy.autoLoginError);
-        router.push("/login");
-        return;
-      }
-
-      router.push(signInResult.url || dashboardPath);
+      router.push("/login");
       router.refresh();
     } catch {
       setError(copy.networkError);
