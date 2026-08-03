@@ -16,6 +16,7 @@ import {
   Users,
 } from "lucide-react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { ActionForm } from "@/components/shared";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { auth, getDashboardPath } from "@/lib/auth";
 import { getThemeFromCookies, type SiteTheme } from "@/lib/theme";
@@ -303,34 +304,34 @@ export default async function TeacherDashboardPage() {
                   <span>{course.enrollments.length} enrollments</span>
                   <details className={styles.courseTools}>
                     <summary>Add lesson</summary>
-                    <form action={createTeacherLessonAction} className={styles.stackForm}>
+                    <ActionForm action={createTeacherLessonAction} className={styles.stackForm}>
                       <input type="hidden" name="courseId" value={course.id} />
                       <input name="title" placeholder="Lesson title" required />
                       <input name="duration" type="number" min="1" placeholder="Minutes" />
                       <textarea name="content" rows={3} placeholder="Lesson notes optional" />
                       <button type="submit">Create lesson</button>
-                    </form>
+                    </ActionForm>
                   </details>
                   <details className={styles.courseTools}>
                     <summary>Schedule live class</summary>
-                    <form action={createTeacherLiveClassAction} className={styles.stackForm}>
+                    <ActionForm action={createTeacherLiveClassAction} className={styles.stackForm}>
                       <input type="hidden" name="courseId" value={course.id} />
                       <input name="title" placeholder="Live class title" required />
                       <input name="startsAt" type="datetime-local" required />
                       <input name="durationMinutes" type="number" min="15" defaultValue="60" />
                       <textarea name="joinNote" rows={3} placeholder="Class note optional" />
                       <button type="submit">Schedule live class</button>
-                    </form>
+                    </ActionForm>
                   </details>
                   <details className={styles.courseTools}>
                     <summary>Add assignment</summary>
-                    <form action={createTeacherAssignmentAction} className={styles.stackForm}>
+                    <ActionForm action={createTeacherAssignmentAction} className={styles.stackForm}>
                       <input type="hidden" name="courseId" value={course.id} />
                       <input name="title" placeholder="Assignment title" required />
                       <input name="dueDate" type="date" />
                       <textarea name="description" rows={3} placeholder="Assignment details" />
                       <button type="submit">Create assignment</button>
-                    </form>
+                    </ActionForm>
                   </details>
                 </article>
               ))}
@@ -360,7 +361,7 @@ export default async function TeacherDashboardPage() {
                     <span>{item.course?.title || "Course"}</span>
                     <span>{formatDate(item.startsAt)}</span>
                     <span className={styles.status}>{item.status || "SCHEDULED"}</span>
-                    <form action={updateTeacherLiveClassAction} className={styles.stackForm}>
+                    <ActionForm action={updateTeacherLiveClassAction} className={styles.stackForm}>
                       <input type="hidden" name="sessionId" value={item.id} />
                       <select name="status" defaultValue={item.status || "SCHEDULED"}>
                         <option value="SCHEDULED">Scheduled</option>
@@ -374,7 +375,7 @@ export default async function TeacherDashboardPage() {
                         placeholder="Recording URL optional"
                       />
                       <button type="submit">Update live class</button>
-                    </form>
+                    </ActionForm>
                   </article>
                 ))}
               </div>
@@ -466,12 +467,12 @@ export default async function TeacherDashboardPage() {
                   <span>{item.student?.name || "Student"}</span>
                   <span className={styles.status}>{item.status || "SUBMITTED"}</span>
                   {item.status !== "REVIEWED" ? (
-                    <form action={reviewSubmissionAction} className={styles.stackForm}>
+                    <ActionForm action={reviewSubmissionAction} className={styles.stackForm}>
                       <input type="hidden" name="submissionId" value={item.id} />
                       <textarea name="feedback" rows={3} placeholder="Feedback for student" />
                       <input name="grade" type="number" min="0" max="100" placeholder="Grade" />
                       <button type="submit">Review</button>
-                    </form>
+                    </ActionForm>
                   ) : (
                     <span className={styles.reviewed}>
                       <CheckCircle2 size={18} aria-hidden="true" />
@@ -497,7 +498,7 @@ export default async function TeacherDashboardPage() {
             </div>
             <span className={styles.counter}>{dashboard.attendance.length}</span>
           </div>
-          <form action={saveAttendanceAction} className={styles.attendanceForm}>
+          <ActionForm action={saveAttendanceAction} className={styles.attendanceForm}>
             <input name="studentEmail" type="email" placeholder="student@example.com" required />
             <select name="courseId" defaultValue="" required>
               <option value="" disabled>
@@ -526,7 +527,7 @@ export default async function TeacherDashboardPage() {
             </select>
             <textarea name="note" rows={3} placeholder="Optional note" />
             <button type="submit">Save attendance</button>
-          </form>
+          </ActionForm>
 
           {dashboard.attendance.length ? (
             <div className={styles.compactList}>

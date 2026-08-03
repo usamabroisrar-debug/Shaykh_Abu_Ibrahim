@@ -6,3 +6,4 @@ export { Badge } from "./Badge/Badge";
 export { Card } from "./Card/Card";
 export { PageShell } from "./PageShell/PageShell";
 export { SocialIcon } from "./SocialIcon";
+export { ActionForm } from "./ActionForm";

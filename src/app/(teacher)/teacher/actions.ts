@@ -80,8 +80,8 @@ export async function reviewSubmissionAction(formData: FormData) {
     redirect("/teacher?error=submission-review-failed");
   }
 
-  revalidatePath("/teacher");
-  revalidatePath("/student");
+  revalidatePath("/teacher", "page");
+  revalidatePath("/student", "page");
   redirect("/teacher?success=submission-reviewed");
 }
 
@@ -127,7 +127,7 @@ export async function saveAttendanceAction(formData: FormData) {
     redirect("/teacher?error=attendance-save-failed");
   }
 
-  revalidatePath("/teacher");
+  revalidatePath("/teacher", "page");
   redirect("/teacher?success=attendance-saved");
 }
 
@@ -175,8 +175,8 @@ export async function createTeacherLessonAction(formData: FormData) {
     redirect("/teacher?error=lesson-create-failed");
   }
 
-  revalidatePath("/teacher");
-  revalidatePath("/student");
+  revalidatePath("/teacher", "page");
+  revalidatePath("/student", "page");
   redirect("/teacher?success=lesson-created");
 }
 
@@ -217,8 +217,8 @@ export async function createTeacherAssignmentAction(formData: FormData) {
     redirect("/teacher?error=assignment-create-failed");
   }
 
-  revalidatePath("/teacher");
-  revalidatePath("/student");
+  revalidatePath("/teacher", "page");
+  revalidatePath("/student", "page");
   redirect("/teacher?success=assignment-created");
 }
 
@@ -258,8 +258,8 @@ export async function createTeacherLiveClassAction(formData: FormData) {
     redirect("/teacher?error=live-class-create-failed");
   }
 
-  revalidatePath("/teacher");
-  revalidatePath("/student");
+  revalidatePath("/teacher", "page");
+  revalidatePath("/student", "page");
   redirect("/teacher?success=live-class-created");
 }
 
@@ -303,7 +303,7 @@ export async function updateTeacherLiveClassAction(formData: FormData) {
     redirect("/teacher?error=live-class-update-failed");
   }
 
-  revalidatePath("/teacher");
-  revalidatePath("/student");
+  revalidatePath("/teacher", "page");
+  revalidatePath("/student", "page");
   redirect("/teacher?success=live-class-updated");
 }

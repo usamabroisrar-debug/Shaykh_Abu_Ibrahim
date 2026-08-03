@@ -17,6 +17,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { ActionForm } from "@/components/shared";
 import { LiveClassJoinButton } from "@/components/lms/LiveClassJoinButton";
 import { PaymentCheckoutButton } from "@/components/lms/PaymentCheckoutButton";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -446,7 +447,7 @@ export default async function StudentDashboardPage() {
                         </span>
                       </div>
                       {nextLesson ? (
-                        <form action={markLessonCompleteAction} className={styles.inlineForm}>
+                        <ActionForm action={markLessonCompleteAction} className={styles.inlineForm}>
                           <input
                             type="hidden"
                             name="courseId"
@@ -454,7 +455,7 @@ export default async function StudentDashboardPage() {
                           />
                           <input type="hidden" name="lessonId" value={nextLesson.id} />
                           <button type="submit">Mark next lesson complete</button>
-                        </form>
+                        </ActionForm>
                       ) : (
                         <p className={styles.mutedText}>
                           Lessons are not available for this course yet.
@@ -627,7 +628,7 @@ export default async function StudentDashboardPage() {
                           {submission.feedback || "Submitted"}
                         </span>
                       ) : (
-                        <form action={submitAssignmentAction} className={styles.stackForm}>
+                        <ActionForm action={submitAssignmentAction} className={styles.stackForm}>
                           <input type="hidden" name="assignmentId" value={item.id} />
                           <textarea
                             name="content"
@@ -645,7 +646,7 @@ export default async function StudentDashboardPage() {
                             aria-label="Upload assignment file"
                           />
                           <button type="submit">Submit</button>
-                        </form>
+                        </ActionForm>
                       )}
                     </div>
                   </article>
@@ -780,10 +781,10 @@ export default async function StudentDashboardPage() {
                     <p>{item.message}</p>
                     {item.createdAt ? <span>{formatDate(item.createdAt)}</span> : null}
                     {!item.readAt ? (
-                      <form action={markNotificationReadAction} className={styles.inlineForm}>
+                      <ActionForm action={markNotificationReadAction} className={styles.inlineForm}>
                         <input type="hidden" name="notificationId" value={item.id} />
                         <button type="submit">Mark as read</button>
-                      </form>
+                      </ActionForm>
                     ) : (
                       <span className={styles.status}>Read</span>
                     )}

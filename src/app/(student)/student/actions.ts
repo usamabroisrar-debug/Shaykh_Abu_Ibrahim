@@ -53,8 +53,8 @@ export async function markLessonCompleteAction(formData: FormData) {
     redirect("/student?error=lesson-progress-failed");
   }
 
-  revalidatePath("/student");
-  redirect("/student?success=lesson-completed");
+  revalidatePath("/student", "page");
+  return { success: true };
 }
 
 export async function submitAssignmentAction(formData: FormData) {
@@ -98,8 +98,8 @@ export async function submitAssignmentAction(formData: FormData) {
     redirect("/student?error=assignment-submit-failed");
   }
 
-  revalidatePath("/student");
-  revalidatePath("/teacher");
+  revalidatePath("/student", "page");
+  revalidatePath("/teacher", "page");
   redirect("/student?success=assignment-submitted");
 }
 
@@ -125,6 +125,6 @@ export async function markNotificationReadAction(formData: FormData) {
     redirect("/student?error=notification-update-failed");
   }
 
-  revalidatePath("/student");
-  redirect("/student?success=notification-read");
+  revalidatePath("/student", "page");
+  return { success: true };
 }
