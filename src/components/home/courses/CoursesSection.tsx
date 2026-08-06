@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { ArrowRight } from "lucide-react";
 import { Button, Container, Section, SectionTitle } from "@/components/shared";
 import { getLocaleFromCookies } from "@/lib/locale";
-import { getFeaturedPublicCourses } from "@/services/course/course.service";
+import { getPublicCourses } from "@/services/course/course.service";
 import { CourseCard } from "./CourseCard";
 import styles from "./CoursesSection.module.css";
 
@@ -39,7 +39,29 @@ const copy = {
 export async function CoursesSection() {
   const locale = getLocaleFromCookies(await cookies());
   const content = copy[locale];
-  const featuredCourses = await getFeaturedPublicCourses(6);
+  const allCourses = await getPublicCourses();
+
+  // Ensure core courses appear first: Qaida, Nazra, Hifz
+  const orderedCategories = ["Qaida", "Nazra", "Hifz"];
+  const orderedCourses: typeof allCourses = [];
+
+  for (const cat of orderedCategories) {
+    orderedCourses.push(...allCourses.filter((c) => c.category === cat));
+  }
+
+  // Append remaining courses after the ordered ones
+  const remaining = allCourses.filter((c) => !orderedCourses.find((o) => o.id === c.id));
+  const combined = [...orderedCourses, ...remaining];
+
+  // Deduplicate by category so we don't show the same category multiple times on home
+  const seen = new Set<string>();
+  const uniqueByCategory = combined.filter((c) => {
+    if (seen.has(c.category)) return false;
+    seen.add(c.category);
+    return true;
+  });
+
+  const featuredCourses = uniqueByCategory.slice(0, 6);
 
   return (
     <Section className={styles.section}>

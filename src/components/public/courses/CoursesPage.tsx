@@ -54,6 +54,28 @@ function localizedRich(value: Parameters<typeof resolveLocalizedRichText>[0], lo
 export async function CoursesPage() {
   const locale = getLocaleFromCookies(await cookies());
   const courses = await getPublicCourses();
+
+  // Ensure core categories appear first on the All Courses page
+  // and place the Qaida Foundation course immediately after other Qaida courses.
+  const preferredOrder = ["Qaida", "Nazra", "Hifz"];
+
+  const qaidaCourses = courses.filter((c) => c.category === "Qaida");
+  const qaidaFoundation = qaidaCourses.find(
+    (c) => c.slug === "qaida-foundation-program" || /qaida\s*foundation/i.test(String(c.title))
+  );
+  const qaidaOthers = qaidaCourses.filter((c) => c.id !== qaidaFoundation?.id);
+
+  const ordered: typeof courses = [];
+  // Push Qaida others first, then Qaida Foundation (if present)
+  ordered.push(...qaidaOthers);
+  if (qaidaFoundation) ordered.push(qaidaFoundation);
+
+  for (const cat of preferredOrder.filter((p) => p !== "Qaida")) {
+    ordered.push(...courses.filter((c) => c.category === cat));
+  }
+
+  const rest = courses.filter((c) => !ordered.find((o) => o.id === c.id));
+  const orderedCourses = [...ordered, ...rest];
   const copy = {
     en: {
       eyebrow: "Courses",
@@ -99,7 +121,7 @@ export async function CoursesPage() {
       <Section variant="white">
         <Container>
           <div className={styles.grid}>
-            {courses.map((course) => (
+            {orderedCourses.map((course) => (
               <Card key={course.id} className={styles.card}>
                 <div className={styles.imageWrap}>
                   <Image
